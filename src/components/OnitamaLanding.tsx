@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import OnitamaGame from "./OnitamaGame";
 
 export default function OnitamaLanding() {
   const [showGame, setShowGame] = useState(false);
+  const gameRef = useRef<{ resetGame: () => void }>(null);
 
   if (showGame) {
     return (
@@ -21,15 +22,23 @@ export default function OnitamaLanding() {
                 className="object-contain zen-float"
               />
             </div>
-            <button
-              onClick={() => setShowGame(false)}
-              className="zen-card border border-stone-400 text-stone-700 px-6 py-3 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 tracking-wide font-light"
-            >
-              ← 返回首頁
-            </button>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => gameRef.current?.resetGame()}
+                className="zen-card border border-stone-400 text-stone-700 px-6 py-3 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 tracking-wide font-light"
+              >
+                新局
+              </button>
+              <button
+                onClick={() => setShowGame(false)}
+                className="zen-card border border-stone-400 text-stone-700 px-6 py-3 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 tracking-wide font-light"
+              >
+                ← 返回首頁
+              </button>
+            </div>
           </div>
           <div className="zen-card p-8">
-            <OnitamaGame />
+            <OnitamaGame ref={gameRef} />
           </div>
         </div>
       </div>
@@ -226,9 +235,9 @@ export default function OnitamaLanding() {
                   </h4>
                 </div>
                 <ul className="space-y-3 text-stone-600 font-light">
-                  <li>• 使用的牌旋轉180°放入共用堆</li>
-                  <li>• 取得現在的共用牌</li>
-                  <li>• 牌片在玩家間不斷流轉</li>
+                  <li>• 使用的牌放到對手右側（對手下回合拿取）</li>
+                  <li>• 拿取自己右側的共用牌</li>
+                  <li>• 五張牌在兩人間輪流使用</li>
                   <li>• 三思而後行 - 對手將得到你的牌！</li>
                 </ul>
               </div>

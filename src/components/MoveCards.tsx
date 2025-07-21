@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { MoveCard, Player } from "@/types/game";
 
 interface MoveCardsProps {
@@ -25,42 +26,57 @@ export default function MoveCards({
     >
       <div className="text-center mb-2">
         <div className={`flex items-center justify-center space-x-2 ${
-          player === "red" ? "text-red-800" : "text-stone-800"
+          player === "red" ? "text-red-800" : "text-blue-800"
         }`}>
           <div className={`w-4 h-4 rounded-full ${
-            player === "red" ? "bg-red-800" : "bg-stone-800"
+            player === "red" ? "bg-red-800" : "bg-blue-800"
           }`}></div>
           <span className="font-light tracking-wide">
-            {player === "red" ? "紅方牌組" : "石方牌組"}
+            {player === "red" ? "紅方牌組" : "蓝方牌組"}
           </span>
         </div>
       </div>
 
-      <div className="flex gap-3 justify-center">
+      <div className="flex gap-4 justify-center">
         {cards.map((card, index) => (
-          <div
-            key={index}
+          <motion.div
+            key={`${player}-${index}-${card.name}`}
             onClick={() => onCardClick(index)}
             className={`
-              relative zen-card p-5 border cursor-pointer 
-              transition-all duration-300 hover:scale-105 hover:shadow-xl hover:-translate-y-1
+              relative zen-card p-4 border cursor-pointer 
               ${isCurrentPlayer ? "hover:border-amber-400" : ""}
-              ${playerColor === "red" ? "border-red-300" : "border-stone-300"}
+              ${playerColor === "red" ? "border-red-300" : "border-blue-300"}
               ${
                 selectedCard === index
-                  ? "ring-2 ring-amber-400 border-amber-400 shadow-xl scale-105"
+                  ? "ring-2 ring-amber-400 border-amber-400 shadow-xl"
                   : ""
               }
-              min-w-[140px] zen-float
+              w-32
             `}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ 
+              opacity: 1, 
+              y: 0,
+              scale: selectedCard === index ? 1.05 : 1
+            }}
+            whileHover={{ 
+              scale: isCurrentPlayer ? 1.08 : 1,
+              y: isCurrentPlayer ? -4 : 0,
+              transition: { type: "spring", stiffness: 400, damping: 10 }
+            }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ 
+              duration: 0.3,
+              delay: index * 0.1
+            }}
           >
             {/* Card Name */}
-            <div className="text-sm font-light text-center mb-4 text-stone-800 bg-stone-100/80 py-2 px-3 rounded-none border border-stone-200">
+            <div className="text-xs font-light text-center mb-3 text-stone-800 bg-stone-100/80 py-1 px-2 border border-stone-200">
               {card.name}
             </div>
 
             {/* 5x5 Card Pattern Display - Zen Style */}
-            <div className="w-24 h-24 mx-auto grid grid-cols-5 gap-0.5 p-2 bg-stone-100/90 border border-stone-300">
+            <div className="w-20 h-20 mx-auto grid grid-cols-5 gap-0.5 p-1 bg-stone-100/90 border border-stone-300">
               {Array.from({ length: 5 }, (_, i) =>
                 Array.from({ length: 5 }, (_, j) => {
                   // Center position
@@ -68,9 +84,9 @@ export default function MoveCards({
                     return (
                       <div
                         key={`${i}-${j}`}
-                        className="w-4 h-4 border border-stone-300 bg-stone-800 flex items-center justify-center"
+                        className="w-3 h-3 border border-stone-300 bg-stone-800 flex items-center justify-center"
                       >
-                        <span className="text-xs text-stone-100">中</span>
+                        <span className="text-[10px] text-stone-100">中</span>
                       </div>
                     );
                   }
@@ -86,7 +102,7 @@ export default function MoveCards({
                     <div
                       key={`${i}-${j}`}
                       className={`
-                        w-4 h-4 border border-stone-300
+                        w-3 h-3 border border-stone-300
                         ${
                           hasMove
                             ? playerColor === "red"
@@ -102,15 +118,15 @@ export default function MoveCards({
             </div>
 
             {/* Color Indicator - Zen Style */}
-            <div className="flex justify-center mt-4">
+            <div className="flex justify-center mt-3">
               <div
                 className={`
-                w-8 h-1 
-                ${playerColor === "red" ? "bg-red-700" : "bg-stone-700"}
+                w-6 h-1 
+                ${playerColor === "red" ? "bg-red-700" : "bg-blue-700"}
               `}
               ></div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>

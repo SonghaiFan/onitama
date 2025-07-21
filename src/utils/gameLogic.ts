@@ -221,9 +221,12 @@ export function executeMove(
   };
 
   // Rotate used card and make it shared (flip moves for opposite player)
+  // The shared card's color should indicate whose turn it will be next
+  const nextPlayer = gameState.currentPlayer === "red" ? "blue" : "red";
   const rotatedCard: MoveCard = {
     ...usedCard,
     moves: usedCard.moves.map((move) => ({ x: -move.x, y: -move.y })),
+    color: nextPlayer, // Update color to show who will use this card next
   };
   newState.sharedCard = rotatedCard;
 

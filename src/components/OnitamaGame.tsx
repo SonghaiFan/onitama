@@ -1,9 +1,13 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import React, {
+  useState,
+  useCallback,
+  useImperativeHandle,
+  forwardRef,
+} from "react";
+import { motion } from "framer-motion";
 import GameBoard from "./GameBoard";
-import MoveCards from "./MoveCards";
-import GameStatus from "./GameStatus";
 import { GameState, Player } from "@/types/game";
 import {
   INITIAL_GAME_STATE,
@@ -13,71 +17,24 @@ import {
   createNewGame,
 } from "@/utils/gameLogic";
 
-export default function OnitamaGame() {
-  const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
-  const [possibleMoves, setPossibleMoves] = useState<[number, number][]>([]);
+const OnitamaGame = forwardRef<{ resetGame: () => void }, {}>(
+  function OnitamaGame(props, ref) {
+    const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
+    const [possibleMoves, setPossibleMoves] = useState<[number, number][]>([]);
 
-  const handlePieceClick = useCallback(
-    (position: [number, number]) => {
-      if (gameState.winner) return;
+    const handlePieceClick = useCallback(
+      (position: [number, number]) => {
+        if (gameState.winner) return;
 
-      const [row, col] = position;
-      const piece = gameState.board[row][col];
+        const [row, col] = position;
+        const piece = gameState.board[row][col];
 
-      // If clicking on empty space and we have a selected piece and card, try to move
-      if (
-        !piece &&
-        gameState.selectedPiece &&
-        gameState.selectedCard !== null
-      ) {
-        const selectedCard =
-          gameState.players[gameState.currentPlayer].cards[
-            gameState.selectedCard
-          ];
-
+        // If clicking on empty space and we have a selected piece and card, try to move
         if (
-          isValidMove(
-            gameState.selectedPiece,
-            position,
-            selectedCard,
-            gameState.board
-          )
+          !piece &&
+          gameState.selectedPiece &&
+          gameState.selectedCard !== null
         ) {
-          const newGameState = executeMove(
-            gameState,
-            gameState.selectedPiece,
-            position,
-            gameState.selectedCard
-          );
-          setGameState(newGameState);
-          setPossibleMoves([]);
-        }
-        return;
-      }
-
-      // If clicking on a piece
-      if (piece) {
-        // If it's the current player's piece, select it
-        if (piece.player === gameState.currentPlayer) {
-          const newGameState = { ...gameState, selectedPiece: position };
-          setGameState(newGameState);
-
-          // Show possible moves if a card is also selected
-          if (gameState.selectedCard !== null) {
-            const selectedCard =
-              gameState.players[gameState.currentPlayer].cards[
-                gameState.selectedCard
-              ];
-            const moves = getPossibleMoves(
-              piece,
-              selectedCard,
-              gameState.board
-            );
-            setPossibleMoves(moves);
-          }
-        }
-        // If it's an opponent's piece and we can capture it
-        else if (gameState.selectedPiece && gameState.selectedCard !== null) {
           const selectedCard =
             gameState.players[gameState.currentPlayer].cards[
               gameState.selectedCard
@@ -100,104 +57,293 @@ export default function OnitamaGame() {
             setGameState(newGameState);
             setPossibleMoves([]);
           }
+          return;
         }
-      }
-    },
-    [gameState]
-  );
 
-  const handleCardClick = useCallback(
-    (cardIndex: number) => {
-      if (gameState.winner) return;
-
-      const newGameState = { ...gameState, selectedCard: cardIndex };
-      setGameState(newGameState);
-
-      // Show possible moves if a piece is also selected
-      if (gameState.selectedPiece) {
-        const [row, col] = gameState.selectedPiece;
-        const piece = gameState.board[row][col];
+        // If clicking on a piece
         if (piece) {
-          const selectedCard =
-            gameState.players[gameState.currentPlayer].cards[cardIndex];
-          const moves = getPossibleMoves(piece, selectedCard, gameState.board);
-          setPossibleMoves(moves);
-        }
-      }
-    },
-    [gameState]
-  );
+          // If it's the current player's piece, select it
+          if (piece.player === gameState.currentPlayer) {
+            const newGameState = { ...gameState, selectedPiece: position };
+            setGameState(newGameState);
 
-  const resetGame = useCallback(() => {
-    setGameState(createNewGame()); // Use createNewGame for fresh random cards
-    setPossibleMoves([]);
-  }, []);
-
-  return (
-    <div className="flex flex-col lg:flex-row gap-8 items-start justify-center">
-      {/* Game Board */}
-      <div className="flex-1 max-w-md">
-        <GameBoard
-          gameState={gameState}
-          onPieceClick={handlePieceClick}
-          possibleMoves={possibleMoves}
-        />
-      </div>
-
-      {/* Side Panel */}
-      <div className="flex-1 max-w-md space-y-6">
-        <GameStatus gameState={gameState} />
-
-        {/* Blue Player Cards (top) */}
-        <div className="transform rotate-180">
-          <MoveCards
-            cards={gameState.players.blue.cards}
-            player="blue"
-            onCardClick={handleCardClick}
-            isCurrentPlayer={gameState.currentPlayer === "blue"}
-            selectedCard={
-              gameState.currentPlayer === "blue" ? gameState.selectedCard : null
+            // Show possible moves if a card is also selected
+            if (gameState.selectedCard !== null) {
+              const selectedCard =
+                gameState.players[gameState.currentPlayer].cards[
+                  gameState.selectedCard
+                ];
+              const moves = getPossibleMoves(
+                piece,
+                selectedCard,
+                gameState.board
+              );
+              setPossibleMoves(moves);
             }
-          />
-        </div>
+          }
+          // If it's an opponent's piece and we can capture it
+          else if (gameState.selectedPiece && gameState.selectedCard !== null) {
+            const selectedCard =
+              gameState.players[gameState.currentPlayer].cards[
+                gameState.selectedCard
+              ];
 
-        {/* Shared Card - Authentic Style */}
-        <div className="flex justify-center">
-          <div className="relative bg-gradient-to-br from-amber-50 to-orange-100 p-4 rounded-lg border-2 border-yellow-500 shadow-lg">
-            <div className="text-sm font-bold text-center mb-2 text-gray-800">
-              Shared Card
-            </div>
-            <div className="text-xs font-semibold text-center mb-3 bg-white/70 py-1 px-2 rounded text-gray-700">
-              {gameState.sharedCard.name}
+            if (
+              isValidMove(
+                gameState.selectedPiece,
+                position,
+                selectedCard,
+                gameState.board
+              )
+            ) {
+              const newGameState = executeMove(
+                gameState,
+                gameState.selectedPiece,
+                position,
+                gameState.selectedCard
+              );
+              setGameState(newGameState);
+              setPossibleMoves([]);
+            }
+          }
+        }
+      },
+      [gameState]
+    );
+
+    const handleCardClick = useCallback(
+      (cardIndex: number) => {
+        if (gameState.winner) return;
+
+        const newGameState = { ...gameState, selectedCard: cardIndex };
+        setGameState(newGameState);
+
+        // Show possible moves if a piece is also selected
+        if (gameState.selectedPiece) {
+          const [row, col] = gameState.selectedPiece;
+          const piece = gameState.board[row][col];
+          if (piece) {
+            const selectedCard =
+              gameState.players[gameState.currentPlayer].cards[cardIndex];
+            const moves = getPossibleMoves(
+              piece,
+              selectedCard,
+              gameState.board
+            );
+            setPossibleMoves(moves);
+          }
+        }
+      },
+      [gameState]
+    );
+
+    const resetGame = useCallback(() => {
+      setGameState(createNewGame()); // Use createNewGame for fresh random cards
+      setPossibleMoves([]);
+    }, []);
+
+    useImperativeHandle(ref, () => ({
+      resetGame,
+    }));
+
+    // Get all 5 cards and their positions - memoized to prevent unnecessary re-renders
+    const allCards = React.useMemo(() => {
+      const redCards = gameState.players.red.cards;
+      const blueCards = gameState.players.blue.cards;
+      const sharedCard = gameState.sharedCard;
+
+      return [
+        // Red cards (bottom)
+        {
+          card: redCards[0],
+          position: "red-left",
+          isSelected:
+            gameState.currentPlayer === "red" && gameState.selectedCard === 0,
+        },
+        {
+          card: redCards[1],
+          position: "red-right",
+          isSelected:
+            gameState.currentPlayer === "red" && gameState.selectedCard === 1,
+        },
+        // Blue cards (top, rotated)
+        {
+          card: blueCards[0],
+          position: "blue-left",
+          isSelected:
+            gameState.currentPlayer === "blue" && gameState.selectedCard === 0,
+        },
+        {
+          card: blueCards[1],
+          position: "blue-right",
+          isSelected:
+            gameState.currentPlayer === "blue" && gameState.selectedCard === 1,
+        },
+        // Shared card (left or right)
+        {
+          card: sharedCard,
+          position:
+            sharedCard.color === "blue" ? "shared-left" : "shared-right",
+          isSelected: false,
+        },
+      ];
+    }, [
+      gameState.players.red.cards,
+      gameState.players.blue.cards,
+      gameState.sharedCard,
+      gameState.currentPlayer,
+      gameState.selectedCard,
+    ]);
+
+    // Universal Card Component
+    const UniversalCard = ({
+      cardData,
+    }: {
+      cardData: { card: any; position: string; isSelected: boolean };
+    }) => {
+      const { card, position, isSelected } = cardData;
+      const isShared = position.startsWith("shared");
+      const isBlue = position.startsWith("blue");
+      const isRed = position.startsWith("red");
+      const isRotated = isBlue || (isShared && position === "shared-left");
+
+      // Get position coordinates
+      const getPositionStyle = (pos: string) => {
+        const positions = {
+          "red-left": { x: -80, y: 200 },
+          "red-right": { x: 80, y: 200 },
+          "blue-left": { x: -80, y: -200 },
+          "blue-right": { x: 80, y: -200 },
+          "shared-left": { x: -280, y: 0 },
+          "shared-right": { x: 280, y: 0 },
+        };
+        return positions[pos as keyof typeof positions] || { x: 0, y: 0 };
+      };
+
+      const posStyle = getPositionStyle(position);
+
+      const handleClick = () => {
+        if (isShared) return; // Can't click shared card
+
+        if (isRed && gameState.currentPlayer === "red") {
+          const cardIndex = position === "red-left" ? 0 : 1;
+          handleCardClick(cardIndex);
+        } else if (isBlue && gameState.currentPlayer === "blue") {
+          const cardIndex = position === "blue-left" ? 0 : 1;
+          handleCardClick(cardIndex);
+        }
+      };
+
+      return (
+        <motion.div
+          className={`absolute zen-card p-4 border cursor-pointer select-none
+          ${isShared ? "p-6" : ""}
+          ${
+            isRed
+              ? "border-red-300"
+              : isBlue
+              ? "border-blue-300"
+              : "border-stone-300"
+          }
+          ${
+            isSelected ? "ring-2 ring-amber-400 border-amber-400 shadow-xl" : ""
+          }
+          ${!isShared ? "w-32" : ""}
+        `}
+          initial={{ x: 0, y: 0, rotate: 0 }}
+          animate={{
+            x: posStyle.x,
+            y: posStyle.y,
+            rotate: isRotated ? 180 : 0,
+            scale: isSelected ? 1.05 : 1,
+          }}
+          whileHover={{
+            scale:
+              !isShared &&
+              ((isRed && gameState.currentPlayer === "red") ||
+                (isBlue && gameState.currentPlayer === "blue"))
+                ? 1.08
+                : isSelected
+                ? 1.05
+                : 1,
+            y:
+              !isShared &&
+              ((isRed && gameState.currentPlayer === "red") ||
+                (isBlue && gameState.currentPlayer === "blue"))
+                ? posStyle.y - 4
+                : posStyle.y,
+            transition: { type: "spring", stiffness: 400, damping: 10 },
+          }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleClick}
+          transition={{
+            type: "spring",
+            stiffness: 200,
+            damping: 20,
+            duration: 0.8,
+          }}
+          style={{ zIndex: isSelected ? 30 : isShared ? 25 : 15 }}
+        >
+          {/* Card Title for shared cards */}
+          {isShared && (
+            <motion.div
+              className="text-lg font-light text-stone-800 mb-4 tracking-wide text-center"
+              animate={{ rotate: isRotated ? 180 : 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              共用牌
+            </motion.div>
+          )}
+
+          {isShared && (
+            <div className="w-12 h-px bg-stone-300 mx-auto mb-6"></div>
+          )}
+
+          {/* Card Content */}
+          <div
+            className={`zen-card ${
+              isShared ? "p-3" : "p-0"
+            } border border-stone-300`}
+          >
+            <div className="text-xs font-light text-center mb-3 text-stone-800 bg-stone-100/80 py-1 px-2 border border-stone-200">
+              {card.name}
             </div>
 
-            {/* 5x5 Grid Display - Like Real Cards */}
-            <div className="w-24 h-24 mx-auto bg-white/90 rounded border border-gray-300 grid grid-cols-5 gap-0.5 p-1">
-              {/* Display shared card pattern */}
+            {/* 5x5 Grid Display */}
+            <div className="w-20 h-20 mx-auto bg-stone-100/90 border border-stone-300 grid grid-cols-5 gap-0.5 p-1">
               {Array.from({ length: 5 }, (_, i) =>
                 Array.from({ length: 5 }, (_, j) => {
-                  // Center position
-                  if (i === 2 && j === 2) {
+                  const actualI = isRotated ? 4 - i : i;
+                  const actualJ = isRotated ? 4 - j : j;
+
+                  if (actualI === 2 && actualJ === 2) {
                     return (
                       <div
                         key={`${i}-${j}`}
-                        className="w-4 h-4 border border-gray-200 bg-gray-800"
-                      />
+                        className="w-3 h-3 border border-stone-300 bg-stone-800 flex items-center justify-center"
+                      >
+                        <span className="text-[10px] text-stone-100">中</span>
+                      </div>
                     );
                   }
 
-                  // Check if this position has a move
-                  const hasMove = gameState.sharedCard.moves.some((move) => {
+                  const hasMove = card.moves.some((move: any) => {
                     const displayRow = 2 - move.y;
                     const displayCol = 2 + move.x;
-                    return displayRow === i && displayCol === j;
+                    return displayRow === actualI && displayCol === actualJ;
                   });
 
                   return (
                     <div
                       key={`${i}-${j}`}
-                      className={`w-4 h-4 border border-gray-200 ${
-                        hasMove ? "bg-yellow-500" : "bg-gray-50"
+                      className={`w-3 h-3 border border-stone-300 ${
+                        hasMove
+                          ? isRed
+                            ? "bg-red-600"
+                            : isBlue
+                            ? "bg-emerald-600"
+                            : "bg-amber-500"
+                          : "bg-stone-50"
                       }`}
                     />
                   );
@@ -208,62 +354,113 @@ export default function OnitamaGame() {
             {/* Color Indicator */}
             <div className="flex justify-center mt-3">
               <div
-                className={`w-6 h-3 rounded-sm ${
-                  gameState.sharedCard.color === "red"
+                className={`w-6 h-1 ${
+                  isRed
+                    ? "bg-red-600"
+                    : isBlue
+                    ? "bg-blue-600"
+                    : card.color === "red"
                     ? "bg-red-600"
                     : "bg-blue-600"
                 }`}
               ></div>
             </div>
           </div>
-        </div>
 
-        {/* Red Player Cards (bottom) */}
-        <MoveCards
-          cards={gameState.players.red.cards}
-          player="red"
-          onCardClick={handleCardClick}
-          isCurrentPlayer={gameState.currentPlayer === "red"}
-          selectedCard={
-            gameState.currentPlayer === "red" ? gameState.selectedCard : null
-          }
-        />
+          {/* Shared card next turn indicator */}
+          {isShared && (
+            <motion.div
+              className="mt-6 text-xs text-stone-500 font-light text-center"
+              animate={{ rotate: isRotated ? 180 : 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              下一回合輪到
+              <span
+                className={`ml-1 ${
+                  card.color === "red" ? "text-red-600" : "text-blue-600"
+                }`}
+              >
+                {card.color === "red" ? "紅方" : "藍方"}
+              </span>
+            </motion.div>
+          )}
+        </motion.div>
+      );
+    };
 
-        {/* Controls */}
-        <div className="flex gap-4">
-          <button
-            onClick={resetGame}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-          >
-            New Game
-          </button>
-        </div>
-
-        {/* Instructions */}
-        <div className="bg-blue-50 p-3 rounded-lg text-sm text-blue-800">
-          <div className="font-semibold mb-2">How to Play:</div>
-          <div className="space-y-1">
-            <div>1. Select one of your cards</div>
-            <div>2. Click on your piece to select it</div>
-            <div>3. Click on a highlighted square to move</div>
-            <div className="text-xs text-blue-600 mt-2">
-              Green circles = valid moves | Red dots = capture moves
-            </div>
+    // Simple game status without heavy styling
+    const GameStatusSimple = () => (
+      <div className="flex items-center justify-center space-x-8 mb-6">
+        {gameState.winner ? (
+          <div className="flex items-center space-x-3">
+            <div className="text-2xl">🏆</div>
+            <span
+              className={`text-xl font-medium ${
+                gameState.winner === "red" ? "text-red-600" : "text-blue-600"
+              }`}
+            >
+              {gameState.winner === "red" ? "紅方" : "藍方"}勝利！
+            </span>
           </div>
-        </div>
+        ) : (
+          <>
+            <div className="flex items-center space-x-2">
+              <span className="text-stone-600 font-light">當前回合:</span>
+              <div
+                className={`w-4 h-4 rounded-full ${
+                  gameState.currentPlayer === "red"
+                    ? "bg-red-600"
+                    : "bg-blue-600"
+                }`}
+              ></div>
+              <span
+                className={`font-medium ${
+                  gameState.currentPlayer === "red"
+                    ? "text-red-600"
+                    : "text-blue-600"
+                }`}
+              >
+                {gameState.currentPlayer === "red" ? "紅方" : "藍方"}
+              </span>
+            </div>
+            {gameState.selectedPiece && (
+              <div className="text-stone-500 text-sm">
+                已選棋子: ({gameState.selectedPiece[0]},{" "}
+                {gameState.selectedPiece[1]})
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    );
 
-        {/* Card Info */}
-        <div className="bg-green-50 p-3 rounded-lg text-sm text-green-800">
-          <div className="font-semibold mb-2">🎴 Authentic Onitama Cards</div>
-          <div className="text-green-700">
-            Playing with official cards: {gameState.players.red.cards[0].name},{" "}
-            {gameState.players.red.cards[1].name},{" "}
-            {gameState.players.blue.cards[0].name},{" "}
-            {gameState.players.blue.cards[1].name}, and{" "}
-            {gameState.sharedCard.name}
+    return (
+      <div className="max-w-7xl mx-auto">
+        {/* Simple Game Status */}
+        <GameStatusSimple />
+
+        {/* All Cards Container - Relative positioning for absolute cards */}
+        <div className="relative flex justify-center items-center min-h-[600px] min-w-[800px] mx-auto">
+          {/* Render all 5 cards */}
+          {allCards.map((cardData) => (
+            <UniversalCard
+              key={`${cardData.card.name}-${cardData.position}`}
+              cardData={cardData}
+            />
+          ))}
+
+          {/* Game Board - Centered */}
+          <div className="relative z-20">
+            <GameBoard
+              gameState={gameState}
+              onPieceClick={handlePieceClick}
+              possibleMoves={possibleMoves}
+            />
           </div>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
+);
+
+export default OnitamaGame;
