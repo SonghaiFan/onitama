@@ -30,11 +30,11 @@ export default function GameBoard({
         w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold text-sm
         ${
           isRed
-            ? "bg-red-500 border-red-700 text-white"
-            : "bg-blue-500 border-blue-700 text-white"
+            ? "bg-red-800 border-red-900 text-red-100"
+            : "bg-stone-800 border-stone-900 text-stone-100"
         }
-        ${isMaster ? "text-yellow-300 shadow-lg" : ""}
-        cursor-pointer hover:scale-110 transition-transform
+        ${isMaster ? "master-piece text-amber-100 shadow-lg" : "student-piece"}
+        cursor-pointer hover:scale-110 transition-all duration-300 zen-float
       `}
       >
         {isMaster ? "♔" : "♙"}
@@ -49,8 +49,8 @@ export default function GameBoard({
   };
 
   return (
-    <div className="bg-amber-100 p-4 rounded-lg border-2 border-amber-300 shadow-lg">
-      <div className="grid grid-cols-5 gap-1 bg-amber-200 p-2 rounded">
+    <div className="neoprene-mat p-8 border border-stone-300 shadow-2xl">
+      <div className="grid grid-cols-5 gap-2 bg-stone-100 p-4 border border-stone-200 shadow-inner">
         {Array.from({ length: 5 }, (_, row) =>
           Array.from({ length: 5 }, (_, col) => {
             const piece = gameState.board[row][col];
@@ -66,25 +66,21 @@ export default function GameBoard({
                 key={`${row}-${col}`}
                 onClick={() => handleCellClick(row, col)}
                 className={`
-                  w-12 h-12 border border-amber-400 flex items-center justify-center cursor-pointer
-                  transition-all duration-200 hover:bg-amber-50 relative
-                  ${isBlueTempleArch ? "bg-blue-200 border-blue-400" : ""}
-                  ${isRedTempleArch ? "bg-red-200 border-red-400" : ""}
+                  w-14 h-14 border border-stone-300 flex items-center justify-center cursor-pointer
+                  transition-all duration-300 hover:shadow-md relative backdrop-blur-sm
+                  ${isBlueTempleArch ? "temple-arch bg-stone-200 border-stone-400" : ""}
+                  ${isRedTempleArch ? "temple-arch bg-stone-200 border-stone-400" : ""}
                   ${
                     isSelected
-                      ? "ring-2 ring-yellow-400 bg-yellow-100"
-                      : "bg-amber-50"
+                      ? "ring-2 ring-amber-400 bg-amber-100 shadow-lg"
+                      : "bg-stone-50"
                   }
-                  ${isPossible ? "ring-2 ring-green-400 bg-green-100" : ""}
-                  ${!piece ? "hover:bg-amber-100" : ""}
+                  ${isPossible ? "ring-2 ring-emerald-400 bg-emerald-50 shadow-md" : ""}
+                  ${!piece ? "hover:bg-stone-100" : ""}
                 `}
               >
                 {(isBlueTempleArch || isRedTempleArch) && !piece && (
-                  <div
-                    className={`text-xs font-bold ${
-                      isBlueTempleArch ? "text-blue-600" : "text-red-600"
-                    }`}
-                  >
+                  <div className="text-lg text-stone-600 zen-float">
                     ⛩
                   </div>
                 )}
@@ -92,12 +88,12 @@ export default function GameBoard({
 
                 {/* Possible move indicator */}
                 {isPossible && !piece && (
-                  <div className="w-4 h-4 bg-green-400 rounded-full opacity-70"></div>
+                  <div className="w-5 h-5 bg-emerald-500 rounded-full opacity-80 shadow-sm zen-float"></div>
                 )}
                 {isPossible &&
                   piece &&
                   piece.player !== gameState.currentPlayer && (
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
+                    <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-600 rounded-full shadow-lg animate-pulse"></div>
                   )}
               </div>
             );
@@ -105,10 +101,16 @@ export default function GameBoard({
         )}
       </div>
 
-      {/* Board Labels */}
-      <div className="flex justify-between items-center mt-4 text-sm font-semibold text-gray-600">
-        <span className="text-blue-600">Blue Player</span>
-        <span className="text-red-600">Red Player</span>
+      {/* Board Labels - Zen Style */}
+      <div className="flex justify-between items-center mt-8">
+        <div className="text-center">
+          <div className="w-6 h-6 bg-stone-800 rounded-full mb-2 mx-auto"></div>
+          <span className="text-sm text-stone-700 font-light tracking-wide">石方</span>
+        </div>
+        <div className="text-center">
+          <div className="w-6 h-6 bg-red-800 rounded-full mb-2 mx-auto"></div>
+          <span className="text-sm text-stone-700 font-light tracking-wide">紅方</span>
+        </div>
       </div>
     </div>
   );

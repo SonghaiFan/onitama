@@ -9,26 +9,28 @@ export default function OnitamaLanding() {
 
   if (showGame) {
     return (
-      <div className="min-h-screen bg-gray-100 p-4">
-        <div className="container mx-auto max-w-6xl">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center space-x-4">
+      <div className="min-h-screen scroll-paper ink-wash p-8">
+        <div className="container mx-auto max-w-7xl">
+          <div className="flex items-center justify-between mb-12">
+            <div className="flex items-center space-x-6">
               <Image
                 src="/Onitama_Logo.svg.png"
                 alt="Onitama"
                 width={200}
                 height={60}
-                className="object-contain"
+                className="object-contain zen-float"
               />
             </div>
             <button
               onClick={() => setShowGame(false)}
-              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
+              className="zen-card border border-stone-400 text-stone-700 px-6 py-3 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 tracking-wide font-light"
             >
-              ← Back to Home
+              ← 返回首頁
             </button>
           </div>
-          <OnitamaGame />
+          <div className="zen-card p-8">
+            <OnitamaGame />
+          </div>
         </div>
       </div>
     );
@@ -135,163 +137,171 @@ export default function OnitamaLanding() {
         </div>
       </section>
 
-      {/* How to Play */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
-            How to Play
-          </h2>
+      {/* How to Play - Zen Scroll Style */}
+      <section className="py-32 bg-stone-25 watercolor-wash">
+        <div className="container mx-auto px-8 max-w-4xl">
+          <div className="text-center mb-24">
+            <h2 className="text-4xl font-light text-stone-800 mb-4 tracking-wide">
+              遊戲方式
+            </h2>
+            <div className="w-24 h-px bg-stone-300 mx-auto"></div>
+          </div>
 
           {/* Setup */}
-          <div className="mb-12">
-            <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-              <span className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center mr-3">
-                1
-              </span>
-              Setup
-            </h3>
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-white p-6 rounded-lg shadow">
-                <div className="text-center mb-4">
-                  <span className="text-3xl">🏟️</span>
+          <div className="mb-24">
+            <div className="flex items-center justify-center mb-12">
+              <div className="w-12 h-12 bg-stone-200 rounded-full flex items-center justify-center mr-4">
+                <span className="text-stone-700 font-light">一</span>
+              </div>
+              <h3 className="text-3xl font-light text-stone-800 tracking-wide">
+                佈局
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              <div className="zen-card p-8 text-center">
+                <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <span className="text-2xl text-stone-600">棋</span>
                 </div>
-                <h4 className="font-bold text-gray-800 mb-2">Board & Pieces</h4>
-                <p className="text-gray-600">
-                  5×5 board with Temple Arches. Each player has 1 Master (♔) and
-                  4 Students (♙).
+                <h4 className="font-medium text-stone-800 mb-4">棋盤與棋子</h4>
+                <p className="text-stone-600 font-light leading-relaxed">
+                  5×5棋盤設有神殿。每人持1師傅(♔)及4學徒(♙)。
                 </p>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow">
-                <div className="text-center mb-4">
-                  <span className="text-3xl">🃏</span>
+              <div className="zen-card p-8 text-center">
+                <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <span className="text-2xl text-stone-600">牌</span>
                 </div>
-                <h4 className="font-bold text-gray-800 mb-2">Move Cards</h4>
-                <p className="text-gray-600">
-                  Each player gets 2 cards. 1 shared card sits between players.
+                <h4 className="font-medium text-stone-800 mb-4">移動牌</h4>
+                <p className="text-stone-600 font-light leading-relaxed">
+                  每人持2張牌，1張共用牌放在中間。
                 </p>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow">
-                <div className="text-center mb-4">
-                  <span className="text-3xl">🎲</span>
+              <div className="zen-card p-8 text-center">
+                <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <span className="text-2xl text-stone-600">先</span>
                 </div>
-                <h4 className="font-bold text-gray-800 mb-2">
-                  Starting Player
-                </h4>
-                <p className="text-gray-600">
-                  The shared card's color determines who goes first.
+                <h4 className="font-medium text-stone-800 mb-4">先手</h4>
+                <p className="text-stone-600 font-light leading-relaxed">
+                  共用牌的顏色決定誰先手。
                 </p>
               </div>
             </div>
           </div>
 
           {/* Gameplay */}
-          <div className="mb-12">
-            <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-              <span className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center mr-3">
-                2
-              </span>
-              Your Turn
-            </h3>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="bg-white p-6 rounded-lg shadow">
-                <h4 className="font-bold text-gray-800 mb-4 flex items-center">
-                  <span className="text-2xl mr-2">🚶</span>
-                  Move & Attack
-                </h4>
-                <ul className="space-y-2 text-gray-600">
-                  <li>• Select one of your move cards</li>
-                  <li>• Choose a piece to move (Master or Student)</li>
-                  <li>• Move according to the card's pattern</li>
-                  <li>• You can jump over pieces but not land on your own</li>
-                  <li>• Landing on opponent's piece captures it</li>
+          <div className="mb-24">
+            <div className="flex items-center justify-center mb-12">
+              <div className="w-12 h-12 bg-stone-200 rounded-full flex items-center justify-center mr-4">
+                <span className="text-stone-700 font-light">二</span>
+              </div>
+              <h3 className="text-3xl font-light text-stone-800 tracking-wide">
+                你的回合
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <div className="zen-card p-10">
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-stone-100 rounded-full flex items-center justify-center mr-4">
+                    <span className="text-lg text-stone-600">行</span>
+                  </div>
+                  <h4 className="font-medium text-stone-800 text-xl">
+                    移動與攻擊
+                  </h4>
+                </div>
+                <ul className="space-y-3 text-stone-600 font-light">
+                  <li>• 選擇一張移動牌</li>
+                  <li>• 選擇要移動的棋子</li>
+                  <li>• 按牌片模式移動</li>
+                  <li>• 可越過但不可停在自己棋子上</li>
+                  <li>• 停在對手棋子上即捕獲</li>
                 </ul>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow">
-                <h4 className="font-bold text-gray-800 mb-4 flex items-center">
-                  <span className="text-2xl mr-2">🔄</span>
-                  Exchange Cards
-                </h4>
-                <ul className="space-y-2 text-gray-600">
-                  <li>
-                    • Your used card rotates 180° and goes to the shared pile
-                  </li>
-                  <li>• Take the current shared card into your hand</li>
-                  <li>• Cards continuously flow between players</li>
-                  <li>• Think ahead - your opponent gets your card next!</li>
+              <div className="zen-card p-10">
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-stone-100 rounded-full flex items-center justify-center mr-4">
+                    <span className="text-lg text-stone-600">換</span>
+                  </div>
+                  <h4 className="font-medium text-stone-800 text-xl">
+                    交換牌片
+                  </h4>
+                </div>
+                <ul className="space-y-3 text-stone-600 font-light">
+                  <li>• 使用的牌旋轉180°放入共用堆</li>
+                  <li>• 取得現在的共用牌</li>
+                  <li>• 牌片在玩家間不斷流轉</li>
+                  <li>• 三思而後行 - 對手將得到你的牌！</li>
                 </ul>
               </div>
             </div>
           </div>
 
           {/* Strategy Tips */}
-          <div className="mb-12">
-            <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-              <span className="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center mr-3">
-                3
-              </span>
-              Strategy Tips
-            </h3>
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-white p-6 rounded-lg shadow">
-                <div className="text-center mb-4">
-                  <span className="text-3xl">🎯</span>
+          <div className="mb-24">
+            <div className="flex items-center justify-center mb-12">
+              <div className="w-12 h-12 bg-stone-200 rounded-full flex items-center justify-center mr-4">
+                <span className="text-stone-700 font-light">三</span>
+              </div>
+              <h3 className="text-3xl font-light text-stone-800 tracking-wide">
+                策略要點
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              <div className="zen-card p-8 text-center">
+                <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <span className="text-2xl text-stone-600">思</span>
                 </div>
-                <h4 className="font-bold text-gray-800 mb-2">Think Ahead</h4>
-                <p className="text-gray-600">
-                  Every card you play becomes accessible to your opponent. Plan
-                  your moves carefully!
+                <h4 className="font-medium text-stone-800 mb-4">深思熙慮</h4>
+                <p className="text-stone-600 font-light leading-relaxed">
+                  每張你出的牌都會成為對手的武器。計畫要周全！
                 </p>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow">
-                <div className="text-center mb-4">
-                  <span className="text-3xl">⚡</span>
+              <div className="zen-card p-8 text-center">
+                <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <span className="text-2xl text-stone-600">中</span>
                 </div>
-                <h4 className="font-bold text-gray-800 mb-2">Control Center</h4>
-                <p className="text-gray-600">
-                  The center squares are powerful positions for both offense and
-                  defense.
+                <h4 className="font-medium text-stone-800 mb-4">掌控中心</h4>
+                <p className="text-stone-600 font-light leading-relaxed">
+                  中央方格是攻守皆宜的強勢位置。
                 </p>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow">
-                <div className="text-center mb-4">
-                  <span className="text-3xl">⚖️</span>
+              <div className="zen-card p-8 text-center">
+                <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <span className="text-2xl text-stone-600">平</span>
                 </div>
-                <h4 className="font-bold text-gray-800 mb-2">Balance</h4>
-                <p className="text-gray-600">
-                  Balance aggression and defense. Protect your Master while
-                  threatening theirs.
+                <h4 className="font-medium text-stone-800 mb-4">攻守平衡</h4>
+                <p className="text-stone-600 font-light leading-relaxed">
+                  在保護自己師傅的同時威脅對手。
                 </p>
               </div>
             </div>
           </div>
 
           {/* Game Controls */}
-          <div className="bg-blue-50 p-8 rounded-lg">
-            <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-              🎮 Game Controls
-            </h3>
-            <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-              <div className="space-y-3">
-                <h4 className="font-bold text-blue-800">How to Make a Move:</h4>
-                <ol className="space-y-2 text-blue-700">
-                  <li>1. Click on one of your move cards to select it</li>
-                  <li>
-                    2. Click on your piece (Master or Student) to select it
-                  </li>
-                  <li>3. Click on a highlighted green circle to move there</li>
-                  <li>
-                    4. Red dots indicate you can capture an opponent's piece
-                  </li>
+          <div className="zen-card p-12 mx-8">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-light text-stone-800 mb-4 tracking-wide">
+                操作指南
+              </h3>
+              <div className="w-16 h-px bg-stone-300 mx-auto"></div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-3xl mx-auto">
+              <div className="space-y-4">
+                <h4 className="font-medium text-stone-800 mb-4">如何移動:</h4>
+                <ol className="space-y-3 text-stone-600 font-light">
+                  <li>1. 點擊一張移動牌選擇它</li>
+                  <li>2. 點擊你的棋子(師傅或學徒)</li>
+                  <li>3. 點擊綠色圓圈移動至該位置</li>
+                  <li>4. 紅點表示可以擒獲對手棋子</li>
                 </ol>
               </div>
-              <div className="space-y-3">
-                <h4 className="font-bold text-blue-800">Visual Indicators:</h4>
-                <ul className="space-y-2 text-blue-700">
-                  <li>🟦 Blue pieces = Blue Player</li>
-                  <li>🟥 Red pieces = Red Player</li>
-                  <li>♔ Crown = Master piece</li>
-                  <li>♙ Pawn = Student piece</li>
-                  <li>⛩️ Temple Arch = Victory target</li>
+              <div className="space-y-4">
+                <h4 className="font-medium text-stone-800 mb-4">視覺指示:</h4>
+                <ul className="space-y-3 text-stone-600 font-light">
+                  <li>🟦 藍色棋子 = 藍方</li>
+                  <li>🟥 紅色棋子 = 紅方</li>
+                  <li>♔ 皇冠 = 師傅</li>
+                  <li>♙ 兵卒 = 學徒</li>
+                  <li>⛩️ 神殿 = 勝利目標</li>
                 </ul>
               </div>
             </div>
@@ -299,29 +309,30 @@ export default function OnitamaLanding() {
         </div>
       </section>
 
-      {/* Call to Action */}
-      <section className="py-16 bg-amber-600 text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">
-            Ready to Master the Way of the Wind?
+      {/* Call to Action - Zen Minimalist */}
+      <section className="py-32 bg-stone-900 text-white">
+        <div className="container mx-auto px-8 text-center max-w-3xl">
+          <h2 className="text-4xl font-light mb-6 tracking-wide text-stone-100">
+            風之道を極める時が来ましたか？
           </h2>
-          <p className="text-xl mb-8 text-amber-100">
-            Challenge yourself with this elegant strategy game
+          <p className="text-xl mb-12 text-stone-300 font-light leading-relaxed">
+            優雅な策略遊戲で自分を試してみてください
           </p>
           <button
             onClick={() => setShowGame(true)}
-            className="bg-white text-amber-600 hover:bg-amber-50 text-xl font-bold py-4 px-8 rounded-lg transition-colors shadow-lg hover:shadow-xl transform hover:scale-105"
+            className="zen-card border border-stone-400 text-stone-800 text-xl font-light py-6 px-16 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 tracking-widest"
           >
-            🥋 Start Playing Now
+            挑戰開始
           </button>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white py-8">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-gray-400">
-            Onitama - Experience the ancient art of strategic combat
+      {/* Footer - Minimalist */}
+      <footer className="bg-stone-50 py-16">
+        <div className="container mx-auto px-8 text-center">
+          <div className="w-32 h-px bg-stone-300 mx-auto mb-6"></div>
+          <p className="text-stone-500 font-light tracking-wide">
+            鬼王 — 古代戰術的芸術を体験する
           </p>
         </div>
       </footer>

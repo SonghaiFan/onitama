@@ -151,3 +151,81 @@
   outline-offset: 2px;
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
+
+/* Traditional scroll texture */
+.scroll-paper {
+  background: linear-gradient(
+    180deg,
+    rgb(250, 248, 242) 0%,
+    rgb(248, 245, 235) 20%,
+    rgb(245, 242, 230) 40%,
+    rgb(248, 245, 235) 60%,
+    rgb(250, 248, 242) 80%,
+    rgb(252, 251, 249) 100%
+  );
+  background-attachment: fixed;
+  position: relative;
+}
+
+.scroll-paper::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(139, 126, 102, 0.03) 1px, transparent 1px),
+    radial-gradient(circle at 75% 75%, rgba(139, 126, 102, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px, 40px 40px;
+  pointer-events: none;
+}
+
+/* Brush stroke dividers */
+.brush-stroke {
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(139, 126, 102, 0.1) 10%,
+    rgba(139, 126, 102, 0.3) 50%,
+    rgba(139, 126, 102, 0.1) 90%,
+    transparent 100%
+  );
+  position: relative;
+}
+
+.brush-stroke::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 20%;
+  right: 20%;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(139, 126, 102, 0.05) 20%,
+    rgba(139, 126, 102, 0.1) 50%,
+    rgba(139, 126, 102, 0.05) 80%,
+    transparent 100%
+  );
+  filter: blur(0.5px);
+}
+
+/* Zen floating animation for important elements */
+.zen-float {
+  animation: zen-float 6s ease-in-out infinite;
+}
+
+/* Ink wash background for sections */
+.ink-wash {
+  background: 
+    radial-gradient(ellipse at top, rgba(0, 0, 0, 0.02) 0%, transparent 70%),
+    radial-gradient(ellipse at bottom, rgba(0, 0, 0, 0.015) 0%, transparent 70%);
+}
+
+/* Traditional Chinese/Japanese font stack */
+.zen-text {
+  font-family: "Noto Serif SC", "Noto Serif TC", "Source Han Serif", serif;
+}

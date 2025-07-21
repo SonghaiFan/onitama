@@ -23,12 +23,17 @@ export default function MoveCards({
     <div
       className={`space-y-3 ${isCurrentPlayer ? "opacity-100" : "opacity-60"}`}
     >
-      <div
-        className={`text-center font-bold text-sm ${
-          player === "red" ? "text-red-600" : "text-blue-600"
-        }`}
-      >
-        {player === "red" ? "Red Player Cards" : "Blue Player Cards"}
+      <div className="text-center mb-2">
+        <div className={`flex items-center justify-center space-x-2 ${
+          player === "red" ? "text-red-800" : "text-stone-800"
+        }`}>
+          <div className={`w-4 h-4 rounded-full ${
+            player === "red" ? "bg-red-800" : "bg-stone-800"
+          }`}></div>
+          <span className="font-light tracking-wide">
+            {player === "red" ? "紅方牌組" : "石方牌組"}
+          </span>
+        </div>
       </div>
 
       <div className="flex gap-3 justify-center">
@@ -37,25 +42,25 @@ export default function MoveCards({
             key={index}
             onClick={() => onCardClick(index)}
             className={`
-              relative bg-gradient-to-br from-amber-50 to-orange-100 p-4 rounded-lg border-2 cursor-pointer 
-              transition-all duration-200 hover:scale-105 hover:shadow-lg
-              ${isCurrentPlayer ? "hover:border-yellow-400" : ""}
-              ${playerColor === "red" ? "border-red-400" : "border-blue-400"}
+              relative zen-card p-5 border cursor-pointer 
+              transition-all duration-300 hover:scale-105 hover:shadow-xl hover:-translate-y-1
+              ${isCurrentPlayer ? "hover:border-amber-400" : ""}
+              ${playerColor === "red" ? "border-red-300" : "border-stone-300"}
               ${
                 selectedCard === index
-                  ? "ring-2 ring-yellow-400 border-yellow-400 shadow-lg"
+                  ? "ring-2 ring-amber-400 border-amber-400 shadow-xl scale-105"
                   : ""
               }
-              min-w-[120px]
+              min-w-[140px] zen-float
             `}
           >
             {/* Card Name */}
-            <div className="text-xs font-bold text-center mb-3 text-gray-800 bg-white/70 py-1 px-2 rounded">
+            <div className="text-sm font-light text-center mb-4 text-stone-800 bg-stone-100/80 py-2 px-3 rounded-none border border-stone-200">
               {card.name}
             </div>
 
-            {/* 5x5 Card Pattern Display - Like Real Onitama Cards */}
-            <div className="w-20 h-20 mx-auto grid grid-cols-5 gap-0.5 p-1 bg-white/90 rounded border border-gray-300">
+            {/* 5x5 Card Pattern Display - Zen Style */}
+            <div className="w-24 h-24 mx-auto grid grid-cols-5 gap-0.5 p-2 bg-stone-100/90 border border-stone-300">
               {Array.from({ length: 5 }, (_, i) =>
                 Array.from({ length: 5 }, (_, j) => {
                   // Center position
@@ -63,8 +68,10 @@ export default function MoveCards({
                     return (
                       <div
                         key={`${i}-${j}`}
-                        className="w-3 h-3 border border-gray-200 bg-gray-800"
-                      />
+                        className="w-4 h-4 border border-stone-300 bg-stone-800 flex items-center justify-center"
+                      >
+                        <span className="text-xs text-stone-100">中</span>
+                      </div>
                     );
                   }
 
@@ -79,13 +86,13 @@ export default function MoveCards({
                     <div
                       key={`${i}-${j}`}
                       className={`
-                        w-3 h-3 border border-gray-200
+                        w-4 h-4 border border-stone-300
                         ${
                           hasMove
                             ? playerColor === "red"
-                              ? "bg-red-500"
-                              : "bg-green-500"
-                            : "bg-gray-50"
+                              ? "bg-red-600"
+                              : "bg-emerald-600"
+                            : "bg-stone-50"
                         }
                       `}
                     />
@@ -94,12 +101,12 @@ export default function MoveCards({
               )}
             </div>
 
-            {/* Color Indicator - Like Real Cards */}
-            <div className="flex justify-center mt-2">
+            {/* Color Indicator - Zen Style */}
+            <div className="flex justify-center mt-4">
               <div
                 className={`
-                w-4 h-2 rounded-sm
-                ${playerColor === "red" ? "bg-red-600" : "bg-blue-600"}
+                w-8 h-1 
+                ${playerColor === "red" ? "bg-red-700" : "bg-stone-700"}
               `}
               ></div>
             </div>
