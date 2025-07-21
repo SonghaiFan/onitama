@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
-/* Japanese-inspired custom utilities using Tailwind v4 @utility directive */
-@utility scroll-texture {
+/* Japanese-inspired custom utilities using Tailwind v4 .directive */
+.scroll-texture {
   background: linear-gradient(
     135deg,
     rgb(250, 248, 242) 0%,
@@ -14,7 +14,7 @@
   animation: scroll-shimmer 8s ease-in-out infinite;
 }
 
-@utility neoprene-mat {
+.neoprene-mat {
   background: radial-gradient(
     ellipse at center,
     rgb(245, 242, 230) 0%,
@@ -27,7 +27,7 @@
   border: 2px solid rgba(139, 126, 102, 0.2);
 }
 
-@utility temple-arch {
+.temple-arch {
   background: linear-gradient(
     45deg,
     rgba(239, 68, 68, 0.1) 0%,
@@ -38,7 +38,7 @@
   position: relative;
 }
 
-@utility temple-arch::before {
+.temple-arch::before {
   content: "";
   position: absolute;
   inset: -2px;
@@ -52,7 +52,7 @@
   z-index: -1;
 }
 
-@utility zen-card {
+.zen-card {
   background: linear-gradient(
     145deg,
     rgb(255, 253, 250) 0%,
@@ -64,7 +64,7 @@
   border: 1px solid rgba(139, 126, 102, 0.15);
 }
 
-@utility master-piece {
+.master-piece {
   background: linear-gradient(
     135deg,
     rgb(251, 191, 36) 0%,
@@ -77,7 +77,7 @@
   border: 2px solid rgba(146, 64, 14, 0.3);
 }
 
-@utility student-piece {
+.student-piece {
   background: linear-gradient(
     135deg,
     rgb(156, 163, 175) 0%,
@@ -89,7 +89,7 @@
   border: 2px solid rgba(55, 65, 81, 0.2);
 }
 
-@utility calligraphy-border {
+.calligraphy-border {
   background-image: linear-gradient(
       0deg,
       rgba(139, 126, 102, 0.3) 1px,
@@ -100,7 +100,7 @@
   background-position: 0 0, 0 0;
 }
 
-@utility watercolor-wash {
+.watercolor-wash {
   background: radial-gradient(
       ellipse at top left,
       rgba(59, 130, 246, 0.05) 0%,
@@ -144,10 +144,9 @@
 }
 
 /* Japanese typography */
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Noto+Serif+JP:wght@300;400;500;600;700&display=swap");
 
 /* Enhanced focus states for accessibility */
-@utility focus-zen {
+.focus-zen {
   outline: 2px solid rgba(59, 130, 246, 0.6);
   outline-offset: 2px;
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
