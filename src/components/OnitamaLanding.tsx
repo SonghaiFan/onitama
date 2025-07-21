@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import OnitamaGame from "./OnitamaGame";
 
 export default function OnitamaLanding() {
@@ -11,7 +12,15 @@ export default function OnitamaLanding() {
       <div className="min-h-screen bg-gray-100 p-4">
         <div className="container mx-auto max-w-6xl">
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-4xl font-bold text-gray-800">Onitama</h1>
+            <div className="flex items-center space-x-4">
+              <Image
+                src="/Onitama_Logo.svg.png"
+                alt="Onitama"
+                width={200}
+                height={60}
+                className="object-contain"
+              />
+            </div>
             <button
               onClick={() => setShowGame(false)}
               className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
@@ -26,77 +35,97 @@ export default function OnitamaLanding() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
-      {/* Header */}
-      <header className="text-center py-16">
-        <div className="container mx-auto px-4">
-          <h1 className="text-6xl font-bold text-amber-900 mb-4">Onitama</h1>
-          <p className="text-xl text-amber-700 mb-8">
-            The Way of the Wind - A Strategic Board Game
+    <div className="min-h-screen bg-gradient-to-b from-stone-50 via-zinc-50 to-stone-100 scroll-texture">
+      {/* Header - Zen Minimalism */}
+      <header className="text-center py-24">
+        <div className="container mx-auto px-4 max-w-4xl">
+          {/* Official Onitama Logo */}
+          <div className="flex justify-center mb-8">
+            <Image
+              src="/Onitama_Logo.svg.png"
+              alt="Onitama"
+              width={400}
+              height={120}
+              className="object-contain drop-shadow-lg"
+              priority
+            />
+          </div>
+          <p className="text-2xl text-stone-600 mb-16 font-light tracking-wide leading-relaxed">
+            風の道 <span className="text-lg text-stone-500">- The Way of the Wind</span>
           </p>
           <button
             onClick={() => setShowGame(true)}
-            className="bg-amber-600 hover:bg-amber-700 text-white text-xl font-bold py-4 px-8 rounded-lg transition-colors shadow-lg hover:shadow-xl transform hover:scale-105"
+            className="zen-card border border-stone-300 text-stone-800 text-lg font-light py-6 px-12 rounded-none transition-all duration-300 hover:shadow-xl hover:-translate-y-1 tracking-wider"
           >
-            🥋 Play Now
+            始める
           </button>
         </div>
       </header>
 
-      {/* Game Overview */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
-            Game Overview
-          </h2>
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div>
-              <p className="text-lg text-gray-700 mb-4">
-                Onitama is a two-player abstract strategy game that plays out on
-                a 5×5 board. Think chess-lite with a unique twist: movement
-                cards that rotate between players!
+      {/* Game Overview - Vertical Scroll Layout */}
+      <section className="py-32 bg-white">
+        <div className="container mx-auto px-8 max-w-3xl">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl font-light text-stone-800 mb-4 tracking-wide">
+              遊戲概覽
+            </h2>
+            <div className="w-24 h-px bg-stone-300 mx-auto"></div>
+          </div>
+          <div className="space-y-16">
+            <div className="text-center">
+              <p className="text-xl text-stone-600 mb-8 font-light leading-relaxed max-w-2xl mx-auto">
+                二人對弈的抽象策略遊戲，在5×5的棋盤上展開。如象棋般的智慧較量，
+                以獨特的移動卡牌系統創造無限變化。
               </p>
-              <div className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <span className="text-2xl">⚡</span>
-                  <span className="text-gray-700">Quick 15-minute games</span>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-2xl mx-auto">
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-stone-100 rounded-full flex items-center justify-center">
+                    <span className="text-2xl text-stone-600">速</span>
+                  </div>
+                  <span className="text-stone-700 font-light">15分鐘對局</span>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <span className="text-2xl">🧠</span>
-                  <span className="text-gray-700">
-                    Strategic depth with simple rules
-                  </span>
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-stone-100 rounded-full flex items-center justify-center">
+                    <span className="text-2xl text-stone-600">智</span>
+                  </div>
+                  <span className="text-stone-700 font-light">深度策略</span>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <span className="text-2xl">🎯</span>
-                  <span className="text-gray-700">Two paths to victory</span>
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-stone-100 rounded-full flex items-center justify-center">
+                    <span className="text-2xl text-stone-600">勝</span>
+                  </div>
+                  <span className="text-stone-700 font-light">雙重勝利</span>
                 </div>
               </div>
             </div>
-            <div className="bg-amber-100 p-6 rounded-lg">
-              <h3 className="text-xl font-bold text-amber-900 mb-4">
-                Win Conditions
+            <div className="zen-card p-12 mx-8">
+              <h3 className="text-2xl font-light text-stone-800 mb-8 text-center">
+                勝利之道
               </h3>
-              <div className="space-y-3">
-                <div className="flex items-start space-x-3">
-                  <span className="text-2xl">🏆</span>
+              <div className="space-y-8">
+                <div className="text-center">
+                  <div className="w-12 h-12 mx-auto mb-3 bg-stone-200 rounded-full flex items-center justify-center">
+                    <span className="text-lg text-stone-700">石</span>
+                  </div>
                   <div>
-                    <div className="font-semibold text-amber-800">
-                      Way of the Stone
+                    <div className="font-medium text-stone-800 mb-1">
+                      石之道
                     </div>
-                    <div className="text-amber-700">
-                      Capture your opponent's Master
+                    <div className="text-stone-600 font-light">
+                      擒獲對手師傅
                     </div>
                   </div>
                 </div>
-                <div className="flex items-start space-x-3">
-                  <span className="text-2xl">⛩️</span>
+                <div className="text-center">
+                  <div className="w-12 h-12 mx-auto mb-3 bg-stone-200 rounded-full flex items-center justify-center">
+                    <span className="text-lg text-stone-700">流</span>
+                  </div>
                   <div>
-                    <div className="font-semibold text-amber-800">
-                      Way of the Stream
+                    <div className="font-medium text-stone-800 mb-1">
+                      流之道
                     </div>
-                    <div className="text-amber-700">
-                      Move your Master to opponent's Temple Arch
+                    <div className="text-stone-600 font-light">
+                      師傅抵達敵方神殿
                     </div>
                   </div>
                 </div>
@@ -258,8 +287,8 @@ export default function OnitamaLanding() {
               <div className="space-y-3">
                 <h4 className="font-bold text-blue-800">Visual Indicators:</h4>
                 <ul className="space-y-2 text-blue-700">
-                  <li>🟦 Blue pieces = Player 1</li>
-                  <li>🟥 Red pieces = Player 2</li>
+                  <li>🟦 Blue pieces = Blue Player</li>
+                  <li>🟥 Red pieces = Red Player</li>
                   <li>♔ Crown = Master piece</li>
                   <li>♙ Pawn = Student piece</li>
                   <li>⛩️ Temple Arch = Victory target</li>
