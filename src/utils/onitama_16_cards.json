@@ -1,0 +1,388 @@
+{
+  "cards": [
+    {
+      "id": "tiger",
+      "name": {
+        "en": "Tiger",
+        "zh": "虎"
+      },
+      "color": "#B44438",
+      "moves": [
+        {
+          "x": 0,
+          "y": -2
+        },
+        {
+          "x": 0,
+          "y": 1
+        }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "dragon",
+      "name": {
+        "en": "Dragon",
+        "zh": "龙"
+      },
+      "color": "#704F38",
+      "moves": [
+        {
+          "x": -2,
+          "y": -1
+        },
+        {
+          "x": 2,
+          "y": -1
+        },
+        {
+          "x": -1,
+          "y": 1
+        },
+        {
+          "x": 1,
+          "y": 1
+        }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "frog",
+      "name": {
+        "en": "Frog",
+        "zh": "蛙"
+      },
+      "color": "#3A7F56",
+      "moves": [
+        {
+          "x": -2,
+          "y": 0
+        },
+        {
+          "x": -1,
+          "y": 1
+        },
+        {
+          "x": 1,
+          "y": -1
+        }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "rabbit",
+      "name": {
+        "en": "Rabbit",
+        "zh": "兔"
+      },
+      "color": "#CC6633",
+      "moves": [
+        {
+          "x": 2,
+          "y": 0
+        },
+        {
+          "x": 1,
+          "y": 1
+        },
+        {
+          "x": -1,
+          "y": -1
+        }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "crab",
+      "name": {
+        "en": "Crab",
+        "zh": "蟹"
+      },
+      "color": "#406E8E",
+      "moves": [
+        {
+          "x": -2,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": 2,
+          "y": 0
+        }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "elephant",
+      "name": {
+        "en": "Elephant",
+        "zh": "象"
+      },
+      "color": "#9C6644",
+      "moves": [
+        {
+          "x": -1,
+          "y": 1
+        },
+        {
+          "x": 1,
+          "y": 1
+        },
+        {
+          "x": -1,
+          "y": 0
+        },
+        {
+          "x": 1,
+          "y": 0
+        }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "goose",
+      "name": {
+        "en": "Goose",
+        "zh": "鹅"
+      },
+      "color": "#D1A054",
+      "moves": [
+        {
+          "x": -1,
+          "y": 1
+        },
+        {
+          "x": -1,
+          "y": 0
+        },
+        {
+          "x": 1,
+          "y": 0
+        },
+        {
+          "x": 1,
+          "y": -1
+        }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "rooster",
+      "name": {
+        "en": "Rooster",
+        "zh": "鸡"
+      },
+      "color": "#D95D39",
+      "moves": [
+        {
+          "x": 1,
+          "y": 1
+        },
+        {
+          "x": 1,
+          "y": 0
+        },
+        {
+          "x": -1,
+          "y": 0
+        },
+        {
+          "x": -1,
+          "y": -1
+        }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "ox",
+      "name": {
+        "en": "Ox",
+        "zh": "牛"
+      },
+      "color": "#8C5E3C",
+      "moves": [
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": -1,
+          "y": 0
+        },
+        {
+          "x": 1,
+          "y": 0
+        }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "horse",
+      "name": {
+        "en": "Horse",
+        "zh": "马"
+      },
+      "color": "#7D4F28",
+      "moves": [
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": -1,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": -1
+        }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "eel",
+      "name": {
+        "en": "Eel",
+        "zh": "鳗"
+      },
+      "color": "#336B87",
+      "moves": [
+        {
+          "x": -1,
+          "y": 1
+        },
+        {
+          "x": 1,
+          "y": 0
+        },
+        {
+          "x": -1,
+          "y": -1
+        }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "cobra",
+      "name": {
+        "en": "Cobra",
+        "zh": "眼镜蛇"
+      },
+      "color": "#4B3832",
+      "moves": [
+        {
+          "x": 1,
+          "y": 1
+        },
+        {
+          "x": -1,
+          "y": 0
+        },
+        {
+          "x": 1,
+          "y": -1
+        }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "boar",
+      "name": {
+        "en": "Boar",
+        "zh": "猪"
+      },
+      "color": "#935E38",
+      "moves": [
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": -1,
+          "y": 0
+        },
+        {
+          "x": 1,
+          "y": 0
+        }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "monkey",
+      "name": {
+        "en": "Monkey",
+        "zh": "猴"
+      },
+      "color": "#B77F50",
+      "moves": [
+        {
+          "x": -1,
+          "y": 1
+        },
+        {
+          "x": 1,
+          "y": 1
+        },
+        {
+          "x": -1,
+          "y": -1
+        },
+        {
+          "x": 1,
+          "y": -1
+        }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "crane",
+      "name": {
+        "en": "Crane",
+        "zh": "鹤"
+      },
+      "color": "#A97D56",
+      "moves": [
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": -1,
+          "y": -1
+        },
+        {
+          "x": 1,
+          "y": -1
+        }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "mantis",
+      "name": {
+        "en": "Mantis",
+        "zh": "螳螂"
+      },
+      "color": "#6D9DC5",
+      "moves": [
+        {
+          "x": -1,
+          "y": 1
+        },
+        {
+          "x": 1,
+          "y": 1
+        },
+        {
+          "x": 0,
+          "y": -1
+        }
+      ],
+      "firstPlayerColor": "blue"
+    }
+  ]
+}

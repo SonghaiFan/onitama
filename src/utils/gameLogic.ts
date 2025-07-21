@@ -1,133 +1,89 @@
-import { GameState, MoveCard, GamePiece, Position, Player } from "@/types/game";
+import { GameState, MoveCard, Piece, Player, Move } from "@/types/game";
+import cardData from "./onitama_16_cards.json";
 
-export const SAMPLE_MOVE_CARDS: MoveCard[] = [
-  {
-    name: "Tiger",
-    pattern: [
-      [" ", "X", " "],
-      [" ", "O", " "],
-      [" ", "X", " "],
-    ],
-    color: "player1",
-  },
-  {
-    name: "Dragon",
-    pattern: [
-      ["X", " ", " "],
-      [" ", "O", "X"],
-      [" ", " ", " "],
-    ],
-    color: "player1",
-  },
-  {
-    name: "Frog",
-    pattern: [
-      [" ", "X", " "],
-      ["X", "O", " "],
-      [" ", "X", " "],
-    ],
-    color: "player2",
-  },
-  {
-    name: "Rabbit",
-    pattern: [
-      [" ", " ", "X"],
-      [" ", "O", "X"],
-      [" ", " ", " "],
-    ],
-    color: "player2",
-  },
-  {
-    name: "Crab",
-    pattern: [
-      [" ", "X", " "],
-      ["X", "O", "X"],
-      [" ", " ", " "],
-    ],
-    color: "player1",
-  },
-];
+// Convert card data from JSON format to our game format
+function convertCardToGameFormat(card: any): MoveCard {
+  return {
+    name: card.name.en,
+    moves: card.moves,
+    color: card.firstPlayerColor === "red" ? "red" : "blue",
+  };
+}
+
+// Convert all cards and store them
+export const ALL_ONITAMA_CARDS: MoveCard[] = cardData.cards.map(
+  convertCardToGameFormat
+);
+
+// Function to randomly select 5 cards for a game
+function selectRandomCards(): {
+  playerCards: MoveCard[];
+  sharedCard: MoveCard;
+} {
+  const shuffled = [...ALL_ONITAMA_CARDS].sort(() => Math.random() - 0.5);
+  const selected = shuffled.slice(0, 5);
+
+  return {
+    playerCards: selected.slice(0, 4),
+    sharedCard: selected[4],
+  };
+}
 
 // Create initial board setup
-function createInitialBoard(): (GamePiece | null)[][] {
-  const board: (GamePiece | null)[][] = Array(5)
+function createInitialBoard(): (Piece | null)[][] {
+  const board: (Piece | null)[][] = Array(5)
     .fill(null)
     .map(() => Array(5).fill(null));
 
-  // Player 1 (bottom) pieces
-  board[4][2] = {
-    type: "master",
-    player: "player1",
-    position: { row: 4, col: 2 },
-  }; // Master on Temple Arch
-  board[4][0] = {
-    type: "student",
-    player: "player1",
-    position: { row: 4, col: 0 },
-  };
-  board[4][1] = {
-    type: "student",
-    player: "player1",
-    position: { row: 4, col: 1 },
-  };
-  board[4][3] = {
-    type: "student",
-    player: "player1",
-    position: { row: 4, col: 3 },
-  };
-  board[4][4] = {
-    type: "student",
-    player: "player1",
-    position: { row: 4, col: 4 },
-  };
+  // Red player (bottom) pieces
+  board[4][2] = { player: "red", isMaster: true, position: [4, 2] }; // Master on Temple Arch
+  board[4][0] = { player: "red", isMaster: false, position: [4, 0] };
+  board[4][1] = { player: "red", isMaster: false, position: [4, 1] };
+  board[4][3] = { player: "red", isMaster: false, position: [4, 3] };
+  board[4][4] = { player: "red", isMaster: false, position: [4, 4] };
 
-  // Player 2 (top) pieces
-  board[0][2] = {
-    type: "master",
-    player: "player2",
-    position: { row: 0, col: 2 },
-  }; // Master on Temple Arch
-  board[0][0] = {
-    type: "student",
-    player: "player2",
-    position: { row: 0, col: 0 },
-  };
-  board[0][1] = {
-    type: "student",
-    player: "player2",
-    position: { row: 0, col: 1 },
-  };
-  board[0][3] = {
-    type: "student",
-    player: "player2",
-    position: { row: 0, col: 3 },
-  };
-  board[0][4] = {
-    type: "student",
-    player: "player2",
-    position: { row: 0, col: 4 },
-  };
+  // Blue player (top) pieces
+  board[0][2] = { player: "blue", isMaster: true, position: [0, 2] }; // Master on Temple Arch
+  board[0][0] = { player: "blue", isMaster: false, position: [0, 0] };
+  board[0][1] = { player: "blue", isMaster: false, position: [0, 1] };
+  board[0][3] = { player: "blue", isMaster: false, position: [0, 3] };
+  board[0][4] = { player: "blue", isMaster: false, position: [0, 4] };
 
   return board;
 }
 
-export const INITIAL_GAME_STATE: GameState = {
-  board: createInitialBoard(),
-  players: {
-    player1: {
-      cards: [SAMPLE_MOVE_CARDS[0], SAMPLE_MOVE_CARDS[1]],
+// Generate initial game state with random cards
+function createInitialGameState(): GameState {
+  const { playerCards, sharedCard } = selectRandomCards();
+
+  // Determine starting player based on shared card color
+  const startingPlayer = sharedCard.color;
+
+  return {
+    board: createInitialBoard(),
+    players: {
+      red: {
+        cards: [playerCards[0], playerCards[1]],
+      },
+      blue: {
+        cards: [playerCards[2], playerCards[3]],
+      },
     },
-    player2: {
-      cards: [SAMPLE_MOVE_CARDS[2], SAMPLE_MOVE_CARDS[3]],
-    },
-  },
-  sharedCard: SAMPLE_MOVE_CARDS[4],
-  currentPlayer: "player1",
-  selectedPiece: null,
-  selectedCard: null,
-  winner: null,
-  gamePhase: "playing",
-};
+    sharedCard: sharedCard,
+    currentPlayer: startingPlayer,
+    selectedPiece: null,
+    selectedCard: null,
+    winner: null,
+    gamePhase: "playing",
+  };
+}
+
+export const INITIAL_GAME_STATE: GameState = createInitialGameState();
+
+// Function to create a new game with different random cards
+export function createNewGame(): GameState {
+  return createInitialGameState();
+}
 
 export function isValidPosition(row: number, col: number): boolean {
   return row >= 0 && row < 5 && col >= 0 && col < 5;
@@ -136,71 +92,38 @@ export function isValidPosition(row: number, col: number): boolean {
 export function isTempleArch(
   row: number,
   col: number,
-  player: "player1" | "player2"
+  player: Player
 ): boolean {
-  if (player === "player1") {
-    return row === 0 && col === 2; // Top center for player 1's goal
+  if (player === "red") {
+    return row === 0 && col === 2; // Top center for red player's goal
   } else {
-    return row === 4 && col === 2; // Bottom center for player 2's goal
+    return row === 4 && col === 2; // Bottom center for blue player's goal
   }
 }
 
 // Get possible moves for a piece using a specific card
 export function getPossibleMoves(
-  piece: GamePiece,
+  piece: Piece,
   card: MoveCard,
-  board: (GamePiece | null)[][]
-): Position[] {
-  const moves: Position[] = [];
-  const { row: pieceRow, col: pieceCol } = piece.position;
+  board: (Piece | null)[][]
+): [number, number][] {
+  const moves: [number, number][] = [];
+  const [pieceRow, pieceCol] = piece.position;
 
-  // Find the center of the pattern (marked with 'O')
-  let patternCenterRow = -1;
-  let patternCenterCol = -1;
+  // Check each move in the card
+  for (const move of card.moves) {
+    // Apply move with direction based on player
+    // Red player moves "forward" (negative y), Blue player moves "backward" (positive y)
+    const targetRow = pieceRow + (piece.player === "red" ? -move.y : move.y);
+    const targetCol = pieceCol + move.x;
 
-  for (let i = 0; i < card.pattern.length; i++) {
-    for (let j = 0; j < card.pattern[i].length; j++) {
-      if (card.pattern[i][j] === "O") {
-        patternCenterRow = i;
-        patternCenterCol = j;
-        break;
-      }
-    }
-    if (patternCenterRow !== -1) break;
-  }
+    // Check if move is valid
+    if (isValidPosition(targetRow, targetCol)) {
+      const targetPiece = board[targetRow][targetCol];
 
-  if (patternCenterRow === -1) return moves; // Invalid card pattern
-
-  // Check each 'X' in the pattern
-  for (let i = 0; i < card.pattern.length; i++) {
-    for (let j = 0; j < card.pattern[i].length; j++) {
-      if (card.pattern[i][j] === "X") {
-        // Calculate relative position from center
-        const deltaRow = i - patternCenterRow;
-        const deltaCol = j - patternCenterCol;
-
-        // Apply rotation based on player (player2 sees cards rotated 180°)
-        let actualDeltaRow = deltaRow;
-        let actualDeltaCol = deltaCol;
-
-        if (piece.player === "player2") {
-          actualDeltaRow = -deltaRow;
-          actualDeltaCol = -deltaCol;
-        }
-
-        // Calculate target position
-        const targetRow = pieceRow + actualDeltaRow;
-        const targetCol = pieceCol + actualDeltaCol;
-
-        // Check if move is valid
-        if (isValidPosition(targetRow, targetCol)) {
-          const targetPiece = board[targetRow][targetCol];
-
-          // Can't land on own piece
-          if (!targetPiece || targetPiece.player !== piece.player) {
-            moves.push({ row: targetRow, col: targetCol });
-          }
-        }
+      // Can't land on own piece
+      if (!targetPiece || targetPiece.player !== piece.player) {
+        moves.push([targetRow, targetCol]);
       }
     }
   }
@@ -210,40 +133,71 @@ export function getPossibleMoves(
 
 // Check if a move is valid
 export function isValidMove(
-  from: Position,
-  to: Position,
+  from: [number, number],
+  to: [number, number],
   card: MoveCard,
-  board: (GamePiece | null)[][]
+  board: (Piece | null)[][]
 ): boolean {
-  const piece = board[from.row][from.col];
+  const [fromRow, fromCol] = from;
+  const piece = board[fromRow][fromCol];
   if (!piece) return false;
 
   const possibleMoves = getPossibleMoves(piece, card, board);
-  return possibleMoves.some(
-    (move) => move.row === to.row && move.col === to.col
-  );
+  return possibleMoves.some(([row, col]) => row === to[0] && col === to[1]);
 }
 
-// Execute a move
+// Apply move to board (based on the user's suggested function)
+export function applyMove(
+  board: (Piece | null)[][],
+  from: [number, number],
+  move: Move,
+  currentPlayer: Player
+): (Piece | null)[][] {
+  const [fx, fy] = from;
+  const [tx, ty] = [
+    fx + move.x,
+    fy + (currentPlayer === "red" ? -move.y : move.y),
+  ];
+
+  // Check if move is valid
+  if (!isValidPosition(tx, ty)) return board;
+
+  const piece = board[fx][fy];
+  if (!piece || piece.player !== currentPlayer) return board;
+
+  // Can't land on own piece
+  const targetPiece = board[tx][ty];
+  if (targetPiece && targetPiece.player === currentPlayer) return board;
+
+  // Create new board with move applied
+  const newBoard = board.map((row) => [...row]);
+
+  // Move the piece
+  newBoard[fx][fy] = null;
+  newBoard[tx][ty] = { ...piece, position: [tx, ty] };
+
+  return newBoard;
+}
+
+// Execute a move (full game state update)
 export function executeMove(
   gameState: GameState,
-  from: Position,
-  to: Position,
+  from: [number, number],
+  to: [number, number],
   cardIndex: number
 ): GameState {
   const newState = { ...gameState };
   const newBoard = gameState.board.map((row) => [...row]);
 
   // Get the piece to move
-  const piece = newBoard[from.row][from.col];
+  const [fromRow, fromCol] = from;
+  const piece = newBoard[fromRow][fromCol];
   if (!piece) return gameState;
 
-  // Update piece position
-  const movedPiece = { ...piece, position: to };
-
   // Move the piece
-  newBoard[from.row][from.col] = null;
-  newBoard[to.row][to.col] = movedPiece;
+  const [toRow, toCol] = to;
+  newBoard[fromRow][fromCol] = null;
+  newBoard[toRow][toCol] = { ...piece, position: [toRow, toCol] };
 
   // Update board
   newState.board = newBoard;
@@ -266,19 +220,15 @@ export function executeMove(
     },
   };
 
-  // Rotate used card and make it shared
-  const rotatedCard = {
+  // Rotate used card and make it shared (flip moves for opposite player)
+  const rotatedCard: MoveCard = {
     ...usedCard,
-    pattern: usedCard.pattern
-      .slice()
-      .reverse()
-      .map((row) => row.slice().reverse()),
+    moves: usedCard.moves.map((move) => ({ x: -move.x, y: -move.y })),
   };
   newState.sharedCard = rotatedCard;
 
   // Switch turns
-  newState.currentPlayer =
-    gameState.currentPlayer === "player1" ? "player2" : "player1";
+  newState.currentPlayer = gameState.currentPlayer === "red" ? "blue" : "red";
 
   // Clear selections
   newState.selectedPiece = null;
@@ -296,36 +246,64 @@ export function executeMove(
 // Check win conditions
 export function checkWinConditions(gameState: GameState): Player | null {
   // Way of the Stone: Check if a Master has been captured
-  let player1HasMaster = false;
-  let player2HasMaster = false;
+  let redHasMaster = false;
+  let blueHasMaster = false;
 
   for (let row = 0; row < 5; row++) {
     for (let col = 0; col < 5; col++) {
       const piece = gameState.board[row][col];
-      if (piece && piece.type === "master") {
-        if (piece.player === "player1") player1HasMaster = true;
-        if (piece.player === "player2") player2HasMaster = true;
+      if (piece && piece.isMaster) {
+        if (piece.player === "red") redHasMaster = true;
+        if (piece.player === "blue") blueHasMaster = true;
       }
     }
   }
 
-  if (!player1HasMaster) return "player2";
-  if (!player2HasMaster) return "player1";
+  if (!redHasMaster) return "blue";
+  if (!blueHasMaster) return "red";
 
   // Way of the Stream: Check if a Master reached opponent's Temple Arch
   for (let row = 0; row < 5; row++) {
     for (let col = 0; col < 5; col++) {
       const piece = gameState.board[row][col];
-      if (piece && piece.type === "master") {
-        if (piece.player === "player1" && isTempleArch(row, col, "player1")) {
-          return "player1";
+      if (piece && piece.isMaster) {
+        if (piece.player === "red" && isTempleArch(row, col, "red")) {
+          return "red";
         }
-        if (piece.player === "player2" && isTempleArch(row, col, "player2")) {
-          return "player2";
+        if (piece.player === "blue" && isTempleArch(row, col, "blue")) {
+          return "blue";
         }
       }
     }
   }
 
   return null;
+}
+
+// Convert move card to display pattern (for UI display)
+export function getCardDisplayPattern(card: MoveCard): string[][] {
+  // Create 5x5 pattern grid for display
+  const pattern = Array(5)
+    .fill(null)
+    .map(() => Array(5).fill(" "));
+
+  // Center is at [2, 2]
+  pattern[2][2] = "O";
+
+  // Add moves to pattern
+  card.moves.forEach((move) => {
+    const displayRow = 2 - move.y; // y=-2 becomes row 4, y=2 becomes row 0
+    const displayCol = 2 + move.x; // x=-2 becomes col 0, x=2 becomes col 4
+
+    if (
+      displayRow >= 0 &&
+      displayRow < 5 &&
+      displayCol >= 0 &&
+      displayCol < 5
+    ) {
+      pattern[displayRow][displayCol] = "X";
+    }
+  });
+
+  return pattern;
 }

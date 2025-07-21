@@ -1,21 +1,19 @@
-export type Player = "player1" | "player2";
+export type Player = "red" | "blue";
 
-export type PieceType = "master" | "student";
-
-export interface Position {
-  row: number;
-  col: number;
+export interface Piece {
+  player: Player;
+  isMaster: boolean;
+  position: [number, number];
 }
 
-export interface GamePiece {
-  type: PieceType;
-  player: Player;
-  position: Position;
+export interface Move {
+  x: number;
+  y: number;
 }
 
 export interface MoveCard {
   name: string;
-  pattern: string[][];
+  moves: Move[];
   color: Player;
 }
 
@@ -24,14 +22,14 @@ export interface PlayerState {
 }
 
 export interface GameState {
-  board: (GamePiece | null)[][];
+  board: (Piece | null)[][];
   players: {
-    player1: PlayerState;
-    player2: PlayerState;
+    red: PlayerState;
+    blue: PlayerState;
   };
   sharedCard: MoveCard;
   currentPlayer: Player;
-  selectedPiece: Position | null;
+  selectedPiece: [number, number] | null;
   selectedCard: number | null;
   winner: Player | null;
   gamePhase: "setup" | "playing" | "finished";

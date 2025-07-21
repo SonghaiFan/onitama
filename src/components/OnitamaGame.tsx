@@ -1,42 +1,28 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import GameBoard from "@/components/GameBoard";
-import MoveCards from "@/components/MoveCards";
-import { GameState, Position } from "@/types/game";
-import { useGameStore } from "@/store/gameStore";
-import { getPossibleMoves, isValidMove, executeMove } from "@/utils/gameLogic";
-
-// Animal kanji mapping for the shared card
-const animalKanji = {
-  Tiger: "虎",
-  Dragon: "龍",
-  Frog: "蛙",
-  Rabbit: "兎",
-  Crab: "蟹",
-  Crane: "鶴",
-  Elephant: "象",
-  Mantis: "螳",
-  Boar: "猪",
-  Horse: "馬",
-  Ox: "牛",
-  Goose: "雁",
-  Rooster: "鶏",
-  Monkey: "猿",
-  Eel: "鰻",
-  Cobra: "蛇",
-};
+import GameBoard from "./GameBoard";
+import MoveCards from "./MoveCards";
+import GameStatus from "./GameStatus";
+import { GameState, Player } from "@/types/game";
+import {
+  INITIAL_GAME_STATE,
+  getPossibleMoves,
+  isValidMove,
+  executeMove,
+  createNewGame,
+} from "@/utils/gameLogic";
 
 export default function OnitamaGame() {
-  const { gameState, setGameState, resetGame } = useGameStore();
-  const [possibleMoves, setPossibleMoves] = useState<Position[]>([]);
+  const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
+  const [possibleMoves, setPossibleMoves] = useState<[number, number][]>([]);
 
   const handlePieceClick = useCallback(
-    (position: Position) => {
+    (position: [number, number]) => {
       if (gameState.winner) return;
 
-      const piece = gameState.board[position.row][position.col];
+      const [row, col] = position;
+      const piece = gameState.board[row][col];
 
       // If clicking on empty space and we have a selected piece and card, try to move
       if (
@@ -117,7 +103,7 @@ export default function OnitamaGame() {
         }
       }
     },
-    [gameState, setGameState]
+    [gameState]
   );
 
   const handleCardClick = useCallback(
@@ -129,10 +115,8 @@ export default function OnitamaGame() {
 
       // Show possible moves if a piece is also selected
       if (gameState.selectedPiece) {
-        const piece =
-          gameState.board[gameState.selectedPiece.row][
-            gameState.selectedPiece.col
-          ];
+        const [row, col] = gameState.selectedPiece;
+        const piece = gameState.board[row][col];
         if (piece) {
           const selectedCard =
             gameState.players[gameState.currentPlayer].cards[cardIndex];
@@ -141,402 +125,145 @@ export default function OnitamaGame() {
         }
       }
     },
-    [gameState, setGameState]
+    [gameState]
   );
 
-  const handleResetGame = useCallback(() => {
-    resetGame();
+  const resetGame = useCallback(() => {
+    setGameState(createNewGame()); // Use createNewGame for fresh random cards
     setPossibleMoves([]);
-  }, [resetGame]);
+  }, []);
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 items-center justify-center max-w-7xl mx-auto p-6 pt-20">
-      {/* Left Side Panel - Enhanced Shared Card */}
-      <motion.div
-        className="flex flex-col items-center space-y-8"
-        initial={{ opacity: 0, x: -50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        {/* Shared Card with Japanese aesthetics */}
-        <motion.div
-          className="zen-card rounded-2xl p-6 shadow-2xl relative overflow-hidden w-32 h-44"
-          whileHover={{ scale: 1.05, rotateY: 8, y: -4 }}
-          transition={{ type: "spring", stiffness: 300 }}
-          initial={{ opacity: 0, scale: 0.8, rotateY: -90 }}
-          animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-        >
-          {/* Traditional border pattern */}
-          <div className="absolute inset-2 border border-amber-200/60 rounded-xl">
-            <div className="absolute inset-1 border border-amber-300/40 rounded-lg" />
-          </div>
+    <div className="flex flex-col lg:flex-row gap-8 items-start justify-center">
+      {/* Game Board */}
+      <div className="flex-1 max-w-md">
+        <GameBoard
+          gameState={gameState}
+          onPieceClick={handlePieceClick}
+          possibleMoves={possibleMoves}
+        />
+      </div>
 
-          <div className="relative z-10 h-full flex flex-col text-center">
-            {/* Shared card label */}
-            <div
-              className="text-xs font-medium text-amber-700 mb-2 tracking-wide"
-              style={{ fontFamily: '"Noto Sans JP", sans-serif' }}
-            >
-              共有カード • Shared
+      {/* Side Panel */}
+      <div className="flex-1 max-w-md space-y-6">
+        <GameStatus gameState={gameState} />
+
+        {/* Blue Player Cards (top) */}
+        <div className="transform rotate-180">
+          <MoveCards
+            cards={gameState.players.blue.cards}
+            player="blue"
+            onCardClick={handleCardClick}
+            isCurrentPlayer={gameState.currentPlayer === "blue"}
+            selectedCard={
+              gameState.currentPlayer === "blue" ? gameState.selectedCard : null
+            }
+          />
+        </div>
+
+        {/* Shared Card - Authentic Style */}
+        <div className="flex justify-center">
+          <div className="relative bg-gradient-to-br from-amber-50 to-orange-100 p-4 rounded-lg border-2 border-yellow-500 shadow-lg">
+            <div className="text-sm font-bold text-center mb-2 text-gray-800">
+              Shared Card
             </div>
-
-            {/* Animal name in Japanese */}
-            <div
-              className="text-3xl font-bold text-amber-800 mb-1"
-              style={{ fontFamily: '"Noto Serif JP", serif' }}
-            >
-              {animalKanji[
-                gameState.sharedCard.name as keyof typeof animalKanji
-              ] || gameState.sharedCard.name[0]}
-            </div>
-
-            <div
-              className="text-xs text-amber-600 mb-4 tracking-wide"
-              style={{ fontFamily: '"Noto Sans JP", sans-serif' }}
-            >
+            <div className="text-xs font-semibold text-center mb-3 bg-white/70 py-1 px-2 rounded text-gray-700">
               {gameState.sharedCard.name}
             </div>
 
-            {/* Movement pattern */}
-            <div className="flex-1 flex items-center justify-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-amber-100/80 to-amber-50 rounded-lg border border-amber-200/80 grid grid-cols-3 gap-1 p-2 shadow-inner">
-                {gameState.sharedCard.pattern.map((row, i) =>
-                  row.map((cell, j) => (
-                    <motion.div
+            {/* 5x5 Grid Display - Like Real Cards */}
+            <div className="w-24 h-24 mx-auto bg-white/90 rounded border border-gray-300 grid grid-cols-5 gap-0.5 p-1">
+              {/* Display shared card pattern */}
+              {Array.from({ length: 5 }, (_, i) =>
+                Array.from({ length: 5 }, (_, j) => {
+                  // Center position
+                  if (i === 2 && j === 2) {
+                    return (
+                      <div
+                        key={`${i}-${j}`}
+                        className="w-4 h-4 border border-gray-200 bg-gray-800"
+                      />
+                    );
+                  }
+
+                  // Check if this position has a move
+                  const hasMove = gameState.sharedCard.moves.some((move) => {
+                    const displayRow = 2 - move.y;
+                    const displayCol = 2 + move.x;
+                    return displayRow === i && displayCol === j;
+                  });
+
+                  return (
+                    <div
                       key={`${i}-${j}`}
-                      className={`w-4 h-4 rounded-sm transition-all duration-300 ${
-                        cell === "X"
-                          ? "bg-gradient-to-br from-amber-600 to-amber-700 shadow-sm"
-                          : cell === "O"
-                          ? "bg-gradient-to-br from-yellow-500 to-yellow-600 shadow-sm border border-yellow-700/20"
-                          : "bg-amber-100/60 border border-amber-200/40"
+                      className={`w-4 h-4 border border-gray-200 ${
+                        hasMove ? "bg-yellow-500" : "bg-gray-50"
                       }`}
-                      initial={{ scale: 0, rotate: 180 }}
-                      animate={{ scale: 1, rotate: 0 }}
-                      transition={{ duration: 0.4, delay: (i * 3 + j) * 0.05 }}
-                      whileHover={{
-                        scale: cell !== " " ? 1.1 : 1,
-                        rotate: cell === "O" ? 180 : 0,
-                      }}
                     />
-                  ))
-                )}
-              </div>
+                  );
+                })
+              )}
             </div>
 
-            {/* Subtle shine effect */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent rounded-2xl pointer-events-none" />
-          </div>
-        </motion.div>
-
-        {/* Enhanced Current Player Indicator */}
-        <motion.div
-          className={`zen-card rounded-2xl px-6 py-4 shadow-lg border-2 relative overflow-hidden ${
-            gameState.currentPlayer === "player1"
-              ? "border-blue-300/50 bg-gradient-to-br from-blue-50 to-blue-100/50"
-              : "border-red-300/50 bg-gradient-to-br from-red-50 to-red-100/50"
-          }`}
-          animate={{
-            scale: [1, 1.02, 1],
-            boxShadow:
-              gameState.currentPlayer === "player1"
-                ? [
-                    "0 4px 20px rgba(59, 130, 246, 0.2)",
-                    "0 8px 30px rgba(59, 130, 246, 0.4)",
-                    "0 4px 20px rgba(59, 130, 246, 0.2)",
-                  ]
-                : [
-                    "0 4px 20px rgba(239, 68, 68, 0.2)",
-                    "0 8px 30px rgba(239, 68, 68, 0.4)",
-                    "0 4px 20px rgba(239, 68, 68, 0.2)",
-                  ],
-          }}
-          transition={{ duration: 2, repeat: Infinity }}
-          whileHover={{ scale: 1.05, y: -2 }}
-        >
-          <div className="text-center space-y-2">
-            <div
-              className="text-xs opacity-80 font-medium"
-              style={{ fontFamily: '"Noto Sans JP", sans-serif' }}
-            >
-              現在の手番 • Current Turn
-            </div>
-            <div className="flex items-center justify-center space-x-2">
+            {/* Color Indicator */}
+            <div className="flex justify-center mt-3">
               <div
-                className={`w-3 h-3 rounded-full shadow-lg ${
-                  gameState.currentPlayer === "player1"
-                    ? "bg-gradient-to-br from-blue-400 to-blue-600"
-                    : "bg-gradient-to-br from-red-400 to-red-600"
+                className={`w-6 h-3 rounded-sm ${
+                  gameState.sharedCard.color === "red"
+                    ? "bg-red-600"
+                    : "bg-blue-600"
                 }`}
-              />
-              <div
-                className={`font-semibold ${
-                  gameState.currentPlayer === "player1"
-                    ? "text-blue-700"
-                    : "text-red-700"
-                }`}
-                style={{ fontFamily: '"Noto Sans JP", sans-serif' }}
-              >
-                {gameState.currentPlayer === "player1"
-                  ? "青の戦士"
-                  : "赤の戦士"}
-              </div>
-            </div>
-            <div
-              className={`text-xs ${
-                gameState.currentPlayer === "player1"
-                  ? "text-blue-600"
-                  : "text-red-600"
-              }`}
-            >
-              {gameState.currentPlayer === "player1"
-                ? "Blue Warrior"
-                : "Red Warrior"}
+              ></div>
             </div>
           </div>
+        </div>
 
-          {/* Decorative element */}
-          <div
-            className={`absolute top-0 left-0 w-full h-1 rounded-t-2xl ${
-              gameState.currentPlayer === "player1"
-                ? "bg-gradient-to-r from-blue-400 to-blue-600"
-                : "bg-gradient-to-r from-red-400 to-red-600"
-            }`}
-          />
-        </motion.div>
-      </motion.div>
+        {/* Red Player Cards (bottom) */}
+        <MoveCards
+          cards={gameState.players.red.cards}
+          player="red"
+          onCardClick={handleCardClick}
+          isCurrentPlayer={gameState.currentPlayer === "red"}
+          selectedCard={
+            gameState.currentPlayer === "red" ? gameState.selectedCard : null
+          }
+        />
 
-      {/* Center Game Area */}
-      <motion.div
-        className="flex flex-col items-center space-y-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-      >
-        {/* Player 2 Cards (Top) */}
-        <motion.div
-          className="transform rotate-180"
-          initial={{ opacity: 0, y: -30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-        >
-          <MoveCards
-            cards={gameState.players.player2.cards}
-            player="player2"
-            onCardClick={handleCardClick}
-            isCurrentPlayer={gameState.currentPlayer === "player2"}
-            selectedCard={
-              gameState.currentPlayer === "player2"
-                ? gameState.selectedCard
-                : null
-            }
-          />
-        </motion.div>
-
-        {/* Game Board */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-        >
-          <GameBoard
-            gameState={gameState}
-            onPieceClick={handlePieceClick}
-            possibleMoves={possibleMoves}
-          />
-        </motion.div>
-
-        {/* Player 1 Cards (Bottom) */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-        >
-          <MoveCards
-            cards={gameState.players.player1.cards}
-            player="player1"
-            onCardClick={handleCardClick}
-            isCurrentPlayer={gameState.currentPlayer === "player1"}
-            selectedCard={
-              gameState.currentPlayer === "player1"
-                ? gameState.selectedCard
-                : null
-            }
-          />
-        </motion.div>
-      </motion.div>
-
-      {/* Right Side Panel - Enhanced Game Controls */}
-      <motion.div
-        className="flex flex-col items-center space-y-8"
-        initial={{ opacity: 0, x: 50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, delay: 0.4 }}
-      >
-        <motion.button
-          onClick={handleResetGame}
-          className="zen-card px-8 py-4 rounded-2xl font-semibold text-blue-700 hover:text-blue-800 shadow-lg hover:shadow-xl transition-all duration-300 border border-blue-200/60 hover:border-blue-300/80 relative overflow-hidden"
-          whileHover={{ scale: 1.05, y: -2 }}
-          whileTap={{ scale: 0.98 }}
-          transition={{ type: "spring", stiffness: 300 }}
-          style={{ fontFamily: '"Noto Sans JP", sans-serif' }}
-        >
-          <span className="relative z-10 flex items-center space-x-2">
-            <span>🔄</span>
-            <span>新しいゲーム • New Game</span>
-          </span>
-
-          {/* Hover effect */}
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-blue-600/15 opacity-0 hover:opacity-100 transition-opacity duration-300"
-            whileHover={{ opacity: 1 }}
-          />
-        </motion.button>
-
-        {/* Enhanced Legend */}
-        <motion.div
-          className="zen-card rounded-2xl p-6 shadow-lg space-y-4 border border-slate-200/60"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          whileHover={{ scale: 1.02, y: -2 }}
-        >
-          <div
-            className="text-lg font-semibold text-amber-800 text-center mb-4"
-            style={{ fontFamily: '"Noto Serif JP", serif' }}
+        {/* Controls */}
+        <div className="flex gap-4">
+          <button
+            onClick={resetGame}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
           >
-            操作説明 • Controls
-          </div>
-          <div className="space-y-3 text-sm">
-            <div className="flex items-center space-x-3">
-              <div className="w-4 h-4 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-full shadow-sm flex-shrink-0" />
-              <span className="text-emerald-700 font-medium">
-                有効な移動 • Valid moves
-              </span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-4 h-4 bg-gradient-to-br from-red-500 to-red-600 rounded-full shadow-sm flex-shrink-0" />
-              <span className="text-red-700 font-medium">
-                捕獲可能 • Capture moves
-              </span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-4 h-4 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full shadow-sm flex-shrink-0" />
-              <span className="text-yellow-700 font-medium">
-                選択中 • Selected
-              </span>
+            New Game
+          </button>
+        </div>
+
+        {/* Instructions */}
+        <div className="bg-blue-50 p-3 rounded-lg text-sm text-blue-800">
+          <div className="font-semibold mb-2">How to Play:</div>
+          <div className="space-y-1">
+            <div>1. Select one of your cards</div>
+            <div>2. Click on your piece to select it</div>
+            <div>3. Click on a highlighted square to move</div>
+            <div className="text-xs text-blue-600 mt-2">
+              Green circles = valid moves | Red dots = capture moves
             </div>
           </div>
-        </motion.div>
+        </div>
 
-        {/* Traditional decorative element */}
-        <motion.div
-          className="w-16 h-16 opacity-30"
-          animate={{ rotate: [0, 360] }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            className="w-full h-full text-amber-600"
-          >
-            <path
-              d="M12 2L13.5 8.5L20 7L14.5 12L20 17L13.5 15.5L12 22L10.5 15.5L4 17L9.5 12L4 7L10.5 8.5L12 2Z"
-              fill="currentColor"
-              opacity="0.6"
-            />
-          </svg>
-        </motion.div>
-      </motion.div>
-
-      {/* Enhanced Win Celebration Modal */}
-      <AnimatePresence>
-        {gameState.winner && (
-          <motion.div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              className="zen-card rounded-3xl p-10 text-center max-w-md w-full shadow-2xl border-2 border-emerald-200/60 relative overflow-hidden"
-              initial={{ scale: 0.5, opacity: 0, rotateY: -90 }}
-              animate={{ scale: 1, opacity: 1, rotateY: 0 }}
-              exit={{ scale: 0.5, opacity: 0, rotateY: 90 }}
-              transition={{ type: "spring", stiffness: 200 }}
-            >
-              {/* Celebration background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 via-green-50 to-emerald-100/50" />
-
-              {/* Victory content */}
-              <div className="relative z-10">
-                <motion.div
-                  className="text-7xl mb-6"
-                  animate={{
-                    rotate: [0, 10, -10, 0],
-                    scale: [1, 1.1, 1],
-                  }}
-                  transition={{ duration: 0.8, repeat: 3 }}
-                >
-                  🏆
-                </motion.div>
-
-                <motion.div
-                  className="text-4xl font-bold text-emerald-700 mb-3"
-                  style={{ fontFamily: '"Noto Serif JP", serif' }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  勝利！
-                </motion.div>
-
-                <div className="text-2xl font-semibold text-emerald-600 mb-4">
-                  Victory!
-                </div>
-
-                <motion.div
-                  className={`text-xl font-bold mb-6 ${
-                    gameState.winner === "player1"
-                      ? "text-blue-600"
-                      : "text-red-600"
-                  }`}
-                  style={{ fontFamily: '"Noto Sans JP", sans-serif' }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  {gameState.winner === "player1"
-                    ? "青の戦士の勝利！"
-                    : "赤の戦士の勝利！"}
-                </motion.div>
-
-                <div
-                  className={`text-lg mb-8 ${
-                    gameState.winner === "player1"
-                      ? "text-blue-500"
-                      : "text-red-500"
-                  }`}
-                >
-                  {gameState.winner === "player1"
-                    ? "Blue Warrior Wins!"
-                    : "Red Warrior Wins!"}
-                </div>
-
-                <motion.button
-                  onClick={handleResetGame}
-                  className="zen-card px-8 py-4 rounded-2xl font-semibold text-emerald-700 hover:text-emerald-800 shadow-lg hover:shadow-xl transition-all duration-300 border border-emerald-200/60 hover:border-emerald-300/80"
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  style={{ fontFamily: '"Noto Sans JP", sans-serif' }}
-                >
-                  再挑戦 • Play Again
-                </motion.button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        {/* Card Info */}
+        <div className="bg-green-50 p-3 rounded-lg text-sm text-green-800">
+          <div className="font-semibold mb-2">🎴 Authentic Onitama Cards</div>
+          <div className="text-green-700">
+            Playing with official cards: {gameState.players.red.cards[0].name},{" "}
+            {gameState.players.red.cards[1].name},{" "}
+            {gameState.players.blue.cards[0].name},{" "}
+            {gameState.players.blue.cards[1].name}, and{" "}
+            {gameState.sharedCard.name}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

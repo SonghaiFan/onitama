@@ -1,5 +1,5 @@
-import GameApp from "@/components/GameApp";
+import OnitamaLanding from "@/components/OnitamaLanding";
 
 export default function Home() {
-  return <GameApp />;
+  return <OnitamaLanding />;
 }
