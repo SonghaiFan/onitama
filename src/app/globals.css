@@ -1,26 +1,154 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Japanese-inspired custom utilities using Tailwind v4 @utility directive */
+@utility scroll-texture {
+  background: linear-gradient(
+    135deg,
+    rgb(250, 248, 242) 0%,
+    rgb(248, 245, 235) 25%,
+    rgb(245, 242, 230) 50%,
+    rgb(248, 245, 235) 75%,
+    rgb(250, 248, 242) 100%
+  );
+  background-size: 200% 200%;
+  animation: scroll-shimmer 8s ease-in-out infinite;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@utility neoprene-mat {
+  background: radial-gradient(
+    ellipse at center,
+    rgb(245, 242, 230) 0%,
+    rgb(240, 235, 220) 30%,
+    rgb(235, 228, 210) 60%,
+    rgb(230, 220, 195) 100%
+  );
+  box-shadow: inset 0 2px 4px rgba(139, 126, 102, 0.1),
+    inset 0 -2px 4px rgba(139, 126, 102, 0.1), 0 8px 32px rgba(0, 0, 0, 0.12);
+  border: 2px solid rgba(139, 126, 102, 0.2);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@utility temple-arch {
+  background: linear-gradient(
+    45deg,
+    rgba(239, 68, 68, 0.1) 0%,
+    rgba(239, 68, 68, 0.05) 50%,
+    rgba(239, 68, 68, 0.1) 100%
+  );
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  position: relative;
+}
+
+@utility temple-arch::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(239, 68, 68, 0.1),
+    transparent
+  );
+  border-radius: inherit;
+  z-index: -1;
+}
+
+@utility zen-card {
+  background: linear-gradient(
+    145deg,
+    rgb(255, 253, 250) 0%,
+    rgb(250, 247, 240) 50%,
+    rgb(245, 242, 235) 100%
+  );
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(139, 126, 102, 0.15);
+}
+
+@utility master-piece {
+  background: linear-gradient(
+    135deg,
+    rgb(251, 191, 36) 0%,
+    rgb(245, 158, 11) 50%,
+    rgb(217, 119, 6) 100%
+  );
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3),
+    inset 0 -1px 2px rgba(146, 64, 14, 0.2);
+  border: 2px solid rgba(146, 64, 14, 0.3);
+}
+
+@utility student-piece {
+  background: linear-gradient(
+    135deg,
+    rgb(156, 163, 175) 0%,
+    rgb(107, 114, 128) 50%,
+    rgb(75, 85, 99) 100%
+  );
+  box-shadow: 0 2px 8px rgba(75, 85, 99, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(55, 65, 81, 0.2);
+}
+
+@utility calligraphy-border {
+  background-image: linear-gradient(
+      0deg,
+      rgba(139, 126, 102, 0.3) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(139, 126, 102, 0.3) 1px, transparent 1px);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 0;
+}
+
+@utility watercolor-wash {
+  background: radial-gradient(
+      ellipse at top left,
+      rgba(59, 130, 246, 0.05) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at bottom right,
+      rgba(168, 85, 247, 0.05) 0%,
+      transparent 50%
+    );
+}
+
+@keyframes scroll-shimmer {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes zen-float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes temple-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(239, 68, 68, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.5), 0 0 25px rgba(239, 68, 68, 0.2);
+  }
+}
+
+/* Japanese typography */
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Noto+Serif+JP:wght@300;400;500;600;700&display=swap");
+
+/* Enhanced focus states for accessibility */
+@utility focus-zen {
+  outline: 2px solid rgba(59, 130, 246, 0.6);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
