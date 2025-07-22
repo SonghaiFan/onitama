@@ -106,14 +106,25 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
       [gameState]
     );
 
-    const handlePieceMove = useCallback(
-      (from: [number, number], to: [number, number]) => {
-        if (gameState.winner || gameState.selectedCard === null) return;
+    const handleCardSelect = useCallback(
+      (cardIndex: number) => {
+        if (gameState.winner) return;
 
-        const selectedCard = gameState.players[gameState.currentPlayer].cards[gameState.selectedCard];
-        
+        const newGameState = { ...gameState, selectedCard: cardIndex };
+        setGameState(newGameState);
+      },
+      [gameState]
+    );
+
+    const handlePieceMove = useCallback(
+      (from: [number, number], to: [number, number], cardIndex: number) => {
+        if (gameState.winner) return;
+
+        const selectedCard =
+          gameState.players[gameState.currentPlayer].cards[cardIndex];
+
         if (isValidMove(from, to, selectedCard, gameState.board)) {
-          const newGameState = executeMove(gameState, from, to, gameState.selectedCard);
+          const newGameState = executeMove(gameState, from, to, cardIndex);
           setGameState(newGameState);
         }
       },
@@ -146,7 +157,9 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
         ) : (
           <>
             <div className="flex items-center space-x-2">
-              <span className="text-stone-600 font-light zen-text">當前回合:</span>
+              <span className="text-stone-600 font-light zen-text">
+                當前回合:
+              </span>
               <div
                 className={`w-6 h-6 rounded-full animate-pulse shadow-lg ${
                   gameState.currentPlayer === "red"
@@ -193,9 +206,10 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
 
         <div className="game-layout-grid">
           <div style={{ gridArea: "board" }}>
-            <GameBoard 
-              gameState={gameState} 
+            <GameBoard
+              gameState={gameState}
               onPieceClick={handlePieceClick}
+              onCardSelect={handleCardSelect}
               onPieceMove={handlePieceMove}
             />
           </div>

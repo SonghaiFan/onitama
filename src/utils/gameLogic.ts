@@ -37,18 +37,68 @@ function createInitialBoard(): (Piece | null)[][] {
     .map(() => Array(5).fill(null));
 
   // Red player (bottom) pieces
-  board[4][2] = { player: "red", isMaster: true, position: [4, 2] }; // Master on Temple Arch
-  board[4][0] = { player: "red", isMaster: false, position: [4, 0] };
-  board[4][1] = { player: "red", isMaster: false, position: [4, 1] };
-  board[4][3] = { player: "red", isMaster: false, position: [4, 3] };
-  board[4][4] = { player: "red", isMaster: false, position: [4, 4] };
+  board[4][2] = {
+    id: "red_master",
+    player: "red",
+    isMaster: true,
+    position: [4, 2],
+  }; // Master on Temple Arch
+  board[4][0] = {
+    id: "red_1",
+    player: "red",
+    isMaster: false,
+    position: [4, 0],
+  };
+  board[4][1] = {
+    id: "red_2",
+    player: "red",
+    isMaster: false,
+    position: [4, 1],
+  };
+  board[4][3] = {
+    id: "red_3",
+    player: "red",
+    isMaster: false,
+    position: [4, 3],
+  };
+  board[4][4] = {
+    id: "red_4",
+    player: "red",
+    isMaster: false,
+    position: [4, 4],
+  };
 
   // Blue player (top) pieces
-  board[0][2] = { player: "blue", isMaster: true, position: [0, 2] }; // Master on Temple Arch
-  board[0][0] = { player: "blue", isMaster: false, position: [0, 0] };
-  board[0][1] = { player: "blue", isMaster: false, position: [0, 1] };
-  board[0][3] = { player: "blue", isMaster: false, position: [0, 3] };
-  board[0][4] = { player: "blue", isMaster: false, position: [0, 4] };
+  board[0][2] = {
+    id: "blue_master",
+    player: "blue",
+    isMaster: true,
+    position: [0, 2],
+  }; // Master on Temple Arch
+  board[0][0] = {
+    id: "blue_1",
+    player: "blue",
+    isMaster: false,
+    position: [0, 0],
+  };
+  board[0][1] = {
+    id: "blue_2",
+    player: "blue",
+    isMaster: false,
+    position: [0, 1],
+  };
+  board[0][3] = {
+    id: "blue_3",
+    player: "blue",
+    isMaster: false,
+    position: [0, 3],
+  };
+  board[0][4] = {
+    id: "blue_4",
+    player: "blue",
+    isMaster: false,
+    position: [0, 4],
+  };
 
   return board;
 }

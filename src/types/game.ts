@@ -1,6 +1,7 @@
 export type Player = "red" | "blue";
 
 export interface Piece {
+  id: string; // Unique identifier like "red_1", "blue_master", etc.
   player: Player;
   isMaster: boolean;
   position: [number, number];
