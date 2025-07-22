@@ -121,6 +121,7 @@ export default function GameBoard({
                 <AnimatePresence>
                   {(isBlueTempleArch || isRedTempleArch) && !piece && (
                     <motion.div
+                      key={`temple-${row}-${col}`}
                       className="text-lg text-stone-600"
                       initial={{ opacity: 0, scale: 0 }}
                       animate={{
@@ -138,15 +139,12 @@ export default function GameBoard({
                     </motion.div>
                   )}
 
-                  {piece && (
-                    <AnimatePresence mode="wait">
-                      {renderPiece(piece)}
-                    </AnimatePresence>
-                  )}
+                  {piece && renderPiece(piece)}
 
-                  {/* Possible move indicator */}
+                  {/* Possible move indicator - only show one type */}
                   {isPossible && !piece && (
                     <motion.div
+                      key={`move-${row}-${col}`}
                       className="w-5 h-5 bg-emerald-500 rounded-full shadow-sm"
                       initial={{ scale: 0, opacity: 0 }}
                       animate={{
@@ -162,24 +160,23 @@ export default function GameBoard({
                     />
                   )}
 
-                  {isPossible &&
-                    piece &&
-                    piece.player !== gameState.currentPlayer && (
-                      <motion.div
-                        className="absolute -top-2 -right-2 w-4 h-4 bg-red-600 rounded-full shadow-lg"
-                        initial={{ scale: 0 }}
-                        animate={{
-                          scale: [1, 1.3, 1],
-                          opacity: [0.8, 1, 0.8],
-                        }}
-                        exit={{ scale: 0 }}
-                        transition={{
-                          duration: 0.8,
-                          repeat: Infinity,
-                          repeatType: "reverse",
-                        }}
-                      />
-                    )}
+                  {isPossible && piece && piece.player !== gameState.currentPlayer && (
+                    <motion.div
+                      key={`capture-${row}-${col}`}
+                      className="absolute -top-2 -right-2 w-4 h-4 bg-red-600 rounded-full shadow-lg"
+                      initial={{ scale: 0 }}
+                      animate={{
+                        scale: [1, 1.3, 1],
+                        opacity: [0.8, 1, 0.8],
+                      }}
+                      exit={{ scale: 0 }}
+                      transition={{
+                        duration: 0.8,
+                        repeat: Infinity,
+                        repeatType: "reverse",
+                      }}
+                    />
+                  )}
                 </AnimatePresence>
               </div>
             );
