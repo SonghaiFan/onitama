@@ -64,8 +64,8 @@ const Card = React.memo(
             ? "0 0 20px rgba(251, 191, 36, 0.6)"
             : "0 2px 8px rgba(0, 0, 0, 0.1)",
         }}
-        whileHover={{ 
-          scale: canInteract ? (isSelected ? 1.12 : 1.05) : 1 
+        whileHover={{
+          scale: canInteract ? (isSelected ? 1.12 : 1.05) : 1,
         }}
         whileTap={{ scale: canInteract ? 0.95 : 1 }}
         onClick={handleClick}
@@ -79,7 +79,6 @@ const Card = React.memo(
           <>
             <motion.div
               className="text-sm sm:text-lg font-light text-stone-800 mb-3 sm:mb-4 tracking-wide text-center"
-              animate={{ rotate: isRotated ? 180 : 0 }}
               transition={{ duration: 0.6 }}
             >
               共用牌
@@ -166,7 +165,6 @@ const Card = React.memo(
         {isShared && (
           <motion.div
             className="mt-6 text-xs text-stone-500 font-light text-center"
-            animate={{ rotate: isRotated ? 180 : 0 }}
             transition={{ duration: 0.6 }}
           >
             下一回合輪到
