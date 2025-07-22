@@ -401,28 +401,7 @@ export default function GameBoard({
                     {piece && renderPiece(piece, isSelected, row, col)}
 
                     {/* Show possible move indicator */}
-                    {isPossibleMove && !piece && (
-                      <motion.div
-                        key={`move-indicator-${row}-${col}`}
-                        className={`w-4 h-4 rounded-full border-2 opacity-80 ${
-                          gameState.selectedCard === 0
-                            ? "bg-blue-500 border-blue-600"
-                            : gameState.selectedCard === 1
-                            ? "bg-purple-500 border-purple-600"
-                            : "bg-emerald-500 border-emerald-600"
-                        }`}
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{
-                          scale: [1, 1.2, 1],
-                          opacity: [0.6, 1, 0.6],
-                        }}
-                        transition={{
-                          duration: 1.5,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }}
-                      />
-                    )}
+                    {/* Removed animated circle - colored cell background is sufficient */}
                   </AnimatePresence>
                 </DroppableCell>
               );
