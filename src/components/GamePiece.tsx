@@ -21,6 +21,29 @@ interface DraggablePieceProps {
   ) => void;
 }
 
+// Piece icon component (minimal, similar to TempleArchIcon approach)
+function PieceIcon({
+  player,
+  isMaster,
+}: {
+  player: "red" | "blue";
+  isMaster: boolean;
+}) {
+  // Use a Unicode chess king for master, pawn for student, rotate for blue
+  return (
+    <span
+      className={`
+        absolute inset-0 flex items-center justify-center pointer-events-none z-0
+        font-serif text-3xl font-bold select-none opacity-90
+        ${player === "blue" ? "rotate-180" : "-translate-y-1"}
+      `}
+      aria-hidden="true"
+    >
+      {isMaster ? "♔" : "♙"}
+    </span>
+  );
+}
+
 export function DraggablePiece({
   piece,
   row,
@@ -32,7 +55,7 @@ export function DraggablePiece({
   onRightMouseDown,
 }: DraggablePieceProps) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: piece.id, // Use the unique piece ID
+    id: piece.id,
     data: {
       row,
       col,
@@ -56,7 +79,7 @@ export function DraggablePiece({
       {...attributes}
       {...listeners}
       className={`
-        w-12 h-12 rounded-full border-2 flex items-center justify-center font-bold text-xl
+        w-12 h-12 rounded-full border-2 flex items-center justify-center
         ${
           isRed
             ? "bg-red-600 border-red-700 text-white"
@@ -70,6 +93,7 @@ export function DraggablePiece({
             ? "ring-2 ring-amber-400"
             : ""
         }
+        font-bold text-xl
       `}
       initial={{ scale: 0, rotate: -180 }}
       animate={{
@@ -97,20 +121,16 @@ export function DraggablePiece({
       }}
       layoutId={piece.id}
       onContextMenu={(e) => {
-        // Prevent context menu on right click
         e.preventDefault();
       }}
       onMouseDown={(e) => {
-        // Handle right mouse button
         if (e.button === 2 && onRightMouseDown) {
           onRightMouseDown(e, piece, [row, col]);
         }
       }}
     >
-      <div
-        className={`relative ${piece.player === "blue" ? "rotate-180" : ""}`}
-      >
-        {isMaster ? "♔" : "♙"}
+      <div className="relative w-full h-full flex items-center justify-center">
+        <PieceIcon player={piece.player} isMaster={isMaster} />
       </div>
     </motion.div>
   );
@@ -139,10 +159,8 @@ export function DragOverlay({ piece, cardIndex }: DragOverlayProps) {
         ring-2 ring-amber-400 shadow-xl
       `}
     >
-      <div
-        className={`relative ${piece.player === "blue" ? "rotate-180" : ""}`}
-      >
-        {isMaster ? "♔" : "♙"}
+      <div className="relative w-full h-full flex items-center justify-center">
+        <PieceIcon player={piece.player} isMaster={isMaster} />
       </div>
     </motion.div>
   );

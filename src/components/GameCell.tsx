@@ -30,27 +30,17 @@ export function DroppableCell({
     id: `cell-${row}-${col}`,
   });
 
-  // Render temple arch SVG with rotation and color based on player
-  const TempleArchSVG = (isRedTempleArch || isBlueTempleArch) && (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="none"
-      className={`absolute inset-0 w-full h-full pointer-events-none opacity-40 z-0 ${
-        isBlueTempleArch ? "" : "rotate-180"
-      }`}
+  const TempleArchIcon = (isRedTempleArch || isBlueTempleArch) && (
+    <span
+      className={`
+          absolute inset-0 flex items-center justify-center pointer-events-none z-0
+          font-serif text-5xl select-none opacity-50 text-stone-100
+          ${isBlueTempleArch ? "" : "rotate-180"}
+        `}
       aria-hidden="true"
     >
-      <text
-        x="12"
-        y="18"
-        textAnchor="middle"
-        className="font-serif text-[18px] fill-stone-100 transition-colors duration-200"
-      >
-        ⛩
-      </text>
-    </svg>
+      ⛩
+    </span>
   );
 
   return (
@@ -81,8 +71,8 @@ export function DroppableCell({
         ${isOver ? "ring-2 ring-blue-400 bg-blue-50 scale-105" : ""}
       `}
     >
-      {/* SVG floats underneath content */}
-      {TempleArchSVG}
+      {/* Temple arch text floats underneath content */}
+      {TempleArchIcon}
       <div
         onClick={onClick}
         onKeyDown={onKeyDown}
