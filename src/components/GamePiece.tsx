@@ -31,15 +31,14 @@ export function DraggablePiece({
   selectedCardIndex,
   onRightMouseDown,
 }: DraggablePieceProps) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({
-      id: piece.id, // Use the unique piece ID
-      data: {
-        row,
-        col,
-        piece,
-      },
-    });
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: piece.id, // Use the unique piece ID
+    data: {
+      row,
+      col,
+      piece,
+    },
+  });
 
   const isRed = piece.player === "red";
   const isMaster = piece.isMaster;

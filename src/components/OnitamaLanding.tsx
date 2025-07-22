@@ -381,37 +381,6 @@ export default function OnitamaLanding() {
               </div>
             </div>
           </div>
-
-          {/* Game Controls */}
-          <div className="zen-card p-12 mx-8">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-light text-stone-800 mb-4 tracking-wide">
-                操作指南
-              </h3>
-              <div className="w-16 h-px bg-stone-300 mx-auto"></div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-3xl mx-auto">
-              <div className="space-y-4">
-                <h4 className="font-medium text-stone-800 mb-4">如何移動:</h4>
-                <ol className="space-y-3 text-stone-600 font-light">
-                  <li>1. 點擊一張移動牌選擇它</li>
-                  <li>2. 點擊你的棋子(師傅或學徒)</li>
-                  <li>3. 點擊綠色圓圈移動至該位置</li>
-                  <li>4. 紅點表示可以擒獲對手棋子</li>
-                </ol>
-              </div>
-              <div className="space-y-4">
-                <h4 className="font-medium text-stone-800 mb-4">視覺指示:</h4>
-                <ul className="space-y-3 text-stone-600 font-light">
-                  <li>🟦 藍色棋子 = 藍方</li>
-                  <li>🟥 紅色棋子 = 紅方</li>
-                  <li>♔ 皇冠 = 師傅</li>
-                  <li>♙ 兵卒 = 學徒</li>
-                  <li>⛩️ 神殿 = 勝利目標</li>
-                </ul>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
