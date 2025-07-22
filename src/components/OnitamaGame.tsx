@@ -8,7 +8,7 @@ import React, {
   useEffect,
 } from "react";
 import GameBoard from "./GameBoard";
-import MoveCards from "./MoveCards";
+import Card from "./MoveCards";
 import { GameState, Player } from "@/types/game";
 import {
   INITIAL_GAME_STATE,
@@ -259,14 +259,66 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
             />
           </div>
 
-          {/* CORRECTED: Passing the correct props to MoveCards */}
-          <MoveCards
-            redCards={gameState.players.red.cards}
-            blueCards={gameState.players.blue.cards}
-            sharedCard={gameState.sharedCard}
+          {/* Blue Player's Cards */}
+          <Card
+            card={gameState.players.blue.cards[0]}
+            gridArea="blue-left"
+            isSelected={
+              gameState.currentPlayer === "blue" && gameState.selectedCard === 0
+            }
+            playerOwner="blue"
             currentPlayer={gameState.currentPlayer}
-            selectedCardIndex={gameState.selectedCard}
+            cardIndex={0}
             onCardClick={handleCardClick}
+          />
+          <Card
+            card={gameState.players.blue.cards[1]}
+            gridArea="blue-right"
+            isSelected={
+              gameState.currentPlayer === "blue" && gameState.selectedCard === 1
+            }
+            playerOwner="blue"
+            currentPlayer={gameState.currentPlayer}
+            cardIndex={1}
+            onCardClick={handleCardClick}
+          />
+
+          {/* Red Player's Cards */}
+          <Card
+            card={gameState.players.red.cards[0]}
+            gridArea="red-left"
+            isSelected={
+              gameState.currentPlayer === "red" && gameState.selectedCard === 0
+            }
+            playerOwner="red"
+            currentPlayer={gameState.currentPlayer}
+            cardIndex={0}
+            onCardClick={handleCardClick}
+          />
+          <Card
+            card={gameState.players.red.cards[1]}
+            gridArea="red-right"
+            isSelected={
+              gameState.currentPlayer === "red" && gameState.selectedCard === 1
+            }
+            playerOwner="red"
+            currentPlayer={gameState.currentPlayer}
+            cardIndex={1}
+            onCardClick={handleCardClick}
+          />
+
+          {/* Shared Card */}
+          <Card
+            card={gameState.sharedCard}
+            gridArea={
+              gameState.sharedCard.color === "blue"
+                ? "shared-left"
+                : "shared-right"
+            }
+            isSelected={false}
+            playerOwner="shared"
+            currentPlayer={gameState.currentPlayer}
+            onCardClick={() => {}}
           />
         </div>
       </div>

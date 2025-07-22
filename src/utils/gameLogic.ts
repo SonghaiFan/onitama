@@ -208,9 +208,7 @@ function createInitialBoard(): (Piece | null)[][] {
 }
 
 // Generate initial game state with random cards
-function createInitialGameState(
-  cardPack: "normal" | "senseis" = "normal"
-): GameState {
+function createInitialGameState(): GameState {
   const { playerCards, sharedCard } = selectRandomCards();
 
   // Validate that we have valid cards
