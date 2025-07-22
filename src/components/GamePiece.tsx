@@ -142,7 +142,7 @@ interface DragOverlayProps {
   cardIndex: number;
 }
 
-export function DragOverlay({ piece, cardIndex }: DragOverlayProps) {
+export function DragOverlay({ piece }: DragOverlayProps) {
   const isRed = piece.player === "red";
   const isMaster = piece.isMaster;
 

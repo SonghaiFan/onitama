@@ -14,7 +14,6 @@ import {
   INITIAL_GAME_STATE,
   isValidMove,
   executeMove,
-  createNewGame,
   createNewGameAsync,
 } from "@/utils/gameLogic";
 

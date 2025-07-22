@@ -1,13 +1,11 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
 import { GameState, Piece } from "@/types/game";
 import { isTempleArch, getPossibleMoves } from "@/utils/gameLogic";
 import { useState, useCallback, useEffect } from "react";
 import {
   DndContext,
   DragEndEvent,
-  DragOverEvent,
   DragStartEvent,
   PointerSensor,
   useSensor,
@@ -94,7 +92,7 @@ export default function GameBoard({
         }
       }
     },
-    [gameState]
+    []
   );
 
   // Handle mouse move for right-click drag
@@ -248,16 +246,12 @@ export default function GameBoard({
       });
       setIsDragging(true);
     },
-    [gameState]
+    [gameState, onCardSelect]
   );
-
-  const handleDragOver = useCallback((event: DragOverEvent) => {
-    // Optional: Add visual feedback during drag over
-  }, []);
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
-      const { active, over } = event;
+      const { over } = event;
 
       if (!draggedPieceData || !over) {
         setDraggedPieceData(null);
@@ -342,7 +336,6 @@ export default function GameBoard({
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragStart={handleDragStart}
-      onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
       <div

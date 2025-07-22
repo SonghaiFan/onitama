@@ -1,7 +1,14 @@
-import { GameState, MoveCard, Piece, Player, Move } from "@/types/game";
+import {
+  GameState,
+  MoveCard,
+  Piece,
+  Player,
+  Move,
+  SenseisCardPackCard,
+} from "@/types/game";
 
 // Convert card data from JSON format to our game format
-function convertCardToGameFormat(card: any): MoveCard {
+function convertCardToGameFormat(card: SenseisCardPackCard): MoveCard {
   return {
     name: card.name.en,
     displayName: card.name.zh,
@@ -113,7 +120,7 @@ async function selectRandomCardsAsync(
 }
 
 // Synchronous version for backward compatibility
-function selectRandomCards(cardPack: "normal" | "senseis" = "normal"): {
+function selectRandomCards(): {
   playerCards: MoveCard[];
   sharedCard: MoveCard;
 } {
@@ -204,7 +211,7 @@ function createInitialBoard(): (Piece | null)[][] {
 function createInitialGameState(
   cardPack: "normal" | "senseis" = "normal"
 ): GameState {
-  const { playerCards, sharedCard } = selectRandomCards(cardPack);
+  const { playerCards, sharedCard } = selectRandomCards();
 
   // Validate that we have valid cards
   if (!sharedCard || !playerCards || playerCards.length < 4) {
@@ -256,13 +263,6 @@ function createInitialGameState(
 }
 
 export const INITIAL_GAME_STATE: GameState = createInitialGameState();
-
-// Function to create a new game with different random cards
-export function createNewGame(
-  cardPack: "normal" | "senseis" = "normal"
-): GameState {
-  return createInitialGameState(cardPack);
-}
 
 // Async version for loading card packs
 export async function createNewGameAsync(

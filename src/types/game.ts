@@ -36,3 +36,29 @@ export interface GameState {
   winner: Player | null;
   gamePhase: "setup" | "playing" | "finished";
 }
+
+// Type for the Sensei's Path card pack JSON structure
+export interface SenseisCardPackMetadata {
+  name: string;
+  description: string;
+  author: string;
+  version: string;
+}
+
+export interface SenseisCardPackCard {
+  id: string;
+  name: {
+    en: string;
+    hu?: string;
+    zh?: string;
+    ja?: string;
+  };
+  color: string;
+  moves: Move[];
+  firstPlayerColor: Player;
+}
+
+export interface SenseisCardPack {
+  metadata: SenseisCardPackMetadata;
+  cards: SenseisCardPackCard[];
+}
