@@ -2,17 +2,7 @@
 
 import { GameState, Piece } from "@/types/game";
 import { isTempleArch, getPossibleMoves } from "@/utils/gameLogic";
-import { useState, useCallback, useEffect } from "react";
-import {
-  DndContext,
-  DragEndEvent,
-  DragStartEvent,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  closestCenter,
-  DragOverlay as DndDragOverlay,
-} from "@dnd-kit/core";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { DraggablePiece, DragOverlay } from "./GamePiece";
 import { DroppableCell } from "./GameCell";
 
@@ -33,83 +23,85 @@ interface DraggedPieceData {
   cardIndex: number;
 }
 
+interface DragState {
+  isDragging: boolean;
+  draggedPiece: DraggedPieceData | null;
+  dragPosition: { x: number; y: number } | null;
+  isRightDrag: boolean;
+}
+
 export default function GameBoard({
   gameState,
   onPieceClick,
   onCardSelect,
   onPieceMove,
 }: GameBoardProps) {
-  const [draggedPieceData, setDraggedPieceData] =
-    useState<DraggedPieceData | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [isRightDragging, setIsRightDragging] = useState(false);
-  const [rightDragStart, setRightDragStart] = useState<{
-    pieceId: string;
-    position: [number, number];
-    piece: Piece;
-  } | null>(null);
-  const [rightDragPosition, setRightDragPosition] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
+  // Use ref to access current gameState in callbacks to avoid stale closures
+  const gameStateRef = useRef(gameState);
+  gameStateRef.current = gameState;
+
+  // Unified drag state
+  const [dragState, setDragState] = useState<DragState>({
+    isDragging: false,
+    draggedPiece: null,
+    dragPosition: null,
+    isRightDrag: false,
+  });
 
   // Prevent context menu on the entire board
   const handleContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
   }, []);
 
-  // Handle right-click drag start
-  const handleRightMouseDown = useCallback(
+  // Unified drag start handler
+  const handleDragStart = useCallback(
     (e: React.MouseEvent, piece: Piece, position: [number, number]) => {
-      if (e.button === 2) {
-        // Right mouse button
-        e.preventDefault();
+      e.preventDefault();
 
-        if (piece.player === gameState.currentPlayer && !gameState.winner) {
-          // Right-click drag uses right card (index 1)
-          const cardIndex = 1;
+      const isRightDrag = e.button === 2;
+      const cardIndex = isRightDrag ? 1 : 0; // Right = card 1, Left = card 0
 
-          // Update game state to select the card for consistent highlighting
-          if (onCardSelect) {
-            onCardSelect(cardIndex);
-          }
+      if (
+        piece.player === gameStateRef.current.currentPlayer &&
+        !gameStateRef.current.winner
+      ) {
+        // Update game state to select the card for consistent highlighting
+        if (onCardSelect) {
+          onCardSelect(cardIndex);
+        }
 
-          // Mock a drag event by setting the dragged piece data directly
-          setDraggedPieceData({
+        setDragState({
+          isDragging: true,
+          draggedPiece: {
             position,
             piece,
             cardIndex,
-          });
-          setIsDragging(true);
-          setIsRightDragging(true);
-
-          // Store the right drag start info for later use
-          setRightDragStart({
-            pieceId: piece.id,
-            position,
-            piece,
-          });
-        }
+          },
+          dragPosition: { x: e.clientX, y: e.clientY },
+          isRightDrag,
+        });
       }
     },
-    []
+    [onCardSelect]
   );
 
-  // Handle mouse move for right-click drag
+  // Handle mouse move for drag
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
-      if (isRightDragging && rightDragStart) {
-        // Update the drag position for the overlay
-        setRightDragPosition({ x: e.clientX, y: e.clientY });
+      if (dragState.isDragging) {
+        setDragState((prev) => ({
+          ...prev,
+          dragPosition: { x: e.clientX, y: e.clientY },
+        }));
       }
     },
-    [isRightDragging, rightDragStart]
+    [dragState.isDragging]
   );
 
-  // Handle mouse up for right-click drag
+  // Handle mouse up for drag end
   const handleMouseUp = useCallback(
     (e: MouseEvent) => {
-      if (isRightDragging && rightDragStart) {
+      if (dragState.isDragging && dragState.draggedPiece) {
         // Find the cell under the mouse
         const element = document.elementFromPoint(e.clientX, e.clientY);
 
@@ -124,11 +116,17 @@ export default function GameBoard({
               const targetRow = parseInt(parts[1]);
               const targetCol = parseInt(parts[2]);
 
+              // Use the current gameState from ref to avoid stale closure issues
+              const currentPlayer = gameStateRef.current.currentPlayer;
+              const currentBoard = gameStateRef.current.board;
+              const currentPlayerCards =
+                gameStateRef.current.players[currentPlayer].cards;
+
               // Check if it's a valid move using the existing possibleMoves logic
               const possibleMoves = getPossibleMoves(
-                rightDragStart.piece,
-                gameState.players[gameState.currentPlayer].cards[1],
-                gameState.board
+                dragState.draggedPiece.piece,
+                currentPlayerCards[dragState.draggedPiece.cardIndex],
+                currentBoard
               );
 
               const isValidMove = possibleMoves.some(
@@ -137,26 +135,31 @@ export default function GameBoard({
               );
 
               if (isValidMove && onPieceMove) {
-                onPieceMove(rightDragStart.position, [targetRow, targetCol], 1);
+                onPieceMove(
+                  dragState.draggedPiece.position,
+                  [targetRow, targetCol],
+                  dragState.draggedPiece.cardIndex
+                );
               }
             }
           }
         }
 
-        // Reset right drag state
-        setIsRightDragging(false);
-        setRightDragStart(null);
-        setRightDragPosition(null);
-        setDraggedPieceData(null);
-        setIsDragging(false);
+        // Reset drag state
+        setDragState({
+          isDragging: false,
+          draggedPiece: null,
+          dragPosition: null,
+          isRightDrag: false,
+        });
       }
     },
-    [isRightDragging, rightDragStart, gameState, onPieceMove]
+    [dragState.isDragging, dragState.draggedPiece, onPieceMove]
   );
 
-  // Set up global event listeners for right-click drag
+  // Set up global event listeners for drag
   useEffect(() => {
-    if (isRightDragging) {
+    if (dragState.isDragging) {
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
 
@@ -165,26 +168,18 @@ export default function GameBoard({
         document.removeEventListener("mouseup", handleMouseUp);
       };
     }
-  }, [isRightDragging, handleMouseMove, handleMouseUp]);
-
-  // Configure sensors to handle left mouse button only
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 5, // Start dragging after 5px movement
-      },
-    })
-  );
+  }, [dragState.isDragging, handleMouseMove, handleMouseUp]);
 
   const handleCellClick = (row: number, col: number) => {
     // Don't trigger click if we're dragging
-    if (isDragging) return;
+    if (dragState.isDragging) return;
     onPieceClick([row, col]);
   };
 
   // Calculate possible moves when both piece and card are selected OR when dragging
   const possibleMoves: [number, number][] = (() => {
-    const piecePosition = draggedPieceData?.position || gameState.selectedPiece;
+    const piecePosition =
+      dragState.draggedPiece?.position || gameState.selectedPiece;
     if (!piecePosition) return [];
 
     const [row, col] = piecePosition;
@@ -201,107 +196,6 @@ export default function GameBoard({
     return getPossibleMoves(piece, selectedCard, gameState.board);
   })();
 
-  const handleDragStart = useCallback(
-    (event: DragStartEvent) => {
-      const { active } = event;
-      const pieceId = active.id as string;
-
-      // Find the piece by its unique ID
-      let foundPiece: Piece | null = null;
-      let foundPosition: [number, number] | null = null;
-
-      // Search through the board to find the piece with this ID
-      for (let row = 0; row < 5; row++) {
-        for (let col = 0; col < 5; col++) {
-          const piece = gameState.board[row][col];
-          if (piece && piece.id === pieceId) {
-            foundPiece = piece;
-            foundPosition = [row, col];
-            break;
-          }
-        }
-        if (foundPiece) break;
-      }
-
-      if (!foundPiece || !foundPosition) {
-        return;
-      }
-
-      if (foundPiece.player !== gameState.currentPlayer || gameState.winner) {
-        return;
-      }
-
-      // Left-click drag uses left card (index 0)
-      const cardIndex = 0;
-
-      // Update game state to select the card for consistent highlighting
-      if (onCardSelect) {
-        onCardSelect(cardIndex);
-      }
-
-      setDraggedPieceData({
-        position: foundPosition,
-        piece: foundPiece,
-        cardIndex,
-      });
-      setIsDragging(true);
-    },
-    [gameState, onCardSelect]
-  );
-
-  const handleDragEnd = useCallback(
-    (event: DragEndEvent) => {
-      const { over } = event;
-
-      if (!draggedPieceData || !over) {
-        setDraggedPieceData(null);
-        setIsDragging(false);
-        return;
-      }
-
-      const targetId = over.id as string;
-
-      // Check if dropping on a valid cell
-      if (targetId.startsWith("cell-")) {
-        const parts = targetId.split("-");
-        if (parts.length !== 3 || parts[0] !== "cell") {
-          return;
-        }
-
-        const targetRow = parseInt(parts[1]);
-        const targetCol = parseInt(parts[2]);
-
-        // Validate target position
-        if (
-          isNaN(targetRow) ||
-          isNaN(targetCol) ||
-          targetRow < 0 ||
-          targetRow >= 5 ||
-          targetCol < 0 ||
-          targetCol >= 5
-        ) {
-          return;
-        }
-
-        const isValidDrop = possibleMoves.some(
-          ([moveRow, moveCol]) => moveRow === targetRow && moveCol === targetCol
-        );
-
-        if (isValidDrop && onPieceMove) {
-          onPieceMove(
-            draggedPieceData.position,
-            [targetRow, targetCol],
-            draggedPieceData.cardIndex
-          );
-        }
-      }
-
-      setDraggedPieceData(null);
-      setIsDragging(false);
-    },
-    [draggedPieceData, possibleMoves, onPieceMove]
-  );
-
   const renderPiece = (
     piece: Piece | null,
     isSelected: boolean = false,
@@ -313,9 +207,9 @@ export default function GameBoard({
     const canDrag =
       piece.player === gameState.currentPlayer && !gameState.winner;
     const isDraggedPiece =
-      isDragging &&
-      draggedPieceData?.position[0] === row &&
-      draggedPieceData?.position[1] === col;
+      dragState.isDragging &&
+      dragState.draggedPiece?.position[0] === row &&
+      dragState.draggedPiece?.position[1] === col;
 
     return (
       <DraggablePiece
@@ -326,97 +220,83 @@ export default function GameBoard({
         canDrag={canDrag}
         isDraggedPiece={isDraggedPiece}
         selectedCardIndex={gameState.selectedCard ?? undefined}
-        onRightMouseDown={handleRightMouseDown}
+        onDragStart={handleDragStart}
       />
     );
   };
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
+    <div
+      className="neoprene-mat scroll-texture p-8 border border-stone-300 shadow-2xl"
+      onContextMenu={handleContextMenu}
     >
-      <div
-        className="neoprene-mat scroll-texture p-8 border border-stone-300 shadow-2xl"
-        onContextMenu={handleContextMenu}
-      >
-        <div className="grid grid-cols-5 gap-2 bg-stone-100 p-4 border border-stone-200 shadow-inner ink-wash">
-          {Array.from({ length: 5 }, (_, row) =>
-            Array.from({ length: 5 }, (_, col) => {
-              const piece = gameState.board[row][col];
-              const isRedTempleArch = isTempleArch(row, col, "red");
-              const isBlueTempleArch = isTempleArch(row, col, "blue");
-              const isSelected =
-                gameState.selectedPiece?.[0] === row &&
-                gameState.selectedPiece?.[1] === col;
-              const isPossibleMove = possibleMoves.some(
-                ([moveRow, moveCol]) => moveRow === row && moveCol === col
-              );
+      <div className="grid grid-cols-5 gap-2 bg-stone-100 p-4 border border-stone-200 shadow-inner ink-wash">
+        {Array.from({ length: 5 }, (_, row) =>
+          Array.from({ length: 5 }, (_, col) => {
+            const piece = gameState.board[row][col];
+            const isRedTempleArch = isTempleArch(row, col, "red");
+            const isBlueTempleArch = isTempleArch(row, col, "blue");
+            const isSelected =
+              gameState.selectedPiece?.[0] === row &&
+              gameState.selectedPiece?.[1] === col;
+            const isPossibleMove = possibleMoves.some(
+              ([moveRow, moveCol]) => moveRow === row && moveCol === col
+            );
 
-              return (
-                <DroppableCell
-                  key={`${row}-${col}`}
-                  row={row}
-                  col={col}
-                  isPossibleMove={isPossibleMove}
-                  isSelected={isSelected}
-                  isRedTempleArch={isRedTempleArch}
-                  isBlueTempleArch={isBlueTempleArch}
-                  isDragging={isDragging}
-                  dragCardIndex={draggedPieceData?.cardIndex}
-                  onClick={() => handleCellClick(row, col)}
-                  onKeyDown={(e) =>
-                    e.key === "Enter" && handleCellClick(row, col)
-                  }
-                >
-                  {piece && renderPiece(piece, isSelected, row, col)}
-                </DroppableCell>
-              );
-            })
-          )}
-        </div>
+            return (
+              <DroppableCell
+                key={`${row}-${col}`}
+                row={row}
+                col={col}
+                isPossibleMove={isPossibleMove}
+                isSelected={isSelected}
+                isRedTempleArch={isRedTempleArch}
+                isBlueTempleArch={isBlueTempleArch}
+                isDragging={dragState.isDragging}
+                dragCardIndex={dragState.draggedPiece?.cardIndex}
+                onClick={() => handleCellClick(row, col)}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && handleCellClick(row, col)
+                }
+              >
+                {piece && renderPiece(piece, isSelected, row, col)}
+              </DroppableCell>
+            );
+          })
+        )}
       </div>
 
-      <DndDragOverlay>
-        {draggedPieceData && (
-          <DragOverlay
-            piece={draggedPieceData.piece}
-            cardIndex={gameState.selectedCard ?? 0}
-          />
-        )}
-      </DndDragOverlay>
-
-      {/* Custom overlay for right-click drag */}
-      {isRightDragging && rightDragStart && rightDragPosition && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            pointerEvents: "none",
-            zIndex: 1000,
-          }}
-        >
+      {/* Custom drag overlay */}
+      {dragState.isDragging &&
+        dragState.draggedPiece &&
+        dragState.dragPosition && (
           <div
             style={{
-              position: "absolute",
-              left: rightDragPosition.x,
-              top: rightDragPosition.y,
-              transform: "translate(-50%, -50%)",
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
               pointerEvents: "none",
+              zIndex: 1000,
             }}
           >
-            <DragOverlay
-              piece={rightDragStart.piece}
-              cardIndex={gameState.selectedCard ?? 1}
-            />
+            <div
+              style={{
+                position: "absolute",
+                left: dragState.dragPosition.x,
+                top: dragState.dragPosition.y,
+                transform: "translate(-50%, -50%)",
+                pointerEvents: "none",
+              }}
+            >
+              <DragOverlay
+                piece={dragState.draggedPiece.piece}
+                cardIndex={dragState.draggedPiece.cardIndex}
+              />
+            </div>
           </div>
-        </div>
-      )}
-    </DndContext>
+        )}
+    </div>
   );
 }

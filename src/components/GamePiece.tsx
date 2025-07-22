@@ -2,8 +2,6 @@
 
 import { motion } from "framer-motion";
 import { Piece } from "@/types/game";
-import { useDraggable } from "@dnd-kit/core";
-import { CSS } from "@dnd-kit/utilities";
 
 // Draggable piece component
 interface DraggablePieceProps {
@@ -14,7 +12,7 @@ interface DraggablePieceProps {
   canDrag: boolean;
   isDraggedPiece: boolean;
   selectedCardIndex?: number;
-  onRightMouseDown?: (
+  onDragStart: (
     e: React.MouseEvent,
     piece: Piece,
     position: [number, number]
@@ -52,32 +50,13 @@ export function DraggablePiece({
   canDrag,
   isDraggedPiece,
   selectedCardIndex,
-  onRightMouseDown,
+  onDragStart,
 }: DraggablePieceProps) {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: piece.id,
-    data: {
-      row,
-      col,
-      piece,
-    },
-  });
-
   const isRed = piece.player === "red";
   const isMaster = piece.isMaster;
 
-  const style = transform
-    ? {
-        transform: CSS.Translate.toString(transform),
-      }
-    : undefined;
-
   return (
     <motion.div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
       className={`
         w-12 h-12 rounded-full border-2 flex items-center justify-center
         ${
@@ -124,8 +103,8 @@ export function DraggablePiece({
         e.preventDefault();
       }}
       onMouseDown={(e) => {
-        if (e.button === 2 && onRightMouseDown) {
-          onRightMouseDown(e, piece, [row, col]);
+        if (canDrag && (e.button === 0 || e.button === 2)) {
+          onDragStart(e, piece, [row, col]);
         }
       }}
     >

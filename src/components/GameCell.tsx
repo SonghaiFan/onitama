@@ -1,5 +1,4 @@
-import { useDroppable } from "@dnd-kit/core";
-// Droppable cell component
+// Cell component for the game board
 interface DroppableCellProps {
   row: number;
   col: number;
@@ -26,10 +25,6 @@ export function DroppableCell({
   onClick,
   onKeyDown,
 }: DroppableCellProps) {
-  const { setNodeRef, isOver } = useDroppable({
-    id: `cell-${row}-${col}`,
-  });
-
   const TempleArchIcon = (isRedTempleArch || isBlueTempleArch) && (
     <span
       className={`
@@ -45,7 +40,6 @@ export function DroppableCell({
 
   return (
     <div
-      ref={setNodeRef}
       data-cell-id={`cell-${row}-${col}`}
       className={`
         w-16 h-16 border border-stone-300 flex items-center justify-center cursor-pointer
@@ -68,7 +62,6 @@ export function DroppableCell({
             ? "ring-4 ring-emerald-300 bg-emerald-100"
             : ""
         }
-        ${isOver ? "ring-2 ring-blue-400 bg-blue-50 scale-105" : ""}
       `}
     >
       {/* Temple arch text floats underneath content */}
