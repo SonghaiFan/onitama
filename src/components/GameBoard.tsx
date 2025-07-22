@@ -15,7 +15,8 @@ import {
   closestCenter,
   DragOverlay as DndDragOverlay,
 } from "@dnd-kit/core";
-import { DraggablePiece, DroppableCell, DragOverlay } from "./GamePiece";
+import { DraggablePiece, DragOverlay } from "./GamePiece";
+import { DroppableCell } from "./GameCell";
 
 interface GameBoardProps {
   gameState: GameState;
@@ -399,9 +400,6 @@ export default function GameBoard({
                     )}
 
                     {piece && renderPiece(piece, isSelected, row, col)}
-
-                    {/* Show possible move indicator */}
-                    {/* Removed animated circle - colored cell background is sufficient */}
                   </AnimatePresence>
                 </DroppableCell>
               );
