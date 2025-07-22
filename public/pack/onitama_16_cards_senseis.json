@@ -1,0 +1,198 @@
+{
+  "metadata": {
+    "name": "Onitama: Sensei’s Path",
+    "description": " 16 Cards Expansion for Onitama. Let go of the illusion that your Art is superior, that your studies are complete! Take up the Sensei’s Path, and your path towards the true Art is just beginning.",
+    "author": "the Scroll of Onitama",
+    "version": "1.0.0"
+  },
+  "cards": [
+    {
+      "id": "bear",
+      "name": { "en": "Bear", "hu": "Medve", "zh": "熊", "ja": "熊" },
+      "color": "#8D5524",
+      "moves": [
+        { "x": 0, "y": 1 },
+        { "x": -1, "y": 1 },
+        { "x": 1, "y": -1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "dog",
+      "name": { "en": "Dog", "hu": "Kutya", "zh": "狗", "ja": "犬" },
+      "color": "#BCAAA4",
+      "moves": [
+        { "x": -1, "y": 1 },
+        { "x": -1, "y": 0 },
+        { "x": -1, "y": -1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "giraffe",
+      "name": { "en": "Giraffe", "hu": "Zsiráf", "zh": "长颈鹿", "ja": "麟麒" },
+      "color": "#E2C275",
+      "moves": [
+        { "x": -2, "y": 1 },
+        { "x": 2, "y": 1 },
+        { "x": 0, "y": -1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "fox",
+      "name": { "en": "Fox", "hu": "Róka", "zh": "狐", "ja": "狐" },
+      "color": "#E25822",
+      "moves": [
+        { "x": 1, "y": 1 },
+        { "x": 1, "y": 0 },
+        { "x": 1, "y": -1 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "iguana",
+      "name": { "en": "Iguana", "hu": "Iguána", "zh": "蜥蜴", "ja": "鬣蜥" },
+      "color": "#6AB187",
+      "moves": [
+        { "x": -2, "y": 1 },
+        { "x": 0, "y": 1 },
+        { "x": 1, "y": -1 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "kirin",
+      "name": { "en": "Kirin", "hu": "Kirin", "zh": "麒麟", "ja": "麒麟" },
+      "color": "#D9BF77",
+      "moves": [
+        { "x": -1, "y": 2 },
+        { "x": 1, "y": 2 },
+        { "x": 0, "y": -1 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "mouse",
+      "name": { "en": "Mouse", "hu": "Egér", "zh": "鼠", "ja": "老鼠" },
+      "color": "#C0C0C0",
+      "moves": [
+        { "x": 1, "y": 0 },
+        { "x": -1, "y": -1 },
+        { "x": 0, "y": 1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "otter",
+      "name": { "en": "Otter", "hu": "Vidra", "zh": "獭", "ja": "獺" },
+      "color": "#A1887F",
+      "moves": [
+        { "x": -1, "y": 1 },
+        { "x": 2, "y": 0 },
+        { "x": 1, "y": -1 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "panda",
+      "name": { "en": "Panda", "hu": "Panda", "zh": "熊猫", "ja": "熊猫" },
+      "color": "#FFD700",
+      "moves": [
+        { "x": 0, "y": 1 },
+        { "x": 1, "y": 1 },
+        { "x": -1, "y": -1 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "phoenix",
+      "name": { "en": "Phoenix", "hu": "Főnix", "zh": "凤", "ja": "鳳" },
+      "color": "#FFB300",
+      "moves": [
+        { "x": 1, "y": 1 },
+        { "x": 2, "y": 0 },
+        { "x": -1, "y": 1 },
+        { "x": -2, "y": 0 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "rat",
+      "name": { "en": "Rat", "hu": "Patkány", "zh": "鼠", "ja": "鼠" },
+      "color": "#A9A9A9",
+      "moves": [
+        { "x": 1, "y": -1 },
+        { "x": 0, "y": 1 },
+        { "x": -1, "y": 0 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "sable",
+      "name": {
+        "en": "Sable",
+        "hu": "Vadászgörény",
+        "zh": "貂",
+        "ja": "貂黑"
+      },
+      "color": "#708090",
+      "moves": [
+        { "x": 1, "y": 1 },
+        { "x": -2, "y": 0 },
+        { "x": -1, "y": -1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "sea_snake",
+      "name": {
+        "en": "Sea Snake",
+        "hu": "Tengeri kígyó",
+        "zh": "海蛇",
+        "ja": "海兎"
+      },
+      "color": "#3B8686",
+      "moves": [
+        { "x": 0, "y": 1 },
+        { "x": 2, "y": 0 },
+        { "x": -1, "y": -1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "raccoon",
+      "name": { "en": " Raccoon", "hu": "Mosómedve ", "zh": "狸", "ja": "狸" },
+      "color": "#D2B48C",
+      "moves": [
+        { "x": 0, "y": 1 },
+        { "x": 2, "y": 1 },
+        { "x": -1, "y": -1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "turtle",
+      "name": { "en": "Turtle", "hu": "Teknős", "zh": "龟", "ja": "亀" },
+      "color": "#4ECDC4",
+      "moves": [
+        { "x": 1, "y": -1 },
+        { "x": 2, "y": 0 },
+        { "x": -1, "y": 1 },
+        { "x": -2, "y": 0 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "viper",
+      "name": { "en": "Viper", "hu": "Vipera", "zh": "毒蛇", "ja": "蝮" },
+      "color": "#6E2C00",
+      "moves": [
+        { "x": 0, "y": 1 },
+        { "x": -2, "y": 0 },
+        { "x": 1, "y": -1 }
+      ],
+      "firstPlayerColor": "red"
+    }
+  ]
+}

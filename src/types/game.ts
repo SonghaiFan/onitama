@@ -14,7 +14,7 @@ export interface Move {
 
 export interface MoveCard {
   name: string;
-  chineseName?: string;
+  displayName?: string;
   moves: Move[];
   color: Player;
 }

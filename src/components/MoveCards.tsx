@@ -98,7 +98,7 @@ const Card = React.memo(
           } border border-stone-300`}
         >
           {/* Chinese Character Background */}
-          {card.chineseName && (
+          {card.displayName && (
             <div
               className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden"
               style={{
@@ -106,7 +106,7 @@ const Card = React.memo(
               }}
             >
               <span className="text-6xl sm:text-7xl lg:text-8xl font-light text-stone-200/15 zen-text select-none">
-                {card.chineseName}
+                {card.displayName}
               </span>
             </div>
           )}
@@ -120,7 +120,7 @@ const Card = React.memo(
           <div className="relative z-10">
             <div className="text-xs font-light text-center mb-2 sm:mb-3 text-stone-800 bg-stone-100/90 py-1 px-1 sm:px-2 border border-stone-200 backdrop-blur-sm">
               <div className="zen-text font-medium">
-                {card.chineseName || card.name}
+                {card.displayName || card.name}
               </div>
               <div className="text-[10px] text-stone-600 mt-0.5">
                 {card.name}

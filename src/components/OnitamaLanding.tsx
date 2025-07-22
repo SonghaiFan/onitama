@@ -4,9 +4,34 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import OnitamaGame from "./OnitamaGame";
 
+type CardPack = "normal" | "senseis";
+
 export default function OnitamaLanding() {
   const [showGame, setShowGame] = useState(false);
+  const [selectedPacks, setSelectedPacks] = useState<Set<CardPack>>(
+    new Set(["normal"])
+  );
   const gameRef = useRef<{ resetGame: () => void }>(null);
+
+  const togglePack = (pack: CardPack) => {
+    const newPacks = new Set(selectedPacks);
+    if (newPacks.has(pack)) {
+      newPacks.delete(pack);
+      // Ensure at least one pack is always selected
+      if (newPacks.size === 0) {
+        newPacks.add("normal");
+      }
+    } else {
+      newPacks.add(pack);
+    }
+    setSelectedPacks(newPacks);
+  };
+
+  const getSelectedPackForGame = (): CardPack => {
+    // For now, use the first selected pack for the game
+    // In the future, this could combine cards from multiple packs
+    return Array.from(selectedPacks)[0];
+  };
 
   if (showGame) {
     return (
@@ -38,7 +63,7 @@ export default function OnitamaLanding() {
             </div>
           </div>
           <div className="zen-card p-8">
-            <OnitamaGame ref={gameRef} />
+            <OnitamaGame ref={gameRef} cardPack={getSelectedPackForGame()} />
           </div>
         </div>
       </div>
@@ -63,10 +88,71 @@ export default function OnitamaLanding() {
           </div>
           <p className="text-2xl text-stone-600 mb-16 font-light tracking-wide leading-relaxed zen-text">
             形意棋{" "}
-            <span className="text-lg text-stone-500">
-              - 意志與策略的對弈
-            </span>
+            <span className="text-lg text-stone-500">- 意志與策略的對弈</span>
           </p>
+
+          {/* Card Pack Selection */}
+          <div className="mb-12">
+            <h3 className="text-lg text-stone-700 mb-6 font-light tracking-wide zen-text">
+              選擇卡牌包
+            </h3>
+            <div className="flex justify-center space-x-8">
+              <button
+                onClick={() => togglePack("normal")}
+                className={`relative zen-card border-2 px-8 py-6 transition-all duration-500 hover:shadow-xl hover:-translate-y-2 tracking-wide font-light zen-text focus:focus-zen overflow-hidden ${
+                  selectedPacks.has("normal")
+                    ? "border-stone-600 text-stone-800 bg-gradient-to-br from-stone-50 to-stone-100 shadow-lg scale-105"
+                    : "border-stone-300 text-stone-600 hover:border-stone-500 hover:bg-stone-50"
+                }`}
+              >
+                {/* Selection indicator */}
+                {selectedPacks.has("normal") && (
+                  <div className="absolute top-0 right-0 w-0 h-0 border-l-[20px] border-l-transparent border-t-[20px] border-t-stone-600"></div>
+                )}
+
+                {/* Hover effect overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full transition-transform duration-700 group-hover:translate-x-full"></div>
+
+                <div className="text-center relative z-10">
+                  <div className="text-lg font-medium mb-2">標準包</div>
+                  <div className="text-sm text-stone-500 mb-3">
+                    16張經典卡牌
+                  </div>
+                  <div className="text-xs text-stone-400">
+                    {selectedPacks.has("normal") ? "✓ 已選擇" : "點擊選擇"}
+                  </div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => togglePack("senseis")}
+                className={`relative zen-card border-2 px-8 py-6 transition-all duration-500 hover:shadow-xl hover:-translate-y-2 tracking-wide font-light zen-text focus:focus-zen overflow-hidden ${
+                  selectedPacks.has("senseis")
+                    ? "border-stone-600 text-stone-800 bg-gradient-to-br from-stone-50 to-stone-100 shadow-lg scale-105"
+                    : "border-stone-300 text-stone-600 hover:border-stone-500 hover:bg-stone-50"
+                }`}
+              >
+                {/* Selection indicator */}
+                {selectedPacks.has("senseis") && (
+                  <div className="absolute top-0 right-0 w-0 h-0 border-l-[20px] border-l-transparent border-t-[20px] border-t-stone-600"></div>
+                )}
+
+                {/* Hover effect overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full transition-transform duration-700 group-hover:translate-x-full"></div>
+
+                <div className="text-center relative z-10">
+                  <div className="text-lg font-medium mb-2">大師之路</div>
+                  <div className="text-sm text-stone-500 mb-3">
+                    16張進階卡牌
+                  </div>
+                  <div className="text-xs text-stone-400">
+                    {selectedPacks.has("senseis") ? "✓ 已選擇" : "點擊選擇"}
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+
           <button
             onClick={() => setShowGame(true)}
             className="zen-card border border-stone-300 text-stone-800 text-lg font-light py-6 px-12 rounded-none transition-all duration-300 hover:shadow-xl hover:-translate-y-1 tracking-wider zen-text focus:focus-zen"

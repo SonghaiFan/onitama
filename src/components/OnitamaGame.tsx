@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useImperativeHandle,
   forwardRef,
+  useEffect,
 } from "react";
 import GameBoard from "./GameBoard";
 import MoveCards from "./MoveCards";
@@ -14,11 +15,36 @@ import {
   isValidMove,
   executeMove,
   createNewGame,
+  createNewGameAsync,
 } from "@/utils/gameLogic";
 
-const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
-  function OnitamaGame(props, ref) {
+interface OnitamaGameProps {
+  cardPack?: "normal" | "senseis";
+}
+
+const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
+  function OnitamaGame({ cardPack = "normal" }, ref) {
     const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Load the appropriate card pack when component mounts or cardPack changes
+    useEffect(() => {
+      const loadGame = async () => {
+        setIsLoading(true);
+        try {
+          const newGameState = await createNewGameAsync(cardPack);
+          setGameState(newGameState);
+        } catch (error) {
+          console.error("Failed to load card pack:", error);
+          // Fallback to normal game state
+          setGameState(INITIAL_GAME_STATE);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      loadGame();
+    }, [cardPack]);
 
     const handlePieceClick = useCallback(
       (position: [number, number]) => {
@@ -131,9 +157,18 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
       [gameState]
     );
 
-    const resetGame = useCallback(() => {
-      setGameState(createNewGame());
-    }, []);
+    const resetGame = useCallback(async () => {
+      setIsLoading(true);
+      try {
+        const newGameState = await createNewGameAsync(cardPack);
+        setGameState(newGameState);
+      } catch (error) {
+        console.error("Failed to reset game:", error);
+        setGameState(INITIAL_GAME_STATE);
+      } finally {
+        setIsLoading(false);
+      }
+    }, [cardPack]);
 
     useImperativeHandle(ref, () => ({
       resetGame,
@@ -199,6 +234,17 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
         )}
       </div>
     );
+
+    if (isLoading) {
+      return (
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-stone-600 mx-auto mb-4"></div>
+            <p className="text-stone-600 font-light">載入卡牌包...</p>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div className="w-full watercolor-wash">

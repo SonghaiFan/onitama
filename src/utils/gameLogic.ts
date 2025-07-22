@@ -1,27 +1,124 @@
 import { GameState, MoveCard, Piece, Player, Move } from "@/types/game";
-import cardData from "./onitama_16_cards.json";
 
 // Convert card data from JSON format to our game format
 function convertCardToGameFormat(card: any): MoveCard {
   return {
     name: card.name.en,
-    chineseName: card.name.zh,
+    displayName: card.name.zh,
     moves: card.moves,
     color: card.firstPlayerColor === "red" ? "red" : "blue",
   };
 }
 
-// Convert all cards and store them
-export const ALL_ONITAMA_CARDS: MoveCard[] = cardData.cards.map(
-  convertCardToGameFormat
-);
+// Fallback cards in case loading fails
+const FALLBACK_CARDS: MoveCard[] = [
+  {
+    name: "Ox",
+    displayName: "牛",
+    moves: [
+      { x: 0, y: 1 },
+      { x: 0, y: -1 },
+      { x: 1, y: 0 },
+    ],
+    color: "blue",
+  },
+  {
+    name: "Horse",
+    displayName: "马",
+    moves: [
+      { x: 0, y: 1 },
+      { x: -1, y: 0 },
+      { x: 0, y: -1 },
+    ],
+    color: "red",
+  },
+  {
+    name: "Crab",
+    displayName: "蟹",
+    moves: [
+      { x: -2, y: 0 },
+      { x: 0, y: 1 },
+      { x: 2, y: 0 },
+    ],
+    color: "blue",
+  },
+  {
+    name: "Cobra",
+    displayName: "蛇",
+    moves: [
+      { x: 1, y: 1 },
+      { x: -1, y: 0 },
+      { x: 1, y: -1 },
+    ],
+    color: "red",
+  },
+  {
+    name: "Rabbit",
+    displayName: "兔",
+    moves: [
+      { x: 2, y: 0 },
+      { x: 1, y: 1 },
+      { x: -1, y: -1 },
+    ],
+    color: "blue",
+  },
+];
+
+// Function to load card pack data
+async function loadCardPack(
+  packName: "normal" | "senseis"
+): Promise<MoveCard[]> {
+  try {
+    const response = await fetch(`/pack/onitama_16_cards_${packName}.json`);
+    const cardData = await response.json();
+    return cardData.cards.map(convertCardToGameFormat);
+  } catch (error) {
+    console.error(`Failed to load ${packName} card pack:`, error);
+    // Fallback to basic cards
+    return FALLBACK_CARDS;
+  }
+}
+
+// Cache for loaded card packs
+const cardPackCache: Record<string, MoveCard[]> = {};
+
+// Function to get cards for a specific pack
+async function getCardsForPack(
+  packName: "normal" | "senseis"
+): Promise<MoveCard[]> {
+  if (cardPackCache[packName]) {
+    return cardPackCache[packName];
+  }
+
+  const cards = await loadCardPack(packName);
+  cardPackCache[packName] = cards;
+  return cards;
+}
 
 // Function to randomly select 5 cards for a game
-function selectRandomCards(): {
+async function selectRandomCardsAsync(
+  cardPack: "normal" | "senseis" = "normal"
+): Promise<{
+  playerCards: MoveCard[];
+  sharedCard: MoveCard;
+}> {
+  const cards = await getCardsForPack(cardPack);
+  const shuffled = [...cards].sort(() => Math.random() - 0.5);
+  const selected = shuffled.slice(0, 5);
+
+  return {
+    playerCards: selected.slice(0, 4),
+    sharedCard: selected[4],
+  };
+}
+
+// Synchronous version for backward compatibility
+function selectRandomCards(cardPack: "normal" | "senseis" = "normal"): {
   playerCards: MoveCard[];
   sharedCard: MoveCard;
 } {
-  const shuffled = [...ALL_ONITAMA_CARDS].sort(() => Math.random() - 0.5);
+  // For now, use the fallback cards
+  const shuffled = [...FALLBACK_CARDS].sort(() => Math.random() - 0.5);
   const selected = shuffled.slice(0, 5);
 
   return {
@@ -104,8 +201,37 @@ function createInitialBoard(): (Piece | null)[][] {
 }
 
 // Generate initial game state with random cards
-function createInitialGameState(): GameState {
-  const { playerCards, sharedCard } = selectRandomCards();
+function createInitialGameState(
+  cardPack: "normal" | "senseis" = "normal"
+): GameState {
+  const { playerCards, sharedCard } = selectRandomCards(cardPack);
+
+  // Validate that we have valid cards
+  if (!sharedCard || !playerCards || playerCards.length < 4) {
+    console.error("Invalid card selection, using fallback");
+    // Use fallback cards
+    const fallbackCards = [...FALLBACK_CARDS];
+    const shuffled = fallbackCards.sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, 5);
+
+    return {
+      board: createInitialBoard(),
+      players: {
+        red: {
+          cards: [selected[0], selected[1]],
+        },
+        blue: {
+          cards: [selected[2], selected[3]],
+        },
+      },
+      sharedCard: selected[4],
+      currentPlayer: selected[4].color,
+      selectedPiece: null,
+      selectedCard: null,
+      winner: null,
+      gamePhase: "playing",
+    };
+  }
 
   // Determine starting player based on shared card color
   const startingPlayer = sharedCard.color;
@@ -132,8 +258,73 @@ function createInitialGameState(): GameState {
 export const INITIAL_GAME_STATE: GameState = createInitialGameState();
 
 // Function to create a new game with different random cards
-export function createNewGame(): GameState {
-  return createInitialGameState();
+export function createNewGame(
+  cardPack: "normal" | "senseis" = "normal"
+): GameState {
+  return createInitialGameState(cardPack);
+}
+
+// Async version for loading card packs
+export async function createNewGameAsync(
+  cardPack: "normal" | "senseis" = "normal"
+): Promise<GameState> {
+  try {
+    const { playerCards, sharedCard } = await selectRandomCardsAsync(cardPack);
+
+    // Validate that we have valid cards
+    if (!sharedCard || !playerCards || playerCards.length < 4) {
+      console.error("Invalid card selection from async load, using fallback");
+      throw new Error("Invalid card selection");
+    }
+
+    // Determine starting player based on shared card color
+    const startingPlayer = sharedCard.color;
+
+    return {
+      board: createInitialBoard(),
+      players: {
+        red: {
+          cards: [playerCards[0], playerCards[1]],
+        },
+        blue: {
+          cards: [playerCards[2], playerCards[3]],
+        },
+      },
+      sharedCard: sharedCard,
+      currentPlayer: startingPlayer,
+      selectedPiece: null,
+      selectedCard: null,
+      winner: null,
+      gamePhase: "playing",
+    };
+  } catch (error) {
+    console.error(
+      "Failed to create game with selected pack, using fallback:",
+      error
+    );
+    // Use fallback cards
+    const fallbackCards = [...FALLBACK_CARDS];
+    const shuffled = fallbackCards.sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, 5);
+
+    return {
+      board: createInitialBoard(),
+      players: {
+        red: {
+          cards: [selected[0], selected[1]],
+        },
+        blue: {
+          cards: [selected[2], selected[3]],
+        },
+      },
+      sharedCard: selected[4],
+      currentPlayer: selected[4].color,
+      selectedPiece: null,
+      selectedCard: null,
+      winner: null,
+      gamePhase: "playing",
+    };
+  }
 }
 
 export function isValidPosition(row: number, col: number): boolean {
@@ -164,9 +355,21 @@ export function getPossibleMoves(
   // Check each move in the card
   for (const move of card.moves) {
     // Apply move with direction based on player
-    // Red player moves "forward" (negative y), Blue player moves "backward" (positive y)
-    const targetRow = pieceRow + (piece.player === "red" ? -move.y : move.y);
-    const targetCol = pieceCol + move.x;
+    // All moves are from red player's perspective:
+    // - x: positive = right, negative = left
+    // - y: positive = forward (up for red, down for blue)
+    let targetRow: number;
+    let targetCol: number;
+
+    if (piece.player === "red") {
+      // Red player: y=1 means forward (up, negative row)
+      targetRow = pieceRow - move.y;
+      targetCol = pieceCol + move.x;
+    } else {
+      // Blue player: flip the moves (y=1 means forward, which is down for blue)
+      targetRow = pieceRow + move.y;
+      targetCol = pieceCol + move.x;
+    }
 
     // Check if move is valid
     if (isValidPosition(targetRow, targetCol)) {
@@ -205,10 +408,20 @@ export function applyMove(
   currentPlayer: Player
 ): (Piece | null)[][] {
   const [fx, fy] = from;
-  const [tx, ty] = [
-    fx + move.x,
-    fy + (currentPlayer === "red" ? -move.y : move.y),
-  ];
+
+  // Apply move with direction based on player (same logic as getPossibleMoves)
+  let tx: number;
+  let ty: number;
+
+  if (currentPlayer === "red") {
+    // Red player: y=1 means forward (up, negative row)
+    tx = fx + move.x;
+    ty = fy - move.y;
+  } else {
+    // Blue player: flip the moves (y=1 means forward, which is down for blue)
+    tx = fx + move.x;
+    ty = fy + move.y;
+  }
 
   // Check if move is valid
   if (!isValidPosition(tx, ty)) return board;
