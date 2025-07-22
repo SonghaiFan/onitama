@@ -106,6 +106,20 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
       [gameState]
     );
 
+    const handlePieceMove = useCallback(
+      (from: [number, number], to: [number, number]) => {
+        if (gameState.winner || gameState.selectedCard === null) return;
+
+        const selectedCard = gameState.players[gameState.currentPlayer].cards[gameState.selectedCard];
+        
+        if (isValidMove(from, to, selectedCard, gameState.board)) {
+          const newGameState = executeMove(gameState, from, to, gameState.selectedCard);
+          setGameState(newGameState);
+        }
+      },
+      [gameState]
+    );
+
     const resetGame = useCallback(() => {
       setGameState(createNewGame());
     }, []);
@@ -122,7 +136,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
           <div className="flex items-center space-x-3">
             <div className="text-2xl">🏆</div>
             <span
-              className={`text-xl font-medium ${
+              className={`text-xl font-medium zen-text ${
                 gameState.winner === "red" ? "text-red-600" : "text-blue-600"
               }`}
             >
@@ -132,16 +146,16 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
         ) : (
           <>
             <div className="flex items-center space-x-2">
-              <span className="text-stone-600 font-light">當前回合:</span>
+              <span className="text-stone-600 font-light zen-text">當前回合:</span>
               <div
-                className={`w-4 h-4 rounded-full ${
+                className={`w-6 h-6 rounded-full animate-pulse shadow-lg ${
                   gameState.currentPlayer === "red"
-                    ? "bg-red-600"
-                    : "bg-blue-600"
+                    ? "bg-red-600 shadow-red-300"
+                    : "bg-blue-600 shadow-blue-300"
                 }`}
               ></div>
               <span
-                className={`font-medium ${
+                className={`font-bold text-lg zen-text ${
                   gameState.currentPlayer === "red"
                     ? "text-red-600"
                     : "text-blue-600"
@@ -150,24 +164,40 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
                 {gameState.currentPlayer === "red" ? "紅方" : "藍方"}
               </span>
             </div>
-            {gameState.selectedPiece && (
-              <div className="text-stone-500 text-sm">
-                已選棋子: ({gameState.selectedPiece[0]},{" "}
-                {gameState.selectedPiece[1]})
-              </div>
-            )}
+            <div className="flex items-center space-x-4 text-sm text-stone-500 zen-text">
+              {gameState.selectedPiece && (
+                <div className="flex items-center space-x-1">
+                  <span>已選棋子:</span>
+                  <span className="font-mono bg-stone-100 px-2 py-1 rounded">
+                    ({gameState.selectedPiece[0]}, {gameState.selectedPiece[1]})
+                  </span>
+                </div>
+              )}
+              {gameState.selectedCard !== null && (
+                <div className="flex items-center space-x-1">
+                  <span>已選卡牌:</span>
+                  <span className="font-mono bg-stone-100 px-2 py-1 rounded">
+                    #{gameState.selectedCard + 1}
+                  </span>
+                </div>
+              )}
+            </div>
           </>
         )}
       </div>
     );
 
     return (
-      <div className="w-full">
+      <div className="w-full watercolor-wash">
         <GameStatusSimple />
 
         <div className="game-layout-grid">
           <div style={{ gridArea: "board" }}>
-            <GameBoard gameState={gameState} onPieceClick={handlePieceClick} />
+            <GameBoard 
+              gameState={gameState} 
+              onPieceClick={handlePieceClick}
+              onPieceMove={handlePieceMove}
+            />
           </div>
 
           {/* CORRECTED: Passing the correct props to MoveCards */}

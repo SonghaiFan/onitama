@@ -25,13 +25,13 @@ export default function OnitamaLanding() {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => gameRef.current?.resetGame()}
-                className="zen-card border border-stone-400 text-stone-700 px-6 py-3 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 tracking-wide font-light"
+                className="zen-card border border-stone-400 text-stone-700 px-6 py-3 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 tracking-wide font-light zen-text focus:focus-zen"
               >
                 新局
               </button>
               <button
                 onClick={() => setShowGame(false)}
-                className="zen-card border border-stone-400 text-stone-700 px-6 py-3 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 tracking-wide font-light"
+                className="zen-card border border-stone-400 text-stone-700 px-6 py-3 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 tracking-wide font-light zen-text focus:focus-zen"
               >
                 ← 返回首頁
               </button>
@@ -61,12 +61,15 @@ export default function OnitamaLanding() {
               priority
             />
           </div>
-          <p className="text-2xl text-stone-600 mb-16 font-light tracking-wide leading-relaxed">
-            風の道 <span className="text-lg text-stone-500">- The Way of the Wind</span>
+          <p className="text-2xl text-stone-600 mb-16 font-light tracking-wide leading-relaxed zen-text">
+            形意棋{" "}
+            <span className="text-lg text-stone-500">
+              - 意志與策略的對弈
+            </span>
           </p>
           <button
             onClick={() => setShowGame(true)}
-            className="zen-card border border-stone-300 text-stone-800 text-lg font-light py-6 px-12 rounded-none transition-all duration-300 hover:shadow-xl hover:-translate-y-1 tracking-wider"
+            className="zen-card border border-stone-300 text-stone-800 text-lg font-light py-6 px-12 rounded-none transition-all duration-300 hover:shadow-xl hover:-translate-y-1 tracking-wider zen-text focus:focus-zen"
           >
             始める
           </button>
@@ -77,14 +80,14 @@ export default function OnitamaLanding() {
       <section className="py-32 bg-white">
         <div className="container mx-auto px-8 max-w-3xl">
           <div className="text-center mb-20">
-            <h2 className="text-4xl font-light text-stone-800 mb-4 tracking-wide">
+            <h2 className="text-4xl font-light text-stone-800 mb-4 tracking-wide zen-text">
               遊戲概覽
             </h2>
-            <div className="w-24 h-px bg-stone-300 mx-auto"></div>
+            <div className="brush-stroke mx-auto"></div>
           </div>
           <div className="space-y-16">
             <div className="text-center">
-              <p className="text-xl text-stone-600 mb-8 font-light leading-relaxed max-w-2xl mx-auto">
+              <p className="text-xl text-stone-600 mb-8 font-light leading-relaxed max-w-2xl mx-auto zen-text">
                 二人對弈的抽象策略遊戲，在5×5的棋盤上展開。如象棋般的智慧較量，
                 以獨特的移動卡牌系統創造無限變化。
               </p>
@@ -93,24 +96,30 @@ export default function OnitamaLanding() {
                   <div className="w-16 h-16 mx-auto mb-4 bg-stone-100 rounded-full flex items-center justify-center">
                     <span className="text-2xl text-stone-600">速</span>
                   </div>
-                  <span className="text-stone-700 font-light">15分鐘對局</span>
+                  <span className="text-stone-700 font-light zen-text">
+                    15分鐘對局
+                  </span>
                 </div>
                 <div className="text-center">
                   <div className="w-16 h-16 mx-auto mb-4 bg-stone-100 rounded-full flex items-center justify-center">
-                    <span className="text-2xl text-stone-600">智</span>
+                    <span className="text-2xl text-stone-600 zen-text">智</span>
                   </div>
-                  <span className="text-stone-700 font-light">深度策略</span>
+                  <span className="text-stone-700 font-light zen-text">
+                    深度策略
+                  </span>
                 </div>
                 <div className="text-center">
                   <div className="w-16 h-16 mx-auto mb-4 bg-stone-100 rounded-full flex items-center justify-center">
-                    <span className="text-2xl text-stone-600">勝</span>
+                    <span className="text-2xl text-stone-600 zen-text">勝</span>
                   </div>
-                  <span className="text-stone-700 font-light">雙重勝利</span>
+                  <span className="text-stone-700 font-light zen-text">
+                    雙重勝利
+                  </span>
                 </div>
               </div>
             </div>
-            <div className="zen-card p-12 mx-8">
-              <h3 className="text-2xl font-light text-stone-800 mb-8 text-center">
+            <div className="zen-card scroll-paper p-12 mx-8">
+              <h3 className="text-2xl font-light text-stone-800 mb-8 text-center zen-text">
                 勝利之道
               </h3>
               <div className="space-y-8">
@@ -147,13 +156,13 @@ export default function OnitamaLanding() {
       </section>
 
       {/* How to Play - Zen Scroll Style */}
-      <section className="py-32 bg-stone-25 watercolor-wash">
+      <section className="py-32 bg-stone-25 scroll-paper">
         <div className="container mx-auto px-8 max-w-4xl">
           <div className="text-center mb-24">
-            <h2 className="text-4xl font-light text-stone-800 mb-4 tracking-wide">
+            <h2 className="text-4xl font-light text-stone-800 mb-4 tracking-wide zen-text">
               遊戲方式
             </h2>
-            <div className="w-24 h-px bg-stone-300 mx-auto"></div>
+            <div className="brush-stroke mx-auto"></div>
           </div>
 
           {/* Setup */}
@@ -162,7 +171,7 @@ export default function OnitamaLanding() {
               <div className="w-12 h-12 bg-stone-200 rounded-full flex items-center justify-center mr-4">
                 <span className="text-stone-700 font-light">一</span>
               </div>
-              <h3 className="text-3xl font-light text-stone-800 tracking-wide">
+              <h3 className="text-3xl font-light text-stone-800 tracking-wide zen-text">
                 佈局
               </h3>
             </div>
@@ -171,8 +180,10 @@ export default function OnitamaLanding() {
                 <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <span className="text-2xl text-stone-600">棋</span>
                 </div>
-                <h4 className="font-medium text-stone-800 mb-4">棋盤與棋子</h4>
-                <p className="text-stone-600 font-light leading-relaxed">
+                <h4 className="font-medium text-stone-800 mb-4 zen-text">
+                  棋盤與棋子
+                </h4>
+                <p className="text-stone-600 font-light leading-relaxed zen-text">
                   5×5棋盤設有神殿。每人持1師傅(♔)及4學徒(♙)。
                 </p>
               </div>
@@ -321,15 +332,15 @@ export default function OnitamaLanding() {
       {/* Call to Action - Zen Minimalist */}
       <section className="py-32 bg-stone-900 text-white">
         <div className="container mx-auto px-8 text-center max-w-3xl">
-          <h2 className="text-4xl font-light mb-6 tracking-wide text-stone-100">
-            風之道を極める時が来ましたか？
+          <h2 className="text-4xl font-light mb-6 tracking-wide text-stone-100 zen-text">
+            準備好挑戰形意棋了嗎？
           </h2>
-          <p className="text-xl mb-12 text-stone-300 font-light leading-relaxed">
-            優雅な策略遊戲で自分を試してみてください
+          <p className="text-xl mb-12 text-stone-300 font-light leading-relaxed zen-text">
+            在這優雅的策略遊戲中磨練你的心智
           </p>
           <button
             onClick={() => setShowGame(true)}
-            className="zen-card border border-stone-400 text-stone-800 text-xl font-light py-6 px-16 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 tracking-widest"
+            className="zen-card border border-stone-400 text-stone-800 text-xl font-light py-6 px-16 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 tracking-widest zen-text focus:focus-zen"
           >
             挑戰開始
           </button>
@@ -339,9 +350,9 @@ export default function OnitamaLanding() {
       {/* Footer - Minimalist */}
       <footer className="bg-stone-50 py-16">
         <div className="container mx-auto px-8 text-center">
-          <div className="w-32 h-px bg-stone-300 mx-auto mb-6"></div>
-          <p className="text-stone-500 font-light tracking-wide">
-            鬼王 — 古代戰術的芸術を体験する
+          <div className="brush-stroke mx-auto mb-6"></div>
+          <p className="text-stone-500 font-light tracking-wide zen-text">
+            形意棋 — 古代智慧的現代演繹
           </p>
         </div>
       </footer>

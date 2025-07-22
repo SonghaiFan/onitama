@@ -44,18 +44,22 @@ const Card = React.memo(
       <motion.div
         style={{ gridArea }} // This is the key change!
         className={`
-          zen-card p-3 sm:p-4 border select-none w-32 md:w-36 lg:w-40
+          zen-card scroll-paper p-3 sm:p-4 border select-none w-32 md:w-36 lg:w-40 relative overflow-hidden
           ${
             isRed
-              ? "border-red-300"
+              ? "border-red-300 shadow-red-100"
               : isBlue
-              ? "border-blue-300"
+              ? "border-blue-300 shadow-blue-100"
               : "border-stone-300"
           }
           ${
-            isSelected ? "ring-2 ring-amber-400 border-amber-400 shadow-xl" : ""
+            isSelected
+              ? "ring-2 ring-amber-400 border-amber-400 shadow-xl shadow-amber-200/50"
+              : ""
           }
-          ${canInteract ? "cursor-pointer" : "cursor-default"}
+          ${canInteract ? "cursor-pointer hover:shadow-lg" : "cursor-default"}
+          ${!canInteract && !isShared ? "opacity-40 grayscale" : ""}
+          ${canInteract ? "focus:focus-zen" : ""}
         `}
         animate={{
           rotate: isRotated ? 180 : 0,
@@ -69,6 +73,8 @@ const Card = React.memo(
         }}
         whileTap={{ scale: canInteract ? 0.95 : 1 }}
         onClick={handleClick}
+        onKeyDown={(e) => e.key === "Enter" && canInteract && handleClick()}
+        tabIndex={canInteract ? 0 : -1}
         transition={{
           type: "spring",
           stiffness: 260,
@@ -77,105 +83,126 @@ const Card = React.memo(
       >
         {isShared && (
           <>
-            <motion.div
-              className="text-sm sm:text-lg font-light text-stone-800 mb-3 sm:mb-4 tracking-wide text-center"
-              transition={{ duration: 0.6 }}
-            >
-              共用牌
-            </motion.div>
-            <div className="w-8 sm:w-12 h-px bg-stone-300 mx-auto mb-4 sm:mb-6"></div>
+            <div className="text-sm sm:text-lg font-light text-stone-800 mb-3 sm:mb-4 tracking-wide text-center zen-text relative">
+              <span className="bg-white/80 px-2 py-1 rounded backdrop-blur-sm">
+                共用牌
+              </span>
+            </div>
+            <div className="brush-stroke mx-auto mb-4 sm:mb-6"></div>
           </>
         )}
 
         <div
-          className={`zen-card ${
+          className={`zen-card relative overflow-hidden ${
             isShared ? "p-2 sm:p-3" : "p-0"
           } border border-stone-300`}
         >
-          <div className="text-xs font-light text-center mb-2 sm:mb-3 text-stone-800 bg-stone-100/80 py-1 px-1 sm:px-2 border border-stone-200">
-            {card.name}
-          </div>
+          {/* Chinese Character Background */}
+          {card.chineseName && (
+            <div
+              className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden"
+              style={{
+                transform: isRotated ? "rotate(180deg)" : "rotate(0deg)",
+              }}
+            >
+              <span className="text-6xl sm:text-7xl lg:text-8xl font-light text-stone-200/15 zen-text select-none">
+                {card.chineseName}
+              </span>
+            </div>
+          )}
 
-          <div className="w-16 h-16 sm:w-18 sm:h-18 lg:w-20 lg:h-20 mx-auto bg-stone-100/90 border border-stone-300 grid grid-cols-5 gap-0.5 p-1">
-            {Array.from({ length: 5 }, (_, i) =>
-              Array.from({ length: 5 }, (_, j) => {
-                const actualI = isRotated ? 4 - i : i;
-                const actualJ = isRotated ? 4 - j : j;
+          {/* Decorative Corner Elements */}
+          <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-stone-300/50 pointer-events-none"></div>
+          <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-stone-300/50 pointer-events-none"></div>
+          <div className="absolute bottom-1 left-1 w-2 h-2 border-l border-b border-stone-300/50 pointer-events-none"></div>
+          <div className="absolute bottom-1 right-1 w-2 h-2 border-r border-b border-stone-300/50 pointer-events-none"></div>
 
-                if (actualI === 2 && actualJ === 2) {
+          <div className="relative z-10">
+            <div className="text-xs font-light text-center mb-2 sm:mb-3 text-stone-800 bg-stone-100/90 py-1 px-1 sm:px-2 border border-stone-200 backdrop-blur-sm">
+              <div className="zen-text font-medium">
+                {card.chineseName || card.name}
+              </div>
+              <div className="text-[10px] text-stone-600 mt-0.5">
+                {card.name}
+              </div>
+            </div>
+
+            <div className="w-16 h-16 sm:w-18 sm:h-18 lg:w-20 lg:h-20 mx-auto bg-stone-100/95 border border-stone-300 grid grid-cols-5 gap-0.5 p-1 backdrop-blur-sm shadow-inner">
+              {Array.from({ length: 5 }, (_, i) =>
+                Array.from({ length: 5 }, (_, j) => {
+                  const actualI = isRotated ? 4 - i : i;
+                  const actualJ = isRotated ? 4 - j : j;
+
+                  if (actualI === 2 && actualJ === 2) {
+                    return (
+                      <div
+                        key={`${i}-${j}`}
+                        className="w-2.5 h-2.5 sm:w-3 sm:h-3 border border-stone-400 bg-gradient-to-br from-stone-700 to-stone-900 flex items-center justify-center shadow-sm"
+                      ></div>
+                    );
+                  }
+
+                  const hasMove = card.moves.some((move) => {
+                    // All card moves are defined from red player's perspective
+                    // For blue cards or when blue player views them, we need to show the mirrored version
+                    let displayMove = move;
+                    if (isBlue && !isShared) {
+                      // Mirror the move for blue player's perspective
+                      displayMove = { x: move.x, y: -move.y };
+                    }
+
+                    const displayRow = 2 - displayMove.y;
+                    const displayCol = 2 + displayMove.x;
+                    return displayRow === actualI && displayCol === actualJ;
+                  });
+
                   return (
                     <div
                       key={`${i}-${j}`}
-                      className="w-2.5 h-2.5 sm:w-3 sm:h-3 border border-stone-300 bg-stone-800 flex items-center justify-center"
-                    >
-                      <span className="text-[8px] sm:text-[10px] text-stone-100">
-                        中
-                      </span>
-                    </div>
+                      className={`w-2.5 h-2.5 sm:w-3 sm:h-3 border border-stone-300 transition-colors ${
+                        hasMove
+                          ? isRed
+                            ? "bg-gradient-to-br from-red-500 to-red-700 shadow-sm"
+                            : isBlue
+                            ? "bg-gradient-to-br from-emerald-500 to-emerald-700 shadow-sm"
+                            : "bg-gradient-to-br from-amber-400 to-amber-600 shadow-sm"
+                          : "bg-stone-50 hover:bg-stone-100"
+                      }`}
+                    />
                   );
-                }
+                })
+              )}
+            </div>
 
-                const hasMove = card.moves.some((move) => {
-                  // All card moves are defined from red player's perspective
-                  // For blue cards or when blue player views them, we need to show the mirrored version
-                  let displayMove = move;
-                  if (isBlue && !isShared) {
-                    // Mirror the move for blue player's perspective
-                    displayMove = { x: move.x, y: -move.y };
-                  }
-
-                  const displayRow = 2 - displayMove.y;
-                  const displayCol = 2 + displayMove.x;
-                  return displayRow === actualI && displayCol === actualJ;
-                });
-
-                return (
-                  <div
-                    key={`${i}-${j}`}
-                    className={`w-2.5 h-2.5 sm:w-3 sm:h-3 border border-stone-300 ${
-                      hasMove
-                        ? isRed
-                          ? "bg-red-600"
-                          : isBlue
-                          ? "bg-emerald-600"
-                          : "bg-amber-500"
-                        : "bg-stone-50"
-                    }`}
-                  />
-                );
-              })
-            )}
-          </div>
-
-          <div className="flex justify-center mt-2 sm:mt-3">
-            <div
-              className={`w-6 h-1 ${
-                isRed
-                  ? "bg-red-600"
-                  : isBlue
-                  ? "bg-blue-600"
-                  : card.color === "red"
-                  ? "bg-red-600"
-                  : "bg-blue-600"
-              }`}
-            />
+            <div className="flex justify-center mt-2 sm:mt-3">
+              <div
+                className={`w-8 h-1.5 shadow-sm ${
+                  isRed
+                    ? "bg-gradient-to-r from-red-500 to-red-600"
+                    : isBlue
+                    ? "bg-gradient-to-r from-blue-500 to-blue-600"
+                    : card.color === "red"
+                    ? "bg-gradient-to-r from-red-500 to-red-600"
+                    : "bg-gradient-to-r from-blue-500 to-blue-600"
+                }`}
+              />
+            </div>
           </div>
         </div>
 
         {isShared && (
-          <motion.div
-            className="mt-6 text-xs text-stone-500 font-light text-center"
-            transition={{ duration: 0.6 }}
-          >
-            下一回合輪到
-            <span
-              className={`ml-1 ${
-                card.color === "red" ? "text-red-600" : "text-blue-600"
-              }`}
-            >
-              {card.color === "red" ? "紅方" : "藍方"}
-            </span>
-          </motion.div>
+          <div className="mt-6 text-xs text-stone-500 font-light text-center zen-text">
+            <div className="bg-white/60 px-2 py-1 rounded backdrop-blur-sm inline-block">
+              下一回合輪到
+              <span
+                className={`ml-1 zen-text font-medium ${
+                  card.color === "red" ? "text-red-600" : "text-blue-600"
+                }`}
+              >
+                {card.color === "red" ? "紅方" : "藍方"}
+              </span>
+            </div>
+          </div>
         )}
       </motion.div>
     );

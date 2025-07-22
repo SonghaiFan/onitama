@@ -5,6 +5,7 @@ import cardData from "./onitama_16_cards.json";
 function convertCardToGameFormat(card: any): MoveCard {
   return {
     name: card.name.en,
+    chineseName: card.name.zh,
     moves: card.moves,
     color: card.firstPlayerColor === "red" ? "red" : "blue",
   };
