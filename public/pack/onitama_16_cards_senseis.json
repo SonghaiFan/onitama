@@ -30,7 +30,7 @@
     },
     {
       "id": "giraffe",
-      "name": { "en": "Giraffe", "hu": "Zsiráf", "zh": "长颈鹿", "ja": "麟麒" },
+      "name": { "en": "Giraffe", "hu": "Zsiráf", "zh": "麟麒", "ja": "麟麒" },
       "color": "#E2C275",
       "moves": [
         { "x": -2, "y": 1 },

@@ -74,7 +74,6 @@ export function DraggablePiece({
         }
         font-bold text-xl
       `}
-      initial={{ scale: 0, rotate: -180 }}
       animate={{
         scale: isSelected ? 1.1 : isDraggedPiece ? 0.75 : 1,
         rotate: 0,

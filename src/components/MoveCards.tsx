@@ -3,6 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { MoveCard, Player } from "@/types/game";
+import { getArtName } from "../utils/getArtName";
 
 interface CardProps {
   card: MoveCard;
@@ -108,79 +109,14 @@ const Card = React.memo(
               <div
                 className={`
                   flex items-center justify-center
-                  w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20
+                  w-10 h-10 sm:w-16 sm:h-16 lg:w-20 lg:h-20
                   rounded-full bg-stone-100/90
                   shadow-[0_2px_8px_0_rgba(0,0,0,0.04)]
                   ring-1 ring-stone-300
-                  handdrawn-circle
                 `}
-                style={
-                  {
-                    // Optionally, you can add a subtle hand-drawn SVG overlay here for more effect
-                  }
-                }
               >
                 {/* Card Name: If multiple chars, stack vertically and stagger up/down */}
-                <span
-                  className={`
-                    zen-text font-medium
-                    text-4xl sm:text-5xl lg:text-6xl
-                    leading-none
-                    ${
-                      String(card.displayName || card.name).length > 2
-                        ? "scale-90 sm:scale-95"
-                        : ""
-                    }
-                  `}
-                  style={{
-                    fontFamily: "ChineseFont",
-                    display: "inline-block",
-                  }}
-                >
-                  {String(card.displayName || card.name).length > 1 ? (
-                    <span className="flex flex-col items-center justify-center text-3xl sm:text-4xl lg:text-5xl">
-                      {String(card.displayName || card.name)
-                        .split("")
-                        .map((char, idx, arr) => (
-                          <span
-                            key={idx}
-                            className="inline-block"
-                            style={{
-                              // Alternate up/down for each char, more pronounced for longer names
-                              transform:
-                                arr.length > 3
-                                  ? `translateY(${
-                                      (idx % 2 === 0 ? 10 : -10) * 0.9
-                                    }%)`
-                                  : arr.length === 3
-                                  ? idx === 0
-                                    ? "translateY(10%)"
-                                    : idx === 2
-                                    ? "translateY(-10%)"
-                                    : ""
-                                  : arr.length === 2
-                                  ? idx === 0
-                                    ? "translateY(7%)"
-                                    : "translateY(-7%)"
-                                  : "",
-                              marginTop:
-                                arr.length > 1 && idx !== 0
-                                  ? "-0.1em"
-                                  : undefined,
-                              marginBottom:
-                                arr.length > 1 && idx !== arr.length - 1
-                                  ? "-0.1em"
-                                  : undefined,
-                            }}
-                          >
-                            {char}
-                          </span>
-                        ))}
-                    </span>
-                  ) : (
-                    <span>{String(card.displayName || card.name)}</span>
-                  )}
-                </span>
+                {getArtName(card)}
               </div>
               <div className="text-[10px] text-stone-600 mt-0.5 text-center">
                 {card.name}
@@ -264,8 +200,6 @@ const Card = React.memo(
     );
   }
 );
-
-Card.displayName = "Card";
 
 // The main component is now a simple wrapper
 export default function MoveCards({
