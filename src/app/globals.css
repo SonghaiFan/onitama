@@ -255,3 +255,33 @@
     padding: 0.5rem;
   }
 }
+
+.game-layout-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-rows: auto auto auto;
+  grid-template-areas:
+    "blue-left . blue-right"
+    "shared-left board shared-right"
+    "red-left . red-right";
+  align-items: center;
+  justify-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 7xl;
+  margin: auto;
+  padding: 1rem;
+}
+
+@media (max-width: 768px) {
+  .game-layout-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto auto auto;
+    grid-template-areas:
+      "blue-left blue-right"
+      "board board"
+      "red-left red-right"
+      "shared-left shared-right";
+    gap: 1.5rem;
+  }
+}

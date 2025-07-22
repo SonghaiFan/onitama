@@ -27,7 +27,6 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
         const [row, col] = position;
         const piece = gameState.board[row][col];
 
-        // If clicking on empty space and we have a selected piece and card, try to move
         if (
           !piece &&
           gameState.selectedPiece &&
@@ -37,7 +36,6 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
             gameState.players[gameState.currentPlayer].cards[
               gameState.selectedCard
             ];
-
           if (
             isValidMove(
               gameState.selectedPiece,
@@ -57,20 +55,18 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
           return;
         }
 
-        // If clicking on a piece
         if (piece) {
-          // If it's the current player's piece, select it
           if (piece.player === gameState.currentPlayer) {
             const newGameState = { ...gameState, selectedPiece: position };
             setGameState(newGameState);
-          }
-          // If it's an opponent's piece and we can capture it
-          else if (gameState.selectedPiece && gameState.selectedCard !== null) {
+          } else if (
+            gameState.selectedPiece &&
+            gameState.selectedCard !== null
+          ) {
             const selectedCard =
               gameState.players[gameState.currentPlayer].cards[
                 gameState.selectedCard
               ];
-
             if (
               isValidMove(
                 gameState.selectedPiece,
@@ -89,7 +85,6 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
             }
           }
         } else {
-          // Clicking on empty space without valid move - clear selection
           setGameState({
             ...gameState,
             selectedPiece: null,
@@ -112,57 +107,15 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
     );
 
     const resetGame = useCallback(() => {
-      setGameState(createNewGame()); // Use createNewGame for fresh random cards
+      setGameState(createNewGame());
     }, []);
 
     useImperativeHandle(ref, () => ({
       resetGame,
     }));
 
-    // Static card data - only changes when cards change (rarely)
-    const staticCards = React.useMemo(() => {
-      const redCards = gameState.players.red.cards;
-      const blueCards = gameState.players.blue.cards;
-      const sharedCard = gameState.sharedCard;
+    // The old 'staticCards' and 'cards' useMemo hooks are no longer needed and have been removed.
 
-      return [
-        { card: redCards[0], position: "red-left" },
-        { card: redCards[1], position: "red-right" },
-        { card: blueCards[0], position: "blue-left" },
-        { card: blueCards[1], position: "blue-right" },
-        {
-          card: sharedCard,
-          position:
-            sharedCard.color === "blue" ? "shared-left" : "shared-right",
-        },
-      ];
-    }, [
-      gameState.players.red.cards,
-      gameState.players.blue.cards,
-      gameState.sharedCard,
-    ]);
-
-    // Cards with selection state - efficiently computed
-    const cards = React.useMemo(() => {
-      return staticCards.map((staticCard) => ({
-        ...staticCard,
-        isSelected:
-          (staticCard.position === "red-left" &&
-            gameState.currentPlayer === "red" &&
-            gameState.selectedCard === 0) ||
-          (staticCard.position === "red-right" &&
-            gameState.currentPlayer === "red" &&
-            gameState.selectedCard === 1) ||
-          (staticCard.position === "blue-left" &&
-            gameState.currentPlayer === "blue" &&
-            gameState.selectedCard === 0) ||
-          (staticCard.position === "blue-right" &&
-            gameState.currentPlayer === "blue" &&
-            gameState.selectedCard === 1),
-      }));
-    }, [staticCards, gameState.currentPlayer, gameState.selectedCard]);
-
-    // Simple game status
     const GameStatusSimple = () => (
       <div className="flex items-center justify-center space-x-8 mb-6">
         {gameState.winner ? (
@@ -209,23 +162,23 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
     );
 
     return (
-      <div className="w-full max-w-7xl mx-auto px-2 sm:px-4">
-        {/* Simple Game Status */}
+      <div className="w-full">
         <GameStatusSimple />
 
-        {/* Responsive Game Container with container queries */}
-        <div className="relative flex justify-center items-center min-h-[80vh] sm:min-h-[85vh] lg:min-h-screen w-full overflow-hidden game-container @container">
-          {/* Cards Component */}
-          <MoveCards
-            cards={cards}
-            currentPlayer={gameState.currentPlayer}
-            onCardClick={handleCardClick}
-          />
-
-          {/* Game Board - Centered with responsive scaling */}
-          <div className="relative z-20 flex justify-center items-center scale-75 sm:scale-90 lg:scale-100">
+        <div className="game-layout-grid">
+          <div style={{ gridArea: "board" }}>
             <GameBoard gameState={gameState} onPieceClick={handlePieceClick} />
           </div>
+
+          {/* CORRECTED: Passing the correct props to MoveCards */}
+          <MoveCards
+            redCards={gameState.players.red.cards}
+            blueCards={gameState.players.blue.cards}
+            sharedCard={gameState.sharedCard}
+            currentPlayer={gameState.currentPlayer}
+            selectedCardIndex={gameState.selectedCard}
+            onCardClick={handleCardClick}
+          />
         </div>
       </div>
     );

@@ -4,100 +4,66 @@ import React from "react";
 import { motion } from "framer-motion";
 import { MoveCard, Player } from "@/types/game";
 
-interface CardData {
+interface CardProps {
   card: MoveCard;
-  position: string;
+  gridArea: string; // e.g., 'red-left', 'shared-right'
   isSelected: boolean;
-}
-
-interface MoveCardsProps {
-  cards: CardData[];
+  playerOwner: Player | "shared";
   currentPlayer: Player;
+  cardIndex?: number; // 0 or 1 for player cards
   onCardClick: (cardIndex: number, player: Player) => void;
 }
 
+// A much simpler, reusable Card component
 const Card = React.memo(
   ({
-    cardData,
+    card,
+    gridArea,
+    isSelected,
+    playerOwner,
     currentPlayer,
+    cardIndex,
     onCardClick,
-  }: {
-    cardData: CardData;
-    currentPlayer: Player;
-    onCardClick: (cardIndex: number, player: Player) => void;
-  }) => {
-    const { card, position, isSelected } = cardData;
-    const isShared = position.startsWith("shared");
-    const isBlue = position.startsWith("blue");
-    const isRed = position.startsWith("red");
-    const isRotated = isBlue || (isShared && position === "shared-left");
+  }: CardProps) => {
+    const isBlue = playerOwner === "blue";
+    const isRed = playerOwner === "red";
+    const isShared = playerOwner === "shared";
 
-    const positionClasses = {
-      "red-left":
-        "left-[calc(50%-6rem)] top-[calc(50%+12rem)] sm:left-[calc(50%-7rem)] sm:top-[calc(50%+14rem)] lg:left-[calc(50%-8rem)] lg:top-[calc(50%+16rem)]",
-      "red-right":
-        "left-[calc(50%+2rem)] top-[calc(50%+12rem)] sm:left-[calc(50%+3rem)] sm:top-[calc(50%+14rem)] lg:left-[calc(50%+4rem)] lg:top-[calc(50%+16rem)]",
-      "blue-left":
-        "left-[calc(50%-6rem)] top-[calc(50%-16rem)] sm:left-[calc(50%-7rem)] sm:top-[calc(50%-18rem)] lg:left-[calc(50%-8rem)] lg:top-[calc(50%-20rem)]",
-      "blue-right":
-        "left-[calc(50%+2rem)] top-[calc(50%-16rem)] sm:left-[calc(50%+3rem)] sm:top-[calc(50%-18rem)] lg:left-[calc(50%+4rem)] lg:top-[calc(50%-20rem)]",
-      "shared-left":
-        "left-[calc(50%-18rem)] top-[calc(50%-1rem)] sm:left-[calc(50%-22rem)] lg:left-[calc(50%-26rem)]",
-      "shared-right":
-        "left-[calc(50%+14rem)] top-[calc(50%-1rem)] sm:left-[calc(50%+18rem)] lg:left-[calc(50%+22rem)]",
-    };
+    // The shared card on the left side (blue's side) is rotated
+    const isRotated = isBlue || (isShared && gridArea === "shared-left");
 
-    const sizeClasses = isShared
-      ? "p-4 sm:p-6 w-28 sm:w-32 md:w-36 lg:w-40"
-      : "w-24 sm:w-28 md:w-30 lg:w-32";
+    const canInteract = !isShared && playerOwner === currentPlayer;
 
     const handleClick = () => {
-      if (isShared) return;
-
-      if (isRed && currentPlayer === "red") {
-        const cardIndex = position === "red-left" ? 0 : 1;
-        onCardClick(cardIndex, "red");
-      } else if (isBlue && currentPlayer === "blue") {
-        const cardIndex = position === "blue-left" ? 0 : 1;
-        onCardClick(cardIndex, "blue");
+      if (canInteract && cardIndex !== undefined) {
+        onCardClick(cardIndex, playerOwner as Player);
       }
     };
 
-    const canInteract =
-      !isShared &&
-      ((isRed && currentPlayer === "red") ||
-        (isBlue && currentPlayer === "blue"));
-
     return (
       <motion.div
+        style={{ gridArea }} // This is the key change!
         className={`
-        absolute zen-card p-3 sm:p-4 border cursor-pointer select-none
-        ${sizeClasses}
-        ${
-          positionClasses[position as keyof typeof positionClasses] ||
-          "left-1/2 top-1/2"
-        }
-        ${
-          isRed
-            ? "border-red-300"
-            : isBlue
-            ? "border-blue-300"
-            : "border-stone-300"
-        }
-        ${isSelected ? "ring-2 ring-amber-400 border-amber-400 shadow-xl" : ""}
-      `}
-        style={{ zIndex: isSelected ? 30 : isShared ? 25 : 15 }}
-        initial={{ opacity: 0, scale: 0.8 }}
+          zen-card p-3 sm:p-4 border select-none w-32 md:w-36 lg:w-40
+          ${
+            isRed
+              ? "border-red-300"
+              : isBlue
+              ? "border-blue-300"
+              : "border-stone-300"
+          }
+          ${
+            isSelected ? "ring-2 ring-amber-400 border-amber-400 shadow-xl" : ""
+          }
+          ${canInteract ? "cursor-pointer" : "cursor-default"}
+        `}
         animate={{
-          opacity: 1,
           rotate: isRotated ? 180 : 0,
           scale: isSelected ? 1.05 : 1,
         }}
-        whileHover={{
-          scale: canInteract ? 1.06 : isSelected ? 1.05 : 1,
-          transition: { type: "spring", stiffness: 400, damping: 15 },
-        }}
+        whileHover={{ scale: canInteract ? 1.08 : 1 }}
         whileTap={{ scale: canInteract ? 0.95 : 1 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
         onClick={handleClick}
         transition={{
           type: "spring",
@@ -181,7 +147,7 @@ const Card = React.memo(
 
           <div className="flex justify-center mt-2 sm:mt-3">
             <div
-              className={`w-4 sm:w-6 h-1 ${
+              className={`w-6 h-1 ${
                 isRed
                   ? "bg-red-600"
                   : isBlue
@@ -217,21 +183,76 @@ const Card = React.memo(
 
 Card.displayName = "Card";
 
+// The main component is now a simple wrapper
 export default function MoveCards({
-  cards,
+  redCards,
+  blueCards,
+  sharedCard,
   currentPlayer,
+  selectedCardIndex,
   onCardClick,
-}: MoveCardsProps) {
+}: {
+  redCards: MoveCard[];
+  blueCards: MoveCard[];
+  sharedCard: MoveCard;
+  currentPlayer: Player;
+  selectedCardIndex: number | null;
+  onCardClick: (cardIndex: number, player: Player) => void;
+}) {
+  const sharedCardPosition =
+    sharedCard.color === "blue" ? "shared-left" : "shared-right";
+
   return (
-    <div className="relative">
-      {cards.map((cardData) => (
-        <Card
-          key={`${cardData.card.name}-${cardData.position}`}
-          cardData={cardData}
-          currentPlayer={currentPlayer}
-          onCardClick={onCardClick}
-        />
-      ))}
-    </div>
+    <>
+      {/* Blue Player's Cards */}
+      <Card
+        card={blueCards[0]}
+        gridArea="blue-left"
+        isSelected={currentPlayer === "blue" && selectedCardIndex === 0}
+        playerOwner="blue"
+        currentPlayer={currentPlayer}
+        cardIndex={0}
+        onCardClick={onCardClick}
+      />
+      <Card
+        card={blueCards[1]}
+        gridArea="blue-right"
+        isSelected={currentPlayer === "blue" && selectedCardIndex === 1}
+        playerOwner="blue"
+        currentPlayer={currentPlayer}
+        cardIndex={1}
+        onCardClick={onCardClick}
+      />
+
+      {/* Red Player's Cards */}
+      <Card
+        card={redCards[0]}
+        gridArea="red-left"
+        isSelected={currentPlayer === "red" && selectedCardIndex === 0}
+        playerOwner="red"
+        currentPlayer={currentPlayer}
+        cardIndex={0}
+        onCardClick={onCardClick}
+      />
+      <Card
+        card={redCards[1]}
+        gridArea="red-right"
+        isSelected={currentPlayer === "red" && selectedCardIndex === 1}
+        playerOwner="red"
+        currentPlayer={currentPlayer}
+        cardIndex={1}
+        onCardClick={onCardClick}
+      />
+
+      {/* Shared Card */}
+      <Card
+        card={sharedCard}
+        gridArea={sharedCardPosition}
+        isSelected={false} // Shared card is never selected
+        playerOwner="shared"
+        currentPlayer={currentPlayer}
+        onCardClick={() => {}} // No action
+      />
+    </>
   );
 }
