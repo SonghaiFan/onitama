@@ -186,22 +186,6 @@ export default function GameBoard({
           })
         )}
       </div>
-
-      {/* Board Labels - Zen Style */}
-      <div className="flex justify-between items-center mt-8">
-        <div className="text-center">
-          <div className="w-6 h-6 bg-blue-600 rounded-full mb-2 mx-auto"></div>
-          <span className="text-sm text-stone-700 font-light tracking-wide">
-            蓝方
-          </span>
-        </div>
-        <div className="text-center">
-          <div className="w-6 h-6 bg-red-600 rounded-full mb-2 mx-auto"></div>
-          <span className="text-sm text-stone-700 font-light tracking-wide">
-            紅方
-          </span>
-        </div>
-      </div>
     </div>
   );
 }
