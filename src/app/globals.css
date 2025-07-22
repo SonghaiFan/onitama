@@ -52,6 +52,8 @@
   z-index: -1;
 }
 
+/* Temple arch icon styling - using Tailwind classes in component instead */
+
 .zen-card {
   background: linear-gradient(
     145deg,

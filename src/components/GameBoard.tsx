@@ -378,29 +378,26 @@ export default function GameBoard({
                     e.key === "Enter" && handleCellClick(row, col)
                   }
                 >
-                  <AnimatePresence mode="wait">
-                    {(isBlueTempleArch || isRedTempleArch) && !piece && (
-                      <motion.div
-                        key={`temple-${row}-${col}-${
-                          isBlueTempleArch ? "blue" : "red"
-                        }`}
-                        className="text-2xl text-stone-600 zen-float"
-                        initial={{ opacity: 0, scale: 0 }}
-                        animate={{
-                          opacity: 1,
-                          scale: 1,
-                        }}
-                        transition={{
-                          opacity: { duration: 0.3 },
-                          scale: { duration: 0.3 },
-                        }}
-                      >
-                        ⛩
-                      </motion.div>
-                    )}
+                  {isBlueTempleArch && (
+                    <div
+                      key={`blue-temple-arch-${row}-${col}`}
+                      className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-180 text-2xl text-blue-600/60 pointer-events-none -z-10"
+                      aria-label="Blue Temple Arch"
+                    >
+                      ⛩️
+                    </div>
+                  )}
+                  {isRedTempleArch && (
+                    <div
+                      key={`red-temple-arch-${row}-${col}`}
+                      className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl text-red-500/60 pointer-events-none -z-10"
+                      aria-label="Red Temple Arch"
+                    >
+                      ⛩️
+                    </div>
+                  )}
 
-                    {piece && renderPiece(piece, isSelected, row, col)}
-                  </AnimatePresence>
+                  {piece && renderPiece(piece, isSelected, row, col)}
                 </DroppableCell>
               );
             })

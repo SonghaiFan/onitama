@@ -108,7 +108,11 @@ export function DraggablePiece({
         }
       }}
     >
-      <div className="relative">{isMaster ? "♔" : "♙"}</div>
+      <div
+        className={`relative ${piece.player === "blue" ? "rotate-180" : ""}`}
+      >
+        {isMaster ? "♔" : "♙"}
+      </div>
     </motion.div>
   );
 }
@@ -136,7 +140,11 @@ export function DragOverlay({ piece, cardIndex }: DragOverlayProps) {
         ring-2 ring-amber-400 shadow-xl
       `}
     >
-      <div className="relative">{isMaster ? "♔" : "♙"}</div>
+      <div
+        className={`relative ${piece.player === "blue" ? "rotate-180" : ""}`}
+      >
+        {isMaster ? "♔" : "♙"}
+      </div>
     </motion.div>
   );
 }

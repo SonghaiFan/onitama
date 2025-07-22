@@ -1,388 +1,485 @@
 {
   "cards": [
     {
-      "id": "tiger",
-      "name": {
-        "en": "Tiger",
-        "zh": "虎"
-      },
-      "color": "#B44438",
-      "moves": [
-        {
-          "x": 0,
-          "y": -2
-        },
-        {
-          "x": 0,
-          "y": 1
-        }
-      ],
-      "firstPlayerColor": "red"
-    },
-    {
-      "id": "dragon",
-      "name": {
-        "en": "Dragon",
-        "zh": "龙"
-      },
-      "color": "#704F38",
-      "moves": [
-        {
-          "x": -2,
-          "y": -1
-        },
-        {
-          "x": 2,
-          "y": -1
-        },
-        {
-          "x": -1,
-          "y": 1
-        },
-        {
-          "x": 1,
-          "y": 1
-        }
-      ],
-      "firstPlayerColor": "blue"
-    },
-    {
-      "id": "frog",
-      "name": {
-        "en": "Frog",
-        "zh": "蛙"
-      },
-      "color": "#3A7F56",
-      "moves": [
-        {
-          "x": -2,
-          "y": 0
-        },
-        {
-          "x": -1,
-          "y": 1
-        },
-        {
-          "x": 1,
-          "y": -1
-        }
-      ],
-      "firstPlayerColor": "blue"
-    },
-    {
-      "id": "rabbit",
-      "name": {
-        "en": "Rabbit",
-        "zh": "兔"
-      },
-      "color": "#CC6633",
-      "moves": [
-        {
-          "x": 2,
-          "y": 0
-        },
-        {
-          "x": 1,
-          "y": 1
-        },
-        {
-          "x": -1,
-          "y": -1
-        }
-      ],
-      "firstPlayerColor": "blue"
-    },
-    {
-      "id": "crab",
-      "name": {
-        "en": "Crab",
-        "zh": "蟹"
-      },
-      "color": "#406E8E",
-      "moves": [
-        {
-          "x": -2,
-          "y": 0
-        },
-        {
-          "x": 0,
-          "y": 1
-        },
-        {
-          "x": 2,
-          "y": 0
-        }
-      ],
-      "firstPlayerColor": "red"
-    },
-    {
-      "id": "elephant",
-      "name": {
-        "en": "Elephant",
-        "zh": "象"
-      },
-      "color": "#9C6644",
-      "moves": [
-        {
-          "x": -1,
-          "y": 1
-        },
-        {
-          "x": 1,
-          "y": 1
-        },
-        {
-          "x": -1,
-          "y": 0
-        },
-        {
-          "x": 1,
-          "y": 0
-        }
-      ],
-      "firstPlayerColor": "blue"
-    },
-    {
-      "id": "goose",
-      "name": {
-        "en": "Goose",
-        "zh": "鹅"
-      },
-      "color": "#D1A054",
-      "moves": [
-        {
-          "x": -1,
-          "y": 1
-        },
-        {
-          "x": -1,
-          "y": 0
-        },
-        {
-          "x": 1,
-          "y": 0
-        },
-        {
-          "x": 1,
-          "y": -1
-        }
-      ],
-      "firstPlayerColor": "blue"
-    },
-    {
-      "id": "rooster",
-      "name": {
-        "en": "Rooster",
-        "zh": "鸡"
-      },
-      "color": "#D95D39",
-      "moves": [
-        {
-          "x": 1,
-          "y": 1
-        },
-        {
-          "x": 1,
-          "y": 0
-        },
-        {
-          "x": -1,
-          "y": 0
-        },
-        {
-          "x": -1,
-          "y": -1
-        }
-      ],
-      "firstPlayerColor": "blue"
-    },
-    {
       "id": "ox",
-      "name": {
-        "en": "Ox",
-        "zh": "牛"
-      },
+      "name": { "en": "Ox", "hu": "Ökör", "zh": "牛" },
       "color": "#8C5E3C",
       "moves": [
-        {
-          "x": 0,
-          "y": 1
-        },
-        {
-          "x": -1,
-          "y": 0
-        },
-        {
-          "x": 1,
-          "y": 0
-        }
+        { "x": 0, "y": 1 },
+        { "x": 0, "y": -1 },
+        { "x": -1, "y": 0 }
       ],
       "firstPlayerColor": "red"
     },
     {
       "id": "horse",
-      "name": {
-        "en": "Horse",
-        "zh": "马"
-      },
+      "name": { "en": "Horse", "hu": "Ló", "zh": "马" },
       "color": "#7D4F28",
       "moves": [
-        {
-          "x": 0,
-          "y": 1
-        },
-        {
-          "x": -1,
-          "y": 0
-        },
-        {
-          "x": 0,
-          "y": -1
-        }
+        { "x": 0, "y": 1 },
+        { "x": -1, "y": 0 },
+        { "x": 0, "y": -1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "crab",
+      "name": { "en": "Crab", "hu": "Rák", "zh": "蟹" },
+      "color": "#406E8E",
+      "moves": [
+        { "x": -2, "y": 0 },
+        { "x": 0, "y": 1 },
+        { "x": 2, "y": 0 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+
+    {
+      "id": "cobra",
+      "name": { "en": "Cobra", "hu": "Kobra", "zh": "蛇" },
+      "color": "#4B3832",
+      "moves": [
+        { "x": 1, "y": 1 },
+        { "x": -1, "y": 0 },
+        { "x": 1, "y": -1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "rabbit",
+      "name": { "en": "Rabbit", "hu": "Nyúl", "zh": "兔" },
+      "color": "#CC6633",
+      "moves": [
+        { "x": 2, "y": 0 },
+        { "x": 1, "y": 1 },
+        { "x": -1, "y": -1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "dragon",
+      "name": { "en": "Dragon", "hu": "Sárkány", "zh": "龙" },
+      "color": "#704F38",
+      "moves": [
+        { "x": -2, "y": -1 },
+        { "x": 2, "y": -1 },
+        { "x": -1, "y": 1 },
+        { "x": 1, "y": 1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "elephant",
+      "name": { "en": "Elephant", "hu": "Elefánt", "zh": "象" },
+      "color": "#9C6644",
+      "moves": [
+        { "x": -1, "y": 1 },
+        { "x": 1, "y": 1 },
+        { "x": -1, "y": 0 },
+        { "x": 1, "y": 0 }
       ],
       "firstPlayerColor": "blue"
     },
     {
       "id": "eel",
-      "name": {
-        "en": "Eel",
-        "zh": "鳗"
-      },
+      "name": { "en": "Eel", "hu": "Angolna", "zh": "鳗" },
       "color": "#336B87",
       "moves": [
-        {
-          "x": -1,
-          "y": 1
-        },
-        {
-          "x": 1,
-          "y": 0
-        },
-        {
-          "x": -1,
-          "y": -1
-        }
+        { "x": -1, "y": 1 },
+        { "x": 1, "y": 0 },
+        { "x": -1, "y": -1 }
       ],
       "firstPlayerColor": "blue"
     },
     {
-      "id": "cobra",
-      "name": {
-        "en": "Cobra",
-        "zh": "眼镜蛇"
-      },
-      "color": "#4B3832",
+      "id": "rooster",
+      "name": { "en": "Rooster", "hu": "Kakas", "zh": "鸡" },
+      "color": "#D95D39",
       "moves": [
-        {
-          "x": 1,
-          "y": 1
-        },
-        {
-          "x": -1,
-          "y": 0
-        },
-        {
-          "x": 1,
-          "y": -1
-        }
+        { "x": 1, "y": 1 },
+        { "x": 1, "y": 0 },
+        { "x": -1, "y": 0 },
+        { "x": -1, "y": -1 }
       ],
       "firstPlayerColor": "blue"
     },
     {
-      "id": "boar",
-      "name": {
-        "en": "Boar",
-        "zh": "猪"
-      },
-      "color": "#935E38",
+      "id": "goose",
+      "name": { "en": "Goose", "hu": "Liba", "zh": "鹅" },
+      "color": "#D1A054",
       "moves": [
-        {
-          "x": 0,
-          "y": 1
-        },
-        {
-          "x": -1,
-          "y": 0
-        },
-        {
-          "x": 1,
-          "y": 0
-        }
-      ],
-      "firstPlayerColor": "blue"
-    },
-    {
-      "id": "monkey",
-      "name": {
-        "en": "Monkey",
-        "zh": "猴"
-      },
-      "color": "#B77F50",
-      "moves": [
-        {
-          "x": -1,
-          "y": 1
-        },
-        {
-          "x": 1,
-          "y": 1
-        },
-        {
-          "x": -1,
-          "y": -1
-        },
-        {
-          "x": 1,
-          "y": -1
-        }
+        { "x": -1, "y": 1 },
+        { "x": -1, "y": 0 },
+        { "x": 1, "y": 0 },
+        { "x": 1, "y": -1 }
       ],
       "firstPlayerColor": "blue"
     },
     {
       "id": "crane",
-      "name": {
-        "en": "Crane",
-        "zh": "鹤"
-      },
+      "name": { "en": "Crane", "hu": "Daru", "zh": "鹤" },
       "color": "#A97D56",
       "moves": [
-        {
-          "x": 0,
-          "y": 1
-        },
-        {
-          "x": -1,
-          "y": -1
-        },
-        {
-          "x": 1,
-          "y": -1
-        }
+        { "x": 0, "y": 1 },
+        { "x": -1, "y": -1 },
+        { "x": 1, "y": -1 }
       ],
       "firstPlayerColor": "red"
     },
     {
-      "id": "mantis",
-      "name": {
-        "en": "Mantis",
-        "zh": "螳螂"
-      },
-      "color": "#6D9DC5",
+      "id": "boar",
+      "name": { "en": "Boar", "hu": "Vaddisznó", "zh": "猪" },
+      "color": "#935E38",
       "moves": [
-        {
-          "x": -1,
-          "y": 1
-        },
-        {
-          "x": 1,
-          "y": 1
-        },
-        {
-          "x": 0,
-          "y": -1
-        }
+        { "x": 0, "y": 1 },
+        { "x": -1, "y": 0 },
+        { "x": 1, "y": 0 }
       ],
       "firstPlayerColor": "blue"
+    },
+    {
+      "id": "ant",
+      "name": { "en": "Ant", "hu": "Hangya", "zh": "蚁" },
+      "color": "#A0A000",
+      "moves": [
+        { "x": 0, "y": 1 },
+        { "x": 0, "y": -1 },
+        { "x": 1, "y": 0 },
+        { "x": -1, "y": 0 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "monkey",
+      "name": { "en": "Monkey", "hu": "Majom", "zh": "猴" },
+      "color": "#B77F50",
+      "moves": [
+        { "x": -1, "y": 1 },
+        { "x": 1, "y": 1 },
+        { "x": -1, "y": -1 },
+        { "x": 1, "y": -1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "frog",
+      "name": { "en": "Frog", "hu": "Béka", "zh": "蛙" },
+      "color": "#3A7F56",
+      "moves": [
+        { "x": -2, "y": 0 },
+        { "x": -1, "y": 1 },
+        { "x": 1, "y": -1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "tiger",
+      "name": { "en": "Tiger", "hu": "Tigris", "zh": "虎" },
+      "color": "#B44438",
+      "moves": [
+        { "x": 0, "y": -2 },
+        { "x": 0, "y": 1 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "dog",
+      "name": { "en": "Dog", "hu": "Kutya", "zh": "狗" },
+      "color": "#BCAAA4",
+      "moves": [
+        { "x": 0, "y": 1 },
+        { "x": 1, "y": 0 },
+        { "x": 0, "y": -1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "mouse",
+      "name": { "en": "Mouse", "hu": "Egér", "zh": "鼠" },
+      "color": "#C0C0C0",
+      "moves": [
+        { "x": 1, "y": 1 },
+        { "x": -1, "y": 1 },
+        { "x": 0, "y": -1 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "phoenix",
+      "name": { "en": "Phoenix", "hu": "Főnix", "zh": "凤" },
+      "color": "#FFB300",
+      "moves": [
+        { "x": 0, "y": 2 },
+        { "x": -1, "y": 1 },
+        { "x": 1, "y": 1 },
+        { "x": 0, "y": -1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "giraffe",
+      "name": { "en": "Giraffe", "hu": "Zsiráf", "zh": "长颈鹿" },
+      "color": "#E2C275",
+      "moves": [
+        { "x": 0, "y": 2 },
+        { "x": 0, "y": -2 },
+        { "x": 1, "y": 0 },
+        { "x": -1, "y": 0 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "raccoon",
+      "name": { "en": "Raccoon", "hu": "Mosómedve", "zh": "熊" },
+      "color": "#7B6D57",
+      "moves": [
+        { "x": 1, "y": 1 },
+        { "x": -1, "y": 1 },
+        { "x": 1, "y": -1 },
+        { "x": -1, "y": -1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "iguana",
+      "name": { "en": "Iguana", "hu": "Iguána", "zh": "鳄" },
+      "color": "#6AB187",
+      "moves": [
+        { "x": 2, "y": 0 },
+        { "x": -2, "y": 0 },
+        { "x": 0, "y": 1 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "otter",
+      "name": { "en": "Otter", "hu": "Vidra", "zh": "獭" },
+      "color": "#A1887F",
+      "moves": [
+        { "x": 1, "y": 0 },
+        { "x": -1, "y": 0 },
+        { "x": 0, "y": 1 },
+        { "x": 0, "y": -1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "fox",
+      "name": { "en": "Fox", "hu": "Róka", "zh": "狐" },
+      "color": "#E25822",
+      "moves": [
+        { "x": 1, "y": 1 },
+        { "x": -1, "y": 1 },
+        { "x": 0, "y": -1 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "rat",
+      "name": { "en": "Rat", "hu": "Patkány", "zh": "鼠" },
+      "color": "#B0B0B0",
+      "moves": [
+        { "x": 1, "y": 0 },
+        { "x": -1, "y": 0 },
+        { "x": 0, "y": 1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "antelope",
+      "name": { "en": "Antelope", "hu": "Antilop", "zh": "羚" },
+      "color": "#C2B280",
+      "moves": [
+        { "x": 2, "y": 1 },
+        { "x": -2, "y": 1 },
+        { "x": 0, "y": -1 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "sea_snake",
+      "name": { "en": "Sea Snake", "hu": "Tengeri kígyó", "zh": "蛇" },
+      "color": "#3B8686",
+      "moves": [
+        { "x": 1, "y": 2 },
+        { "x": -1, "y": 2 },
+        { "x": 0, "y": -1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "turtle",
+      "name": { "en": "Turtle", "hu": "Teknős", "zh": "龟" },
+      "color": "#4ECDC4",
+      "moves": [
+        { "x": 0, "y": 1 },
+        { "x": 0, "y": -1 },
+        { "x": -1, "y": 0 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "bear",
+      "name": { "en": "Bear", "hu": "Medve", "zh": "熊" },
+      "color": "#8D5524",
+      "moves": [
+        { "x": 1, "y": 1 },
+        { "x": -1, "y": 1 },
+        { "x": 0, "y": -1 },
+        { "x": 0, "y": 1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "viper",
+      "name": { "en": "Viper", "hu": "Vipera", "zh": "蛇" },
+      "color": "#6E2C00",
+      "moves": [
+        { "x": 1, "y": 1 },
+        { "x": -1, "y": 1 },
+        { "x": 1, "y": -1 },
+        { "x": -1, "y": -1 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "goat",
+      "name": { "en": "Goat", "hu": "Kecske", "zh": "羊" },
+      "color": "#E0C097",
+      "moves": [
+        { "x": 0, "y": 1 },
+        { "x": 1, "y": 0 },
+        { "x": -1, "y": 0 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "sheep",
+      "name": { "en": "Sheep", "hu": "Juh", "zh": "羊" },
+      "color": "#F5F5DC",
+      "moves": [
+        { "x": 0, "y": 1 },
+        { "x": 0, "y": -1 },
+        { "x": 1, "y": 0 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "moose",
+      "name": { "en": "Moose", "hu": "Jávorszarvas", "zh": "鹿" },
+      "color": "#A0522D",
+      "moves": [
+        { "x": 0, "y": 2 },
+        { "x": 0, "y": -2 },
+        { "x": 1, "y": 1 },
+        { "x": -1, "y": 1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "deer",
+      "name": { "en": "Deer", "hu": "Szarvas", "zh": "鹿" },
+      "color": "#C19A6B",
+      "moves": [
+        { "x": 0, "y": 2 },
+        { "x": 0, "y": -2 },
+        { "x": 1, "y": 0 },
+        { "x": -1, "y": 0 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "bat",
+      "name": { "en": "Bat", "hu": "Denevér", "zh": "蝙蝠" },
+      "color": "#4B3F72",
+      "moves": [
+        { "x": 1, "y": 2 },
+        { "x": -1, "y": 2 },
+        { "x": 1, "y": -2 },
+        { "x": -1, "y": -2 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "eagle",
+      "name": { "en": "Eagle", "hu": "Sas", "zh": "鹰" },
+      "color": "#BDB76B",
+      "moves": [
+        { "x": 0, "y": 2 },
+        { "x": 1, "y": 1 },
+        { "x": -1, "y": 1 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "hawk",
+      "name": { "en": "Hawk", "hu": "Sólyom", "zh": "雕" },
+      "color": "#A9A9A9",
+      "moves": [
+        { "x": 2, "y": 1 },
+        { "x": -2, "y": 1 },
+        { "x": 0, "y": -1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "lion",
+      "name": { "en": "Lion", "hu": "Oroszlán", "zh": "狮" },
+      "color": "#FFD700",
+      "moves": [
+        { "x": 0, "y": 2 },
+        { "x": 0, "y": -2 },
+        { "x": 1, "y": 0 },
+        { "x": -1, "y": 0 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "octopus",
+      "name": { "en": "Octopus", "hu": "Polip", "zh": "章鱼" },
+      "color": "#6A0572",
+      "moves": [
+        { "x": 1, "y": 1 },
+        { "x": -1, "y": 1 },
+        { "x": 1, "y": -1 },
+        { "x": -1, "y": -1 },
+        { "x": 0, "y": 1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "rhino",
+      "name": { "en": "Rhino", "hu": "Orrszarvú", "zh": "犀牛" },
+      "color": "#7B7B7B",
+      "moves": [
+        { "x": 2, "y": 0 },
+        { "x": -2, "y": 0 },
+        { "x": 0, "y": 1 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "scorpion",
+      "name": { "en": "Scorpion", "hu": "Skorpió", "zh": "蝎" },
+      "color": "#B22222",
+      "moves": [
+        { "x": 1, "y": 1 },
+        { "x": -1, "y": 1 },
+        { "x": 0, "y": -1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "spider",
+      "name": { "en": "Spider", "hu": "Pók", "zh": "蛛" },
+      "color": "#222222",
+      "moves": [
+        { "x": 1, "y": 1 },
+        { "x": -1, "y": 1 },
+        { "x": 1, "y": -1 },
+        { "x": -1, "y": -1 }
+      ],
+      "firstPlayerColor": "red"
     }
   ]
 }
