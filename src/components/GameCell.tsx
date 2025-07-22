@@ -51,9 +51,9 @@ export function DroppableCell({
         }
         ${
           isSelected
-            ? "ring-2 ring-amber-400 bg-amber-100 shadow-lg"
+            ? " shadow-lg"
             : isPossibleMove
-            ? "ring-2 ring-emerald-400 bg-emerald-50 shadow-md"
+            ? "shadow-md"
             : "bg-stone-50"
         }
         ${!children && !isPossibleMove ? "hover:bg-stone-100" : ""}

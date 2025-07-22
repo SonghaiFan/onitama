@@ -17,7 +17,7 @@ export function getArtName(card: MoveCard) {
         inline-block
       `}
       style={{
-        fontFamily: "ChineseFont",
+        fontFamily: "DuanNing",
         display: "inline-block",
       }}
     >

@@ -128,9 +128,7 @@ export function Card({
       ? "border-blue-300 shadow-blue-100"
       : "border-stone-300";
 
-    const selectionStyles = isSelected
-      ? "ring-2 ring-amber-400 border-amber-400 shadow-xl shadow-amber-200/50"
-      : "";
+    const selectionStyles = isSelected ? "shadow-xl shadow-amber-200/50" : "";
 
     const interactionStyles = canInteract
       ? "cursor-pointer hover:shadow-lg focus:focus-zen"

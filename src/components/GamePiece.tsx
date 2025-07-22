@@ -68,11 +68,7 @@ export function DraggablePiece({
         ${isMaster ? "master-piece text-amber-100 shadow-lg" : "student-piece"}
         ${canDrag ? "cursor-grab" : "cursor-default"}
         ${isDraggedPiece ? "opacity-50 scale-75" : ""}
-        ${
-          isDraggedPiece && selectedCardIndex !== null
-            ? "ring-2 ring-amber-400"
-            : ""
-        }
+        ${isDraggedPiece && selectedCardIndex !== null ? "shadow-xl" : ""}
         font-bold text-xl
       `}
       animate={{
@@ -135,7 +131,7 @@ export function DragOverlay({ piece }: DragOverlayProps) {
             : "bg-blue-600 border-blue-700 text-white"
         }
         ${isMaster ? "master-piece text-amber-100 shadow-lg" : "student-piece"}
-        ring-2 ring-amber-400 shadow-xl
+        shadow-xl
       `}
     >
       <div className="relative w-full h-full flex items-center justify-center">

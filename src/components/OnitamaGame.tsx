@@ -176,10 +176,9 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
     // The old 'staticCards' and 'cards' useMemo hooks are no longer needed and have been removed.
 
     const GameStatusSimple = () => (
-      <div className="flex items-center justify-center space-x-8 mb-6">
+      <div className="flex items-center justify-center space-x-8">
         {gameState.winner ? (
           <div className="flex items-center space-x-3">
-            <div className="text-2xl">🏆</div>
             <span
               className={`text-xl font-medium zen-text ${
                 gameState.winner === "red" ? "text-red-600" : "text-blue-600"

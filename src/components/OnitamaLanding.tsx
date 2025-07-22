@@ -77,18 +77,19 @@ export default function OnitamaLanding() {
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Official Onitama Logo */}
           <div className="flex justify-center mb-8">
-            <Image
-              src="/Onitama_Logo.svg.png"
-              alt="Onitama"
-              width={400}
-              height={120}
-              className="object-contain drop-shadow-lg"
-              priority
-            />
+            <div className="flex items-center justify-center w-full">
+              <Image
+                src="/Onitama_Logo.svg.png"
+                alt="Onitama"
+                width={260}
+                height={78}
+                className="object-contain mr-6"
+                priority
+              />
+            </div>
           </div>
-          <p className="text-2xl text-stone-600 mb-16 font-light tracking-wide leading-relaxed zen-text">
-            形意棋{" "}
-            <span className="text-lg text-stone-500">- 意志與策略的對弈</span>
+          <p className="text-4xl text-stone-600 mb-16 font-light tracking-wide leading-relaxed zen-text">
+            <span className="text-lg text-stone-500">意志與策略的對弈</span>
           </p>
 
           {/* Card Pack Selection */}
@@ -180,7 +181,14 @@ export default function OnitamaLanding() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-2xl mx-auto">
                 <div className="text-center">
                   <div className="w-16 h-16 mx-auto mb-4 bg-stone-100 rounded-full flex items-center justify-center">
-                    <span className="text-2xl text-stone-600">速</span>
+                    <span
+                      className="text-4xl text-stone-600"
+                      style={{
+                        fontFamily: "DuanNing",
+                      }}
+                    >
+                      速
+                    </span>
                   </div>
                   <span className="text-stone-700 font-light zen-text">
                     15分鐘對局
@@ -188,7 +196,14 @@ export default function OnitamaLanding() {
                 </div>
                 <div className="text-center">
                   <div className="w-16 h-16 mx-auto mb-4 bg-stone-100 rounded-full flex items-center justify-center">
-                    <span className="text-2xl text-stone-600 zen-text">智</span>
+                    <span
+                      className="text-4xl text-stone-600 zen-text"
+                      style={{
+                        fontFamily: "DuanNing",
+                      }}
+                    >
+                      智
+                    </span>
                   </div>
                   <span className="text-stone-700 font-light zen-text">
                     深度策略
@@ -196,7 +211,14 @@ export default function OnitamaLanding() {
                 </div>
                 <div className="text-center">
                   <div className="w-16 h-16 mx-auto mb-4 bg-stone-100 rounded-full flex items-center justify-center">
-                    <span className="text-2xl text-stone-600 zen-text">勝</span>
+                    <span
+                      className="text-4xl text-stone-600 zen-text"
+                      style={{
+                        fontFamily: "DuanNing",
+                      }}
+                    >
+                      勝
+                    </span>
                   </div>
                   <span className="text-stone-700 font-light zen-text">
                     雙重勝利
@@ -211,7 +233,14 @@ export default function OnitamaLanding() {
               <div className="space-y-8">
                 <div className="text-center">
                   <div className="w-12 h-12 mx-auto mb-3 bg-stone-200 rounded-full flex items-center justify-center">
-                    <span className="text-lg text-stone-700">石</span>
+                    <span
+                      className="text-lg text-stone-700"
+                      style={{
+                        fontFamily: "DuanNing",
+                      }}
+                    >
+                      石
+                    </span>
                   </div>
                   <div>
                     <div className="font-medium text-stone-800 mb-1">
@@ -224,7 +253,14 @@ export default function OnitamaLanding() {
                 </div>
                 <div className="text-center">
                   <div className="w-12 h-12 mx-auto mb-3 bg-stone-200 rounded-full flex items-center justify-center">
-                    <span className="text-lg text-stone-700">流</span>
+                    <span
+                      className="text-lg text-stone-700"
+                      style={{
+                        fontFamily: "DuanNing",
+                      }}
+                    >
+                      流
+                    </span>
                   </div>
                   <div>
                     <div className="font-medium text-stone-800 mb-1">
@@ -255,7 +291,14 @@ export default function OnitamaLanding() {
           <div className="mb-24">
             <div className="flex items-center justify-center mb-12">
               <div className="w-12 h-12 bg-stone-200 rounded-full flex items-center justify-center mr-4">
-                <span className="text-stone-700 font-light">一</span>
+                <span
+                  className="text-stone-700 font-light"
+                  style={{
+                    fontFamily: "DuanNing",
+                  }}
+                >
+                  一
+                </span>
               </div>
               <h3 className="text-3xl font-light text-stone-800 tracking-wide zen-text">
                 佈局
@@ -264,7 +307,14 @@ export default function OnitamaLanding() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
               <div className="zen-card p-8 text-center">
                 <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-2xl text-stone-600">棋</span>
+                  <span
+                    className="text-4xl text-stone-600"
+                    style={{
+                      fontFamily: "DuanNing",
+                    }}
+                  >
+                    棋
+                  </span>
                 </div>
                 <h4 className="font-medium text-stone-800 mb-4 zen-text">
                   棋盤與棋子
@@ -275,7 +325,14 @@ export default function OnitamaLanding() {
               </div>
               <div className="zen-card p-8 text-center">
                 <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-2xl text-stone-600">牌</span>
+                  <span
+                    className="text-4xl text-stone-600"
+                    style={{
+                      fontFamily: "DuanNing",
+                    }}
+                  >
+                    牌
+                  </span>
                 </div>
                 <h4 className="font-medium text-stone-800 mb-4">移動牌</h4>
                 <p className="text-stone-600 font-light leading-relaxed">
@@ -284,7 +341,14 @@ export default function OnitamaLanding() {
               </div>
               <div className="zen-card p-8 text-center">
                 <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-2xl text-stone-600">先</span>
+                  <span
+                    className="text-4xl text-stone-600"
+                    style={{
+                      fontFamily: "DuanNing",
+                    }}
+                  >
+                    先
+                  </span>
                 </div>
                 <h4 className="font-medium text-stone-800 mb-4">先手</h4>
                 <p className="text-stone-600 font-light leading-relaxed">
@@ -298,7 +362,14 @@ export default function OnitamaLanding() {
           <div className="mb-24">
             <div className="flex items-center justify-center mb-12">
               <div className="w-12 h-12 bg-stone-200 rounded-full flex items-center justify-center mr-4">
-                <span className="text-stone-700 font-light">二</span>
+                <span
+                  className="text-stone-700 font-light"
+                  style={{
+                    fontFamily: "DuanNing",
+                  }}
+                >
+                  二
+                </span>
               </div>
               <h3 className="text-3xl font-light text-stone-800 tracking-wide">
                 你的回合
@@ -308,7 +379,14 @@ export default function OnitamaLanding() {
               <div className="zen-card p-10">
                 <div className="flex items-center mb-6">
                   <div className="w-12 h-12 bg-stone-100 rounded-full flex items-center justify-center mr-4">
-                    <span className="text-lg text-stone-600">行</span>
+                    <span
+                      className="text-lg text-stone-600"
+                      style={{
+                        fontFamily: "DuanNing",
+                      }}
+                    >
+                      行
+                    </span>
                   </div>
                   <h4 className="font-medium text-stone-800 text-xl">
                     移動與攻擊
@@ -325,7 +403,14 @@ export default function OnitamaLanding() {
               <div className="zen-card p-10">
                 <div className="flex items-center mb-6">
                   <div className="w-12 h-12 bg-stone-100 rounded-full flex items-center justify-center mr-4">
-                    <span className="text-lg text-stone-600">換</span>
+                    <span
+                      className="text-lg text-stone-600"
+                      style={{
+                        fontFamily: "DuanNing",
+                      }}
+                    >
+                      换
+                    </span>
                   </div>
                   <h4 className="font-medium text-stone-800 text-xl">
                     交換牌片
@@ -345,7 +430,14 @@ export default function OnitamaLanding() {
           <div className="mb-24">
             <div className="flex items-center justify-center mb-12">
               <div className="w-12 h-12 bg-stone-200 rounded-full flex items-center justify-center mr-4">
-                <span className="text-stone-700 font-light">三</span>
+                <span
+                  className="text-stone-700 font-light"
+                  style={{
+                    fontFamily: "DuanNing",
+                  }}
+                >
+                  三
+                </span>
               </div>
               <h3 className="text-3xl font-light text-stone-800 tracking-wide">
                 策略要點
@@ -354,7 +446,14 @@ export default function OnitamaLanding() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
               <div className="zen-card p-8 text-center">
                 <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-2xl text-stone-600">思</span>
+                  <span
+                    className="text-4xl text-stone-600"
+                    style={{
+                      fontFamily: "DuanNing",
+                    }}
+                  >
+                    思
+                  </span>
                 </div>
                 <h4 className="font-medium text-stone-800 mb-4">深思熙慮</h4>
                 <p className="text-stone-600 font-light leading-relaxed">
@@ -363,7 +462,14 @@ export default function OnitamaLanding() {
               </div>
               <div className="zen-card p-8 text-center">
                 <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-2xl text-stone-600">中</span>
+                  <span
+                    className="text-4xl text-stone-600"
+                    style={{
+                      fontFamily: "DuanNing",
+                    }}
+                  >
+                    中
+                  </span>
                 </div>
                 <h4 className="font-medium text-stone-800 mb-4">掌控中心</h4>
                 <p className="text-stone-600 font-light leading-relaxed">
@@ -372,7 +478,14 @@ export default function OnitamaLanding() {
               </div>
               <div className="zen-card p-8 text-center">
                 <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-2xl text-stone-600">平</span>
+                  <span
+                    className="text-4xl text-stone-600"
+                    style={{
+                      fontFamily: "DuanNing",
+                    }}
+                  >
+                    平
+                  </span>
                 </div>
                 <h4 className="font-medium text-stone-800 mb-4">攻守平衡</h4>
                 <p className="text-stone-600 font-light leading-relaxed">
@@ -407,7 +520,10 @@ export default function OnitamaLanding() {
         <div className="container mx-auto px-8 text-center">
           <div className="brush-stroke mx-auto mb-6"></div>
           <p className="text-stone-500 font-light tracking-wide zen-text">
-            形意棋 — 古代智慧的現代演繹
+            形动有踪，意藏无形。
+            <span className="block text-xs text-stone-400 mt-2">
+              The form leaves a trace, the intent remains unseen.
+            </span>
           </p>
         </div>
       </footer>
