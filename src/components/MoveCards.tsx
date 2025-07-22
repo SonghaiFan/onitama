@@ -94,23 +94,9 @@ const Card = React.memo(
 
         <div
           className={`zen-card relative overflow-hidden ${
-            isShared ? "p-2 sm:p-3" : "p-0"
+            isShared ? "p-2 sm:p-3" : "p-2"
           } border border-stone-300`}
         >
-          {/* Chinese Character Background */}
-          {card.displayName && (
-            <div
-              className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden"
-              style={{
-                transform: isRotated ? "rotate(180deg)" : "rotate(0deg)",
-              }}
-            >
-              <span className="text-6xl sm:text-7xl lg:text-8xl font-light text-stone-200/15 zen-text select-none">
-                {card.displayName}
-              </span>
-            </div>
-          )}
-
           {/* Decorative Corner Elements */}
           <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-stone-300/50 pointer-events-none"></div>
           <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-stone-300/50 pointer-events-none"></div>
@@ -118,11 +104,85 @@ const Card = React.memo(
           <div className="absolute bottom-1 right-1 w-2 h-2 border-r border-b border-stone-300/50 pointer-events-none"></div>
 
           <div className="relative z-10">
-            <div className="text-xs font-light text-center mb-2 sm:mb-3 text-stone-800 bg-stone-100/90 py-1 px-1 sm:px-2 border border-stone-200 backdrop-blur-sm">
-              <div className="zen-text font-medium">
-                {card.displayName || card.name}
+            <div className="flex flex-col items-center justify-center mb-2 sm:mb-3">
+              <div
+                className={`
+                  flex items-center justify-center
+                  w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20
+                  rounded-full bg-stone-100/90
+                  shadow-[0_2px_8px_0_rgba(0,0,0,0.04)]
+                  ring-1 ring-stone-300
+                  handdrawn-circle
+                `}
+                style={
+                  {
+                    // Optionally, you can add a subtle hand-drawn SVG overlay here for more effect
+                  }
+                }
+              >
+                {/* Card Name: If multiple chars, stack vertically and stagger up/down */}
+                <span
+                  className={`
+                    zen-text font-medium
+                    text-4xl sm:text-5xl lg:text-6xl
+                    leading-none
+                    ${
+                      String(card.displayName || card.name).length > 2
+                        ? "scale-90 sm:scale-95"
+                        : ""
+                    }
+                  `}
+                  style={{
+                    fontFamily: "ChineseFont",
+                    display: "inline-block",
+                  }}
+                >
+                  {String(card.displayName || card.name).length > 1 ? (
+                    <span className="flex flex-col items-center justify-center text-3xl sm:text-4xl lg:text-5xl">
+                      {String(card.displayName || card.name)
+                        .split("")
+                        .map((char, idx, arr) => (
+                          <span
+                            key={idx}
+                            className="inline-block"
+                            style={{
+                              // Alternate up/down for each char, more pronounced for longer names
+                              transform:
+                                arr.length > 3
+                                  ? `translateY(${
+                                      (idx % 2 === 0 ? 10 : -10) * 0.9
+                                    }%)`
+                                  : arr.length === 3
+                                  ? idx === 0
+                                    ? "translateY(10%)"
+                                    : idx === 2
+                                    ? "translateY(-10%)"
+                                    : ""
+                                  : arr.length === 2
+                                  ? idx === 0
+                                    ? "translateY(7%)"
+                                    : "translateY(-7%)"
+                                  : "",
+                              marginTop:
+                                arr.length > 1 && idx !== 0
+                                  ? "-0.1em"
+                                  : undefined,
+                              marginBottom:
+                                arr.length > 1 && idx !== arr.length - 1
+                                  ? "-0.1em"
+                                  : undefined,
+                            }}
+                          >
+                            {char}
+                          </span>
+                        ))}
+                    </span>
+                  ) : (
+                    <span>{String(card.displayName || card.name)}</span>
+                  )}
+                </span>
               </div>
-              <div className="text-[10px] text-stone-600 mt-0.5">
+              <div className="text-[10px] text-stone-600 mt-0.5 text-center">
                 {card.name}
               </div>
             </div>
