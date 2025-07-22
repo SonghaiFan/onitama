@@ -161,11 +161,7 @@ const Card = React.memo(
                       key={`${i}-${j}`}
                       className={`w-2.5 h-2.5 sm:w-3 sm:h-3 border border-stone-300 transition-colors ${
                         hasMove
-                          ? isRed
-                            ? "bg-gradient-to-br from-red-500 to-red-700 shadow-sm"
-                            : isBlue
-                            ? "bg-gradient-to-br from-emerald-500 to-emerald-700 shadow-sm"
-                            : "bg-gradient-to-br from-amber-400 to-amber-600 shadow-sm"
+                          ? "bg-emerald-400/80 shadow-sm"
                           : "bg-stone-50 hover:bg-stone-100"
                       }`}
                     />
