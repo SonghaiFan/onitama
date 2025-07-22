@@ -14,7 +14,7 @@ export default function GameBoard({ gameState, onPieceClick }: GameBoardProps) {
     onPieceClick([row, col]);
   };
 
-  const renderPiece = (piece: Piece | null) => {
+  const renderPiece = (piece: Piece | null, isSelected: boolean = false) => {
     if (!piece) return null;
 
     const isRed = piece.player === "red";
@@ -34,11 +34,14 @@ export default function GameBoard({ gameState, onPieceClick }: GameBoardProps) {
       `}
         initial={{ scale: 0, rotate: -180 }}
         animate={{
-          scale: 1,
+          scale: isSelected ? 1.1 : 1,
           rotate: 0,
+          boxShadow: isSelected
+            ? "0 0 20px rgba(251, 191, 36, 0.6)"
+            : "0 2px 4px rgba(0, 0, 0, 0.1)",
         }}
         whileHover={{
-          scale: 1.1,
+          scale: isSelected ? 1.15 : 1.05,
           transition: { type: "spring", stiffness: 400, damping: 10 },
         }}
         whileTap={{ scale: 0.9 }}
@@ -51,7 +54,6 @@ export default function GameBoard({ gameState, onPieceClick }: GameBoardProps) {
           type: "spring",
           stiffness: 260,
           damping: 20,
-          duration: 0.5,
         }}
         layoutId={`piece-${piece.player}-${
           piece.isMaster
@@ -124,7 +126,7 @@ export default function GameBoard({ gameState, onPieceClick }: GameBoardProps) {
                     </motion.div>
                   )}
 
-                  {piece && renderPiece(piece)}
+                  {piece && renderPiece(piece, isSelected)}
                 </AnimatePresence>
               </div>
             );

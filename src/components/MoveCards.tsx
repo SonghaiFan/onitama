@@ -59,17 +59,20 @@ const Card = React.memo(
         `}
         animate={{
           rotate: isRotated ? 180 : 0,
-          scale: isSelected ? 1.05 : 1,
+          scale: isSelected ? 1.1 : 1,
+          boxShadow: isSelected
+            ? "0 0 20px rgba(251, 191, 36, 0.6)"
+            : "0 2px 8px rgba(0, 0, 0, 0.1)",
         }}
-        whileHover={{ scale: canInteract ? 1.08 : 1 }}
+        whileHover={{ 
+          scale: canInteract ? (isSelected ? 1.12 : 1.05) : 1 
+        }}
         whileTap={{ scale: canInteract ? 0.95 : 1 }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
         onClick={handleClick}
         transition={{
           type: "spring",
-          stiffness: 200,
+          stiffness: 260,
           damping: 20,
-          duration: 0.8,
         }}
       >
         {isShared && (
