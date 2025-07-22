@@ -1,20 +1,15 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { GameState, Piece, Player } from "@/types/game";
+import { GameState, Piece } from "@/types/game";
 import { isTempleArch } from "@/utils/gameLogic";
 
 interface GameBoardProps {
   gameState: GameState;
   onPieceClick: (position: [number, number]) => void;
-  possibleMoves?: [number, number][];
 }
 
-export default function GameBoard({
-  gameState,
-  onPieceClick,
-  possibleMoves = [],
-}: GameBoardProps) {
+export default function GameBoard({ gameState, onPieceClick }: GameBoardProps) {
   const handleCellClick = (row: number, col: number) => {
     onPieceClick([row, col]);
   };
@@ -69,12 +64,6 @@ export default function GameBoard({
     );
   };
 
-  const isPossibleMove = (row: number, col: number): boolean => {
-    return possibleMoves.some(
-      ([moveRow, moveCol]) => moveRow === row && moveCol === col
-    );
-  };
-
   return (
     <div className="neoprene-mat p-8 border border-stone-300 shadow-2xl">
       <div className="grid grid-cols-5 gap-2 bg-stone-100 p-4 border border-stone-200 shadow-inner">
@@ -86,7 +75,6 @@ export default function GameBoard({
             const isSelected =
               gameState.selectedPiece?.[0] === row &&
               gameState.selectedPiece?.[1] === col;
-            const isPossible = isPossibleMove(row, col);
 
             return (
               <div
@@ -110,18 +98,15 @@ export default function GameBoard({
                       ? "ring-2 ring-amber-400 bg-amber-100 shadow-lg"
                       : "bg-stone-50"
                   }
-                  ${
-                    isPossible
-                      ? "ring-2 ring-emerald-400 bg-emerald-50 shadow-md"
-                      : ""
-                  }
                   ${!piece ? "hover:bg-stone-100" : ""}
                 `}
               >
-                <AnimatePresence>
+                <AnimatePresence mode="wait">
                   {(isBlueTempleArch || isRedTempleArch) && !piece && (
                     <motion.div
-                      key={`temple-${row}-${col}`}
+                      key={`temple-${row}-${col}-${
+                        isBlueTempleArch ? "blue" : "red"
+                      }`}
                       className="text-lg text-stone-600"
                       initial={{ opacity: 0, scale: 0 }}
                       animate={{
@@ -140,43 +125,6 @@ export default function GameBoard({
                   )}
 
                   {piece && renderPiece(piece)}
-
-                  {/* Possible move indicator - only show one type */}
-                  {isPossible && !piece && (
-                    <motion.div
-                      key={`move-${row}-${col}`}
-                      className="w-5 h-5 bg-emerald-500 rounded-full shadow-sm"
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{
-                        scale: [1, 1.2, 1],
-                        opacity: [0.6, 1, 0.8],
-                      }}
-                      exit={{ scale: 0, opacity: 0 }}
-                      transition={{
-                        duration: 0.6,
-                        repeat: Infinity,
-                        repeatType: "reverse",
-                      }}
-                    />
-                  )}
-
-                  {isPossible && piece && piece.player !== gameState.currentPlayer && (
-                    <motion.div
-                      key={`capture-${row}-${col}`}
-                      className="absolute -top-2 -right-2 w-4 h-4 bg-red-600 rounded-full shadow-lg"
-                      initial={{ scale: 0 }}
-                      animate={{
-                        scale: [1, 1.3, 1],
-                        opacity: [0.8, 1, 0.8],
-                      }}
-                      exit={{ scale: 0 }}
-                      transition={{
-                        duration: 0.8,
-                        repeat: Infinity,
-                        repeatType: "reverse",
-                      }}
-                    />
-                  )}
                 </AnimatePresence>
               </div>
             );

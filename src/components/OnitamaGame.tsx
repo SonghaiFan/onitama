@@ -11,7 +11,6 @@ import MoveCards from "./MoveCards";
 import { GameState, Player } from "@/types/game";
 import {
   INITIAL_GAME_STATE,
-  getPossibleMoves,
   isValidMove,
   executeMove,
   createNewGame,
@@ -20,12 +19,6 @@ import {
 const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
   function OnitamaGame(props, ref) {
     const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
-    const [possibleMoves, setPossibleMoves] = useState<[number, number][]>([]);
-
-    // Clear possible moves when player changes or selections are cleared
-    React.useEffect(() => {
-      setPossibleMoves([]);
-    }, [gameState.currentPlayer, gameState.selectedPiece, gameState.selectedCard]);
 
     const handlePieceClick = useCallback(
       (position: [number, number]) => {
@@ -60,7 +53,6 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
               gameState.selectedCard
             );
             setGameState(newGameState);
-            setPossibleMoves([]);
           }
           return;
         }
@@ -71,23 +63,6 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
           if (piece.player === gameState.currentPlayer) {
             const newGameState = { ...gameState, selectedPiece: position };
             setGameState(newGameState);
-
-            // Show possible moves if a card is also selected
-            if (gameState.selectedCard !== null) {
-              const selectedCard =
-                gameState.players[gameState.currentPlayer].cards[
-                  gameState.selectedCard
-                ];
-              const moves = getPossibleMoves(
-                piece,
-                selectedCard,
-                gameState.board
-              );
-              setPossibleMoves(moves);
-            } else {
-              // Clear possible moves if no card selected
-              setPossibleMoves([]);
-            }
           }
           // If it's an opponent's piece and we can capture it
           else if (gameState.selectedPiece && gameState.selectedCard !== null) {
@@ -111,13 +86,15 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
                 gameState.selectedCard
               );
               setGameState(newGameState);
-              setPossibleMoves([]);
             }
           }
         } else {
           // Clicking on empty space without valid move - clear selection
-          setGameState({ ...gameState, selectedPiece: null, selectedCard: null });
-          setPossibleMoves([]);
+          setGameState({
+            ...gameState,
+            selectedPiece: null,
+            selectedCard: null,
+          });
         }
       },
       [gameState]
@@ -130,29 +107,12 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
 
         const newGameState = { ...gameState, selectedCard: cardIndex };
         setGameState(newGameState);
-
-        // Show possible moves if a piece is also selected
-        if (gameState.selectedPiece) {
-          const [row, col] = gameState.selectedPiece;
-          const piece = gameState.board[row][col];
-          if (piece) {
-            const selectedCard =
-              gameState.players[gameState.currentPlayer].cards[cardIndex];
-            const moves = getPossibleMoves(
-              piece,
-              selectedCard,
-              gameState.board
-            );
-            setPossibleMoves(moves);
-          }
-        }
       },
       [gameState]
     );
 
     const resetGame = useCallback(() => {
       setGameState(createNewGame()); // Use createNewGame for fresh random cards
-      setPossibleMoves([]);
     }, []);
 
     useImperativeHandle(ref, () => ({
@@ -170,29 +130,35 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
         { card: redCards[1], position: "red-right" },
         { card: blueCards[0], position: "blue-left" },
         { card: blueCards[1], position: "blue-right" },
-        { 
-          card: sharedCard, 
-          position: sharedCard.color === "blue" ? "shared-left" : "shared-right" 
+        {
+          card: sharedCard,
+          position:
+            sharedCard.color === "blue" ? "shared-left" : "shared-right",
         },
       ];
     }, [
-      gameState.players.red.cards[0]?.name,
-      gameState.players.red.cards[1]?.name,
-      gameState.players.blue.cards[0]?.name,
-      gameState.players.blue.cards[1]?.name,
-      gameState.sharedCard.name,
-      gameState.sharedCard.color,
+      gameState.players.red.cards,
+      gameState.players.blue.cards,
+      gameState.sharedCard,
     ]);
 
     // Cards with selection state - efficiently computed
     const cards = React.useMemo(() => {
       return staticCards.map((staticCard) => ({
         ...staticCard,
-        isSelected: 
-          (staticCard.position === "red-left" && gameState.currentPlayer === "red" && gameState.selectedCard === 0) ||
-          (staticCard.position === "red-right" && gameState.currentPlayer === "red" && gameState.selectedCard === 1) ||
-          (staticCard.position === "blue-left" && gameState.currentPlayer === "blue" && gameState.selectedCard === 0) ||
-          (staticCard.position === "blue-right" && gameState.currentPlayer === "blue" && gameState.selectedCard === 1),
+        isSelected:
+          (staticCard.position === "red-left" &&
+            gameState.currentPlayer === "red" &&
+            gameState.selectedCard === 0) ||
+          (staticCard.position === "red-right" &&
+            gameState.currentPlayer === "red" &&
+            gameState.selectedCard === 1) ||
+          (staticCard.position === "blue-left" &&
+            gameState.currentPlayer === "blue" &&
+            gameState.selectedCard === 0) ||
+          (staticCard.position === "blue-right" &&
+            gameState.currentPlayer === "blue" &&
+            gameState.selectedCard === 1),
       }));
     }, [staticCards, gameState.currentPlayer, gameState.selectedCard]);
 
@@ -258,11 +224,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, object>(
 
           {/* Game Board - Centered with responsive scaling */}
           <div className="relative z-20 flex justify-center items-center scale-75 sm:scale-90 lg:scale-100">
-            <GameBoard
-              gameState={gameState}
-              onPieceClick={handlePieceClick}
-              possibleMoves={possibleMoves}
-            />
+            <GameBoard gameState={gameState} onPieceClick={handlePieceClick} />
           </div>
         </div>
       </div>
