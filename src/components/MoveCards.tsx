@@ -140,6 +140,21 @@ export function Card({
                   <MoveGrid card={card} isWind={false} isTrimmed={true} />
                   <MoveGrid card={card} isWind={true} isTrimmed={true} />
                 </div>
+              ) : card.isDualCard ? (
+                <div className="flex flex-col items-center justify-center w-full space-y-2 sm:space-y-3">
+                  <MoveGrid
+                    card={card}
+                    isDual={true}
+                    isMaster={true}
+                    isTrimmed={true}
+                  />
+                  <MoveGrid
+                    card={card}
+                    isDual={true}
+                    isMaster={false}
+                    isTrimmed={true}
+                  />
+                </div>
               ) : (
                 <MoveGrid card={card} />
               )}

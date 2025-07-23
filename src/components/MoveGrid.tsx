@@ -1,18 +1,30 @@
 "use client";
-import { MoveCard } from "@/types/game";
+import { MoveCard, Move } from "@/types/game";
 import React from "react";
 
 // Responsive move grid with optional trimming and no borders; each cell is a square via aspect-square
 export function MoveGrid({
   card,
   isWind = false,
+  isDual = false,
+  isMaster = false,
   isTrimmed = false,
 }: {
   card: MoveCard;
   isWind?: boolean;
+  isDual?: boolean;
+  isMaster?: boolean;
   isTrimmed?: boolean;
 }) {
-  const movesToShow = isWind && card.wind_move ? card.wind_move : card.moves;
+  // Determine which moves to show based on card type and parameters
+  let movesToShow: Move[];
+  if (isWind && card.wind_move) {
+    movesToShow = card.wind_move;
+  } else if (isDual && card.isDualCard) {
+    movesToShow = isMaster ? card.master_moves ?? [] : card.student_moves ?? [];
+  } else {
+    movesToShow = card.moves;
+  }
   const rows = [0, 1, 2, 3, 4];
   const cols = [0, 1, 2, 3, 4];
 
@@ -51,6 +63,10 @@ export function MoveGrid({
                 className={`aspect-square flex items-center justify-center shadow-sm ${
                   isWind && card.wind_move
                     ? "bg-gradient-to-br from-cyan-600 to-blue-700"
+                    : isDual && card.isDualCard
+                    ? isMaster
+                      ? "bg-gradient-to-br from-amber-600 to-orange-700"
+                      : "bg-gradient-to-br from-emerald-600 to-green-700"
                     : "bg-gradient-to-br from-stone-700 to-stone-900"
                 }`}
               />
@@ -66,6 +82,10 @@ export function MoveGrid({
                 hasMove
                   ? isWind && card.wind_move
                     ? "bg-cyan-400/80 shadow-sm"
+                    : isDual && card.isDualCard
+                    ? isMaster
+                      ? "bg-amber-400/80 shadow-sm"
+                      : "bg-emerald-400/80 shadow-sm"
                     : "bg-emerald-400/80 shadow-sm"
                   : "bg-stone-50 hover:bg-stone-100"
               }`}

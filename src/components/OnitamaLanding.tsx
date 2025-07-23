@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import OnitamaGame from "./OnitamaGame";
 
-type CardPack = "normal" | "senseis" | "windway";
+type CardPack = "normal" | "senseis" | "windway" | "promo" | "dual";
 type Language = "zh" | "en";
 
 // Bilingual content
@@ -27,9 +27,21 @@ const content = {
         selected: "✓ 已選擇",
         unselected: "點擊選擇",
       },
+      promo: {
+        name: "限定包",
+        description: "6張限定卡牌",
+        selected: "✓ 已選擇",
+        unselected: "點擊選擇",
+      },
       windway: {
         name: "風之道",
-        description: "風靈擴展包",
+        description: "風靈擴展包(8張風靈卡牌+2張移動卡牌)",
+        selected: "✓ 已選擇",
+        unselected: "點擊選擇",
+      },
+      dual: {
+        name: "摹之道",
+        description: "摹形擴展包(4張摹形卡牌)",
         selected: "✓ 已選擇",
         unselected: "點擊選擇",
       },
@@ -138,9 +150,22 @@ const content = {
         selected: "✓ Selected",
         unselected: "Click to select",
       },
+      promo: {
+        name: "Promo Pack",
+        description: "6 Limited Edition Cards",
+        selected: "✓ Selected",
+        unselected: "Click to select",
+      },
       windway: {
         name: "Way of the Wind",
-        description: "Wind Spirit Expansion Pack",
+        description:
+          "Wind Spirit Expansion Pack (8 spirit cards + 2 move cards)",
+        selected: "✓ Selected",
+        unselected: "Click to select",
+      },
+      dual: {
+        name: "Way of the Mimicry",
+        description: "Mimicry Expansion Pack (4 mimicry cards)",
         selected: "✓ Selected",
         unselected: "Click to select",
       },
@@ -476,7 +501,7 @@ export default function OnitamaLanding() {
             <h3 className="text-base sm:text-lg text-stone-700 mb-4 sm:mb-6 font-light tracking-wide zen-text">
               {content[language].cardPacks.title}
             </h3>
-            <div className="flex flex-row justify-center gap-10 sm:gap-6 lg:gap-8">
+            <div className="flex flex-wrap justify-center gap-4 sm:gap-6 lg:gap-8">
               <CardPackButton
                 pack="normal"
                 isSelected={selectedPacks.has("normal")}
@@ -489,10 +514,25 @@ export default function OnitamaLanding() {
                 onClick={() => togglePack("senseis")}
                 lang={language}
               />
+
+              <CardPackButton
+                pack="promo"
+                isSelected={selectedPacks.has("promo")}
+                onClick={() => togglePack("promo")}
+                lang={language}
+              />
+              {/* Pack with special */}
+              <div className="w-full h-1 bg-stone-200 my-4 brush-stroke"></div>
               <CardPackButton
                 pack="windway"
                 isSelected={selectedPacks.has("windway")}
                 onClick={() => togglePack("windway")}
+                lang={language}
+              />
+              <CardPackButton
+                pack="dual"
+                isSelected={selectedPacks.has("dual")}
+                onClick={() => togglePack("dual")}
                 lang={language}
               />
             </div>

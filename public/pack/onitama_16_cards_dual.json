@@ -1,0 +1,78 @@
+{
+  "cards": [
+    {
+      "id": "moose",
+      "name": {
+        "en": "Moose",
+        "hu": "Jávorszarvas",
+        "zh": "麤",
+        "ja": "麤"
+      },
+      "color": "blue",
+      "master_moves": [
+        { "x": -2, "y": 1 },
+        { "x": 2, "y": 1 }
+      ],
+      "student_moves": [{ "x": 0, "y": 1 }],
+      "firstPlayerColor": "blue",
+      "type": "dual_card"
+    },
+    {
+      "id": "deer",
+      "name": {
+        "en": "Deer",
+        "hu": "Szarvas",
+        "zh": "鹿",
+        "ja": "鹿"
+      },
+      "color": "red",
+      "master_moves": [{ "x": 0, "y": 1 }],
+      "student_moves": [
+        { "x": -2, "y": 1 },
+        { "x": 2, "y": 1 }
+      ],
+      "firstPlayerColor": "red",
+      "type": "dual_card"
+    },
+    {
+      "id": "sasori",
+      "name": {
+        "en": "Scorpion",
+        "hu": "Sasori",
+        "zh": "蠍",
+        "ja": "蠍"
+      },
+      "color": "red",
+      "master_moves": [
+        { "x": -1, "y": 2 },
+        { "x": 1, "y": 2 }
+      ],
+      "student_moves": [
+        { "x": -2, "y": 0 },
+        { "x": 2, "y": 0 }
+      ],
+      "firstPlayerColor": "red",
+      "type": "dual_card"
+    },
+    {
+      "id": "kumo",
+      "name": {
+        "en": "Spider",
+        "hu": "Kumo",
+        "zh": "蛛",
+        "ja": "蛛"
+      },
+      "color": "blue",
+      "master_moves": [
+        { "x": -2, "y": 0 },
+        { "x": 2, "y": 0 }
+      ],
+      "student_moves": [
+        { "x": -1, "y": 2 },
+        { "x": 1, "y": 2 }
+      ],
+      "firstPlayerColor": "blue",
+      "type": "dual_card"
+    }
+  ]
+}

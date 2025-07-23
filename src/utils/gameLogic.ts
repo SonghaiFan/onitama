@@ -1,20 +1,25 @@
 import {
   GameState,
   MoveCard,
+  Move,
   Piece,
   Player,
-  SenseisCardPackCard,
+  PackCard,
 } from "@/types/game";
 
 // Convert card data from JSON format to our game format
-function convertCardToGameFormat(card: SenseisCardPackCard): MoveCard {
+function convertCardToGameFormat(card: PackCard): MoveCard {
   return {
     name: card.name.en,
     displayName: card.name.zh,
     moves: card.moves,
     wind_move: card.wind_move,
+    master_moves: card.master_moves,
+    student_moves: card.student_moves,
     color: card.firstPlayerColor === "red" ? "red" : "blue",
     isWindSpiritCard: !!card.wind_move || card.type === "wind_spirit",
+    isDualCard:
+      !!card.master_moves || !!card.student_moves || card.type === "dual_card",
   };
 }
 
@@ -74,7 +79,7 @@ const FALLBACK_CARDS: MoveCard[] = [
 
 // Function to load card pack data
 async function loadCardPack(
-  packName: "normal" | "senseis" | "windway"
+  packName: "normal" | "senseis" | "windway" | "promo" | "dual"
 ): Promise<MoveCard[]> {
   try {
     const response = await fetch(`/pack/onitama_16_cards_${packName}.json`);
@@ -92,7 +97,7 @@ const cardPackCache: Record<string, MoveCard[]> = {};
 
 // Function to get cards for multiple packs
 async function getCardsForPacks(
-  packNames: ("normal" | "senseis" | "windway")[]
+  packNames: ("normal" | "senseis" | "windway" | "promo" | "dual")[]
 ): Promise<MoveCard[]> {
   const allCards: MoveCard[] = [];
 
@@ -111,7 +116,9 @@ async function getCardsForPacks(
 
 // Function to randomly select 5 cards from multiple packs
 async function selectRandomCardsAsync(
-  cardPacks: ("normal" | "senseis" | "windway")[] = ["normal"]
+  cardPacks: ("normal" | "senseis" | "windway" | "promo" | "dual")[] = [
+    "normal",
+  ]
 ): Promise<{
   playerCards: MoveCard[];
   sharedCard: MoveCard;
@@ -216,7 +223,7 @@ function createInitialBoard(): (Piece | null)[][] {
 
 // Check if wind spirit should be included based on selected packs
 function shouldIncludeWindSpirit(
-  cardPacks: ("normal" | "senseis" | "windway")[]
+  cardPacks: ("normal" | "senseis" | "windway" | "promo" | "dual")[]
 ): boolean {
   return cardPacks.includes("windway");
 }
@@ -269,7 +276,9 @@ export const INITIAL_GAME_STATE: GameState = createInitialGameState();
 
 // Async version for loading card packs
 export async function createNewGameAsync(
-  cardPacks: ("normal" | "senseis" | "windway")[] = ["normal"]
+  cardPacks: ("normal" | "senseis" | "windway" | "promo" | "dual")[] = [
+    "normal",
+  ]
 ): Promise<GameState> {
   try {
     const { playerCards, sharedCard } = await selectRandomCardsAsync(cardPacks);
@@ -360,8 +369,22 @@ export function getPossibleMoves(
   const moves: [number, number][] = [];
   const [pieceRow, pieceCol] = piece.position;
 
-  // Wind spirits use wind_move if available, otherwise no moves
-  const movesToCheck = piece.isWindSpirit ? card.wind_move ?? [] : card.moves;
+  // Determine which moves to use based on piece type and card type
+  let movesToCheck: Move[];
+  if (piece.isWindSpirit) {
+    // Wind spirits use wind_move if available, otherwise no moves
+    movesToCheck = card.wind_move ?? [];
+  } else if (card.isDualCard) {
+    // Dual cards: masters use master_moves, students use student_moves
+    if (piece.isMaster) {
+      movesToCheck = card.master_moves ?? [];
+    } else {
+      movesToCheck = card.student_moves ?? [];
+    }
+  } else {
+    // Regular cards: all pieces use the same moves
+    movesToCheck = card.moves;
+  }
 
   // Check each move in the card
   for (const move of movesToCheck) {
@@ -564,7 +587,13 @@ export function executeMove(
   const nextPlayer = gameState.currentPlayer === "red" ? "blue" : "red";
   const rotatedCard: MoveCard = {
     ...usedCard,
-    moves: usedCard.moves.map((move) => ({ x: -move.x, y: -move.y })),
+    // Rotate moves based on card type
+    moves: usedCard.moves?.map((move) => ({ x: -move.x, y: -move.y })) ?? [],
+    // Rotate dual card moves
+    master_moves:
+      usedCard.master_moves?.map((move) => ({ x: -move.x, y: -move.y })) ?? [],
+    student_moves:
+      usedCard.student_moves?.map((move) => ({ x: -move.x, y: -move.y })) ?? [],
     // Keep wind_move unchanged as they use absolute coordinates
     wind_move: usedCard.wind_move,
     color: nextPlayer,

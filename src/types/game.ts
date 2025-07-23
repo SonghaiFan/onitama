@@ -18,8 +18,11 @@ export interface MoveCard {
   displayName?: string;
   moves: Move[];
   wind_move?: Move[]; // Add wind moves for wind spirit cards
+  master_moves?: Move[]; // Add master moves for dual cards
+  student_moves?: Move[]; // Add student moves for dual cards
   color: Player;
   isWindSpiritCard?: boolean; // Flag to identify wind spirit cards
+  isDualCard?: boolean; // Flag to identify dual cards
 }
 
 export interface PlayerState {
@@ -42,14 +45,14 @@ export interface GameState {
 }
 
 // Type for the Sensei's Path card pack JSON structure
-export interface SenseisCardPackMetadata {
+export interface PackMetadata {
   name: string;
   description: string;
   author: string;
   version: string;
 }
 
-export interface SenseisCardPackCard {
+export interface PackCard {
   id: string;
   name: {
     en: string;
@@ -60,11 +63,13 @@ export interface SenseisCardPackCard {
   color: string;
   moves: Move[];
   wind_move?: Move[];
+  master_moves?: Move[];
+  student_moves?: Move[];
   firstPlayerColor: Player;
-  type?: "wind_spirit" | "move_card"; // Card type for wind spirit vs regular cards
+  type?: "wind_spirit" | "normal_card" | "dual_card";
 }
 
-export interface SenseisCardPack {
-  metadata: SenseisCardPackMetadata;
-  cards: SenseisCardPackCard[];
+export interface Pack {
+  metadata: PackMetadata;
+  cards: PackCard[];
 }

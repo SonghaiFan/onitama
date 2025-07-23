@@ -38,7 +38,7 @@ const gameContent = {
 };
 
 interface OnitamaGameProps {
-  cardPacks?: ("normal" | "senseis" | "windway")[];
+  cardPacks?: ("normal" | "senseis" | "windway" | "promo" | "dual")[];
   language?: Language;
 }
 

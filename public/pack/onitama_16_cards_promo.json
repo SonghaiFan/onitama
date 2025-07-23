@@ -1,0 +1,104 @@
+{
+  "cards": [
+    {
+      "id": "serow",
+      "name": {
+        "en": "Serow",
+        "zh": "鬃羊",
+        "ja": "鬃羊"
+      },
+      "color": "blue",
+      "moves": [
+        { "x": 0, "y": 1 },
+        { "x": 0, "y": -2 },
+        { "x": -2, "y": 0 },
+        { "x": 1, "y": 0 }
+      ],
+      "firstPlayerColor": "blue",
+      "type": "normal_card"
+    },
+    {
+      "id": "cat",
+      "name": {
+        "en": "Cat",
+        "zh": "猫",
+        "ja": "猫"
+      },
+      "color": "red",
+      "moves": [
+        { "x": 0, "y": 1 },
+        { "x": 0, "y": -2 },
+        { "x": -1, "y": 0 },
+        { "x": 2, "y": 0 }
+      ],
+      "firstPlayerColor": "red",
+      "type": "normal_card"
+    },
+    {
+      "id": "steer",
+      "name": {
+        "en": "Steer",
+        "zh": "犊",
+        "ja": "犢"
+      },
+      "color": "blue",
+      "moves": [
+        { "x": -1, "y": 0 },
+        { "x": 1, "y": 0 },
+        { "x": -1, "y": -1 },
+        { "x": 1, "y": -1 }
+      ],
+      "firstPlayerColor": "blue",
+      "type": "normal_card"
+    },
+    {
+      "id": "lobster",
+      "name": {
+        "en": "Lobster",
+        "zh": "龙虾",
+        "ja": "龍蝦"
+      },
+      "color": "red",
+      "moves": [
+        { "x": -1, "y": 1 },
+        { "x": 1, "y": 1 },
+        { "x": -1, "y": -2 },
+        { "x": 1, "y": -2 }
+      ],
+      "firstPlayerColor": "red",
+      "type": "normal_card"
+    },
+    {
+      "id": "butterfly",
+      "name": {
+        "en": "Butterfly",
+        "zh": "蝶",
+        "ja": "蝶"
+      },
+      "color": "red",
+      "moves": [
+        { "x": -2, "y": 1 },
+        { "x": 2, "y": 1 },
+        { "x": 0, "y": -1 }
+      ],
+      "firstPlayerColor": "red",
+      "type": "normal_card"
+    },
+    {
+      "id": "moth",
+      "name": {
+        "en": "Moth",
+        "zh": "蛾",
+        "ja": "蛾"
+      },
+      "color": "blue",
+      "moves": [
+        { "x": 0, "y": 1 },
+        { "x": -2, "y": -1 },
+        { "x": 2, "y": -1 }
+      ],
+      "firstPlayerColor": "blue",
+      "type": "normal_card"
+    }
+  ]
+}
