@@ -104,6 +104,7 @@ export function Card({
   return (
     <motion.div
       style={{ gridArea }}
+      className="relative z-20"
       animate={{
         rotate: isRotated ? 180 : 0,
         scale: isSelected ? 1.05 : 1,

@@ -270,17 +270,7 @@ export default function GameBoard({
       {dragState.isDragging &&
         dragState.draggedPiece &&
         dragState.dragPosition && (
-          <div
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              pointerEvents: "none",
-              zIndex: 1000,
-            }}
-          >
+          <div className="fixed inset-0 w-full h-full pointer-events-none z-9999">
             <div
               style={{
                 position: "absolute",

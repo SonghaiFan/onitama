@@ -195,7 +195,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
     }));
 
     const GameStatusSimple = () => (
-      <div className="relative flex items-center justify-center space-x-0.5 sm:space-x-2 lg:space-x-4 mb-0.5 sm:mb-2 lg:mb-4 z-30">
+      <div className="relative flex items-center justify-center space-x-0.5 sm:space-x-2 lg:space-x-4 mb-0.5 sm:mb-2 lg:mb-4 z-25">
         {gameState.winner ? (
           <div className="flex items-center space-x-0.5 sm:space-x-1.5">
             <span
@@ -251,7 +251,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
     }
 
     return (
-      <div className="w-full h-full flex flex-col watercolor-wash">
+      <div className="w-full h-full flex flex-col watercolor-wash z-10">
         <div className="game-layout-grid flex-1">
           <GameStatusSimple />
           <div

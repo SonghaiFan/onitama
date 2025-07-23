@@ -27,7 +27,7 @@ export function DroppableCell({
   const TempleArchIcon = (isRedTempleArch || isBlueTempleArch) && (
     <span
       className={`
-          absolute inset-0 flex items-center justify-center pointer-events-none z-0
+          absolute inset-0 flex items-center justify-center pointer-events-none z-5
           font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl select-none opacity-50 text-stone-100
           ${isBlueTempleArch ? "" : "rotate-180"}
         `}
@@ -42,7 +42,7 @@ export function DroppableCell({
       data-cell-id={`cell-${row}-${col}`}
       className={`
         w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-18 lg:h-18 border border-stone-300 flex items-center justify-center cursor-pointer
-        transition-all duration-300 hover:shadow-md relative bg-stone-50 backdrop-blur-sm focus:focus-zen z-10
+        transition-all duration-300 hover:shadow-md relative bg-stone-50 backdrop-blur-sm focus:focus-zen z-10 hover:z-9999
         ${
           isBlueTempleArch || isRedTempleArch
             ? "temple-arch bg-stone-200 border-stone-400 "
@@ -65,7 +65,7 @@ export function DroppableCell({
         onClick={onClick}
         onKeyDown={onKeyDown}
         tabIndex={0}
-        className="w-full h-full flex items-center justify-center relative z-10"
+        className="w-full h-full flex items-center justify-center relative z-15"
       >
         {children}
       </div>

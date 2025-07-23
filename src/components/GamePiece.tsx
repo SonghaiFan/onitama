@@ -31,7 +31,7 @@ function PieceIcon({
   return (
     <span
       className={`
-        absolute inset-0 flex items-center justify-center pointer-events-none z-0
+        absolute inset-0 flex items-center justify-center pointer-events-none z-20
          font-serif  font-bold select-none opacity-60
          ${
            isMaster
@@ -63,7 +63,7 @@ export function DraggablePiece({
   return (
     <motion.div
       className={`
-        w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full border-2 flex items-center justify-center  z-50
+        w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full border-2 flex items-center justify-center relative z-30
         ${
           isRed
             ? "bg-red-600 border-red-700 text-white"
@@ -128,7 +128,7 @@ export function DragOverlay({ piece }: DragOverlayProps) {
   return (
     <motion.div
       className={`
-        w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full border-2 flex items-center justify-center font-bold text-base sm:text-lg md:text-xl lg:text-2xl z-50
+        w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full border-2 flex items-center justify-center font-bold text-base sm:text-lg md:text-xl lg:text-2xl relative z-50
         ${
           isRed
             ? "bg-red-600 border-red-700 text-white"
