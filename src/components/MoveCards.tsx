@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { MoveCard, Player } from "@/types/game";
 import { getArtName } from "../utils/getArtName";
+import { MoveGrid } from "./MoveGrid";
 
 type Language = "zh" | "en";
 
@@ -34,68 +35,6 @@ interface CardProps {
   language?: Language;
 }
 
-// Separate component for the move grid
-function MoveGrid({
-  card,
-  isRotated,
-  showWindMoves = false,
-}: {
-  card: MoveCard;
-  isRotated: boolean;
-  showWindMoves?: boolean;
-}) {
-  const movesToShow =
-    showWindMoves && card.wind_move ? card.wind_move : card.moves;
-
-  return (
-    <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-18 md:h-18 lg:w-20 lg:h-20 mx-auto bg-stone-100/95 border border-stone-300 grid grid-cols-5 gap-0.5 p-1 backdrop-blur-sm shadow-inner">
-      {Array.from({ length: 5 }, (_, i) =>
-        Array.from({ length: 5 }, (_, j) => {
-          const actualI = isRotated ? 4 - i : i;
-          const actualJ = isRotated ? 4 - j : j;
-
-          if (actualI === 2 && actualJ === 2) {
-            return (
-              <div
-                key={`${i}-${j}`}
-                className={`w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 border border-stone-400 flex items-center justify-center shadow-sm ${
-                  showWindMoves && card.wind_move
-                    ? "bg-gradient-to-br from-cyan-600 to-blue-700"
-                    : "bg-gradient-to-br from-stone-700 to-stone-900"
-                }`}
-              />
-            );
-          }
-
-          const hasMove = movesToShow.some((move) => {
-            let displayMove = move;
-            if (isRotated) {
-              displayMove = { x: move.x, y: -move.y };
-            }
-
-            const displayRow = 2 - displayMove.y;
-            const displayCol = 2 + displayMove.x;
-            return displayRow === actualI && displayCol === actualJ;
-          });
-
-          return (
-            <div
-              key={`${i}-${j}`}
-              className={`w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 border border-stone-300 transition-colors ${
-                hasMove
-                  ? showWindMoves && card.wind_move
-                    ? "bg-cyan-400/80 shadow-sm"
-                    : "bg-emerald-400/80 shadow-sm"
-                  : "bg-stone-50 hover:bg-stone-100"
-              }`}
-            />
-          );
-        })
-      )}
-    </div>
-  );
-}
-
 // Main card component
 export function Card({
   card,
@@ -105,12 +44,14 @@ export function Card({
   currentPlayer,
   cardIndex,
   onCardClick,
+  language = "en",
 }: CardProps) {
   const isBlue = playerOwner === "blue";
   const isRed = playerOwner === "red";
   const isShared = playerOwner === "shared";
   const isRotated = isBlue || (isShared && gridArea === "shared-left");
   const canInteract = !isShared && playerOwner === currentPlayer;
+  const hasWindMoves = card.isWindSpiritCard && card.wind_move;
 
   const handleClick = () => {
     if (canInteract && cardIndex !== undefined) {
@@ -119,7 +60,6 @@ export function Card({
   };
 
   // Create a layoutId that helps track cards across positions
-  // Include the original card name to help Motion track the same card
   const layoutId = `card-${card.name}`;
 
   return (
@@ -159,58 +99,64 @@ export function Card({
       }}
     >
       <div
-        className={`zen-card relative overflow-hidden ${
-          isShared ? "p-1.5 sm:p-2 md:p-3" : "p-1.5 sm:p-2"
-        } border border-stone-300 ${isShared ? "bg-stone-50/80" : ""}`}
+        className={`zen-card relative overflow-hidden w-40 h-28 sm:w-48 sm:h-32 md:w-56 md:h-36 lg:w-64 lg:h-40 ${
+          isShared ? "bg-stone-50/80" : "bg-stone-100/90"
+        } border border-stone-300 shadow-lg`}
       >
         {/* Decorative Corner Elements */}
-        <div className="absolute top-0.5 left-0.5 sm:top-1 sm:left-1 w-1.5 h-1.5 sm:w-2 sm:h-2 border-l border-t border-stone-300/50 pointer-events-none"></div>
-        <div className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1 w-1.5 h-1.5 sm:w-2 sm:h-2 border-r border-t border-stone-300/50 pointer-events-none"></div>
-        <div className="absolute bottom-0.5 left-0.5 sm:bottom-1 sm:left-1 w-1.5 h-1.5 sm:w-2 sm:h-2 border-l border-b border-stone-300/50 pointer-events-none"></div>
-        <div className="absolute bottom-0.5 right-0.5 sm:bottom-1 sm:right-1 w-1.5 h-1.5 sm:w-2 sm:h-2 border-r border-b border-stone-300/50 pointer-events-none"></div>
+        <div className="absolute top-0.5 left-0.5 w-1.5 h-1.5 border-l border-t border-stone-300/50 pointer-events-none"></div>
+        <div className="absolute top-0.5 right-0.5 w-1.5 h-1.5 border-r border-t border-stone-300/50 pointer-events-none"></div>
+        <div className="absolute bottom-0.5 left-0.5 w-1.5 h-1.5 border-l border-b border-stone-300/50 pointer-events-none"></div>
+        <div className="absolute bottom-0.5 right-0.5 w-1.5 h-1.5 border-r border-b border-stone-300/50 pointer-events-none"></div>
 
-        <div className="relative z-10">
-          <div className="flex flex-col items-center justify-center mb-1.5 sm:mb-2 md:mb-3">
-            <div
-              className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] ring-1 ring-stone-300 ${
-                isShared ? "bg-stone-200/70" : "bg-stone-100/90"
-              }`}
-            >
-              {getArtName(card)}
+        <div className="relative z-10 h-full flex flex-col">
+          {/* Main content area - 50/50 split */}
+          <div className="flex-1 flex items-center">
+            {/* Left section - Character and name (50%) */}
+            <div className="w-1/2 h-full flex flex-col items-center justify-center px-2 sm:px-3">
+              <div
+                className={`flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-18 lg:h-18 rounded-full shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] ring-1 ring-stone-300 ${
+                  isShared ? "bg-stone-200/70" : "bg-stone-100/90"
+                }`}
+              >
+                {getArtName(card)}
+              </div>
+              <div
+                className={`text-sm sm:text-base mt-2 text-center ${
+                  isShared ? "text-stone-500" : "text-stone-600"
+                }`}
+              >
+                {card.name}
+              </div>
             </div>
-            <div
-              className={`text-xs sm:text-base mt-2 text-center ${
-                isShared ? "text-stone-500" : "text-stone-600"
-              }`}
-            >
-              {card.name}
+
+            {/* Vertical divider line */}
+            <div className="w-px h-full bg-stone-300/50"></div>
+
+            {/* Right section - Move grid(s) (50%) */}
+            <div className="w-1/2 h-full flex items-center justify-center px-2 sm:px-3">
+              {hasWindMoves ? (
+                <div className="flex flex-col items-center justify-center w-full space-y-2 sm:space-y-3">
+                  <MoveGrid
+                    card={card}
+                    isRotated={isRotated}
+                    isWind={false}
+                    isTrimmed={true}
+                  />
+                  <MoveGrid
+                    card={card}
+                    isRotated={isRotated}
+                    isWind={true}
+                    isTrimmed={true}
+                  />
+                </div>
+              ) : (
+                <MoveGrid card={card} isRotated={isRotated} />
+              )}
             </div>
           </div>
 
-          {/* Show dual grids for wind spirit cards */}
-          {card.isWindSpiritCard && card.wind_move ? (
-            <div className="flex flex-col gap-1 sm:gap-2">
-              <div className="text-center">
-                <div className="text-xs text-stone-500 mb-1">Normal Move</div>
-                <MoveGrid
-                  card={card}
-                  isRotated={isRotated}
-                  showWindMoves={false}
-                />
-              </div>
-              <div className="text-center">
-                <div className="text-xs text-cyan-600 mb-1">Wind Move</div>
-                <MoveGrid
-                  card={card}
-                  isRotated={isRotated}
-                  showWindMoves={true}
-                />
-              </div>
-            </div>
-          ) : (
-            <MoveGrid card={card} isRotated={isRotated} />
-          )}
-
+          {/* Bottom bar */}
           <div className="flex justify-center mt-1.5 sm:mt-2 md:mt-3">
             <div
               className={`w-6 h-1 sm:w-8 sm:h-1.5 shadow-sm ${

@@ -359,7 +359,7 @@ export function getPossibleMoves(
   const moves: [number, number][] = [];
   const [pieceRow, pieceCol] = piece.position;
 
-  // Wind spirits use wind_move if available, otherwise use regular moves
+  // Wind spirits use wind_move if available, otherwise no moves
   const movesToCheck = piece.isWindSpirit ? card.wind_move ?? [] : card.moves;
 
   // Check each move in the card
@@ -367,21 +367,15 @@ export function getPossibleMoves(
     let targetRow: number;
     let targetCol: number;
 
-    if (piece.isWindSpirit) {
-      // Wind spirits use absolute coordinates (no player direction flip)
-      targetRow = pieceRow + move.y;
+    // Regular pieces apply move with direction based on player
+    if (piece.player === "red") {
+      // Red player: y=1 means forward (up, negative row)
+      targetRow = pieceRow - move.y;
       targetCol = pieceCol + move.x;
     } else {
-      // Regular pieces apply move with direction based on player
-      if (piece.player === "red") {
-        // Red player: y=1 means forward (up, negative row)
-        targetRow = pieceRow - move.y;
-        targetCol = pieceCol + move.x;
-      } else {
-        // Blue player: flip the moves (y=1 means forward, which is down for blue)
-        targetRow = pieceRow + move.y;
-        targetCol = pieceCol + move.x;
-      }
+      // Blue player: flip the moves (y=1 means forward, which is down for blue)
+      targetRow = pieceRow + move.y;
+      targetCol = pieceCol + move.x;
     }
 
     // Check if move is valid

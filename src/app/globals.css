@@ -289,8 +289,8 @@
   }
 }
 
-/* Small screens (640px and below) */
-@media (max-width: 640px) {
+/* Medium screens (960px and below) */
+@media (max-width: 960px) {
   .game-layout-grid {
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: auto auto auto;
