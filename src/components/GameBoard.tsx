@@ -48,6 +48,9 @@ export default function GameBoard({
     isRightDrag: false,
   });
 
+  // Track touched cell for z-index management
+  const [touchedCell, setTouchedCell] = useState<string | null>(null);
+
   // Prevent context menu on the entire board
   const handleContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -170,6 +173,18 @@ export default function GameBoard({
     }
   }, [dragState.isDragging, handleMouseMove, handleMouseUp]);
 
+  // Handle cell touch for z-index management
+  const handleCellTouchStart = useCallback((cellId: string) => {
+    setTouchedCell(cellId);
+  }, []);
+
+  const handleCellTouchEnd = useCallback(() => {
+    // Delay clearing touched cell to allow for smooth transitions
+    setTimeout(() => {
+      setTouchedCell(null);
+    }, 100);
+  }, []);
+
   const handleCellClick = (row: number, col: number) => {
     // Don't trigger click if we're dragging
     if (dragState.isDragging) return;
@@ -243,6 +258,9 @@ export default function GameBoard({
               ([moveRow, moveCol]) => moveRow === row && moveCol === col
             );
 
+            const cellId = `cell-${row}-${col}`;
+            const isTouched = touchedCell === cellId;
+
             return (
               <DroppableCell
                 key={`${row}-${col}`}
@@ -254,10 +272,13 @@ export default function GameBoard({
                 isBlueTempleArch={isBlueTempleArch}
                 isDragging={dragState.isDragging}
                 dragCardIndex={dragState.draggedPiece?.cardIndex}
+                isTouched={isTouched}
                 onClick={() => handleCellClick(row, col)}
                 onKeyDown={(e) =>
                   e.key === "Enter" && handleCellClick(row, col)
                 }
+                onTouchStart={() => handleCellTouchStart(cellId)}
+                onTouchEnd={handleCellTouchEnd}
               >
                 {piece && renderPiece(piece, isSelected, row, col)}
               </DroppableCell>

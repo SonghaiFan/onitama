@@ -9,8 +9,11 @@ interface DroppableCellProps {
   isBlueTempleArch: boolean;
   isDragging: boolean;
   dragCardIndex?: number;
+  isTouched?: boolean;
   onClick: () => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
+  onTouchStart?: () => void;
+  onTouchEnd?: () => void;
 }
 
 export function DroppableCell({
@@ -21,8 +24,11 @@ export function DroppableCell({
   isSelected,
   isRedTempleArch,
   isBlueTempleArch,
+  isTouched,
   onClick,
   onKeyDown,
+  onTouchStart,
+  onTouchEnd,
 }: DroppableCellProps) {
   const TempleArchIcon = (isRedTempleArch || isBlueTempleArch) && (
     <span
@@ -43,6 +49,7 @@ export function DroppableCell({
       className={`
         w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-18 lg:h-18 border border-stone-300 flex items-center justify-center cursor-pointer
         transition-all duration-300 hover:shadow-md relative bg-stone-50 backdrop-blur-sm focus:focus-zen z-10 hover:z-9999
+        ${isTouched ? "z-9999" : ""}
         ${
           isBlueTempleArch || isRedTempleArch
             ? "temple-arch bg-stone-200 border-stone-400 "
@@ -58,6 +65,8 @@ export function DroppableCell({
         ${!children && !isPossibleMove ? "hover:bg-stone-100" : ""}
        
       `}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
     >
       {/* Temple arch text floats underneath content */}
       {TempleArchIcon}

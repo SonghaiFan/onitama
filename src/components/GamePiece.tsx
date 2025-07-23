@@ -71,7 +71,7 @@ export function DraggablePiece({
         }
         ${isMaster ? "master-piece text-amber-100 shadow-lg" : "student-piece"}
         ${canDrag ? "cursor-grab" : "cursor-default"}
-        ${isDraggedPiece ? "opacity-50 scale-75" : ""}
+        ${isDraggedPiece ? "opacity-50 scale-75 dragging" : ""}
         ${isDraggedPiece && selectedCardIndex !== null ? "shadow-xl" : ""}
         font-bold text-base sm:text-lg md:text-xl lg:text-2xl
       `}
