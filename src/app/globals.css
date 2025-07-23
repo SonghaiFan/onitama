@@ -145,22 +145,41 @@
 }
 
 .student-piece {
-  scale: 0.9;
+  scale: 0.8;
 }
 
 .wind-spirit-piece {
-  scale: 1.1;
-  animation: wind-float 4s ease-in-out infinite;
+  scale: 1;
+  animation: wind-rotate 2.5s linear infinite;
 }
 
-@keyframes wind-float {
-  0%,
+@keyframes wind-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
   100% {
-    transform: translateY(0px) scale(1.1);
+    transform: rotate(360deg);
   }
-  50% {
-    transform: translateY(-3px) scale(1.15);
-  }
+}
+
+/* Player-specific piece colors */
+.red-piece {
+  background-color: rgb(220, 38, 38);
+  border-color: rgb(185, 28, 28);
+  color: white;
+}
+
+.blue-piece {
+  background-color: rgb(37, 99, 235);
+  border-color: rgb(30, 64, 175);
+  color: white;
+  rotate: 180deg;
+}
+
+.neutral-piece {
+  background-color: rgb(156, 163, 175);
+  border-color: rgb(107, 114, 128);
+  color: white;
 }
 
 /* ==========================================================================

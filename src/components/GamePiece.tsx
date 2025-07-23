@@ -26,23 +26,28 @@ const PIECE_ICONS = {
   "wind-spirit": "風",
 } as const;
 
-const PIECE_COLORS = {
-  red: "bg-red-600 border-red-700 text-white",
-  blue: "bg-blue-600 border-blue-700 text-white",
-  neutral: "bg-neutral-400 border-neutral-500 text-white", // For wind spirits
-} as const;
-
-// Helper to get piece type
+// Helper to get piece type and CSS class
 const getPieceType = (piece: Piece) => {
-  if (piece.isWindSpirit) return "wind-spirit";
-  if (piece.isMaster) return "master";
-  return "student";
+  switch (true) {
+    case !!piece.isWindSpirit:
+      return "wind-spirit";
+    case !!piece.isMaster:
+      return "master";
+    default:
+      return "student";
+  }
 };
 
-// Simple piece styling - just color based on player/type
-const getPieceColor = (piece: Piece) => {
-  if (piece.isWindSpirit) return PIECE_COLORS.neutral;
-  return PIECE_COLORS[piece.player as keyof typeof PIECE_COLORS];
+// Get piece CSS class based on type and player
+const getPieceClass = (piece: Piece) => {
+  const pieceType = getPieceType(piece);
+  const playerClass =
+    piece.player === "red"
+      ? "red"
+      : piece.player === "blue"
+      ? "blue"
+      : "neutral";
+  return `${pieceType}-piece ${playerClass}-piece`;
 };
 
 // Simple piece icon component - just shows the right icon
@@ -52,7 +57,7 @@ function PieceIcon({ piece }: { piece: Piece }) {
 
   return (
     <span
-      className="text-lg sm:text-xl md:text-2xl lg:text-3xl"
+      className="text-lg sm:text-xl md:text-2xl lg:text-3xl opacity-30"
       style={{ fontFamily: "DuanNing" }}
     >
       {icon}
@@ -74,7 +79,7 @@ export function DraggablePiece({
   selectedCardIndex,
   onDragStart,
 }: DraggablePieceProps) {
-  const pieceColor = getPieceColor(piece);
+  const pieceClass = getPieceClass(piece);
 
   const getBoxShadow = () => {
     if (isSelected) return "0 0 20px rgba(251, 191, 36, 0.6)";
@@ -86,7 +91,7 @@ export function DraggablePiece({
       key={`${piece.id}-${row}-${col}`}
       className={`
         ${BASE_PIECE_CLASSES} relative z-30 select-none
-        ${pieceColor}
+        ${pieceClass}
         ${canDrag ? "cursor-grab" : "cursor-default"}
         ${isDraggedPiece ? "opacity-50 scale-75 dragging" : ""}
         ${isDraggedPiece && selectedCardIndex !== null ? "shadow-xl" : ""}
@@ -139,13 +144,13 @@ interface DragOverlayProps {
 }
 
 export function DragOverlay({ piece }: DragOverlayProps) {
-  const pieceColor = getPieceColor(piece);
+  const pieceClass = getPieceClass(piece);
 
   return (
     <motion.div
       className={`
         ${BASE_PIECE_CLASSES} relative z-50 shadow-xl select-none
-        ${pieceColor}
+        ${pieceClass}
       `}
     >
       <div className="relative w-full h-full flex items-center justify-center">
