@@ -195,11 +195,11 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
     }));
 
     const GameStatusSimple = () => (
-      <div className="flex items-center justify-center space-x-4 sm:space-x-6 lg:space-x-8 mb-4 sm:mb-6 lg:mb-8">
+      <div className="fixed top-60 sm:top-40 left-1/2 -translate-x-1/2 flex items-center justify-center space-x-0.5 sm:space-x-2 lg:space-x-4 mb-0.5 sm:mb-2 lg:mb-4 z-30">
         {gameState.winner ? (
-          <div className="flex items-center space-x-2 sm:space-x-3">
+          <div className="flex items-center space-x-0.5 sm:space-x-1.5">
             <span
-              className={`text-lg sm:text-xl font-medium zen-text ${
+              className={`text-base sm:text-lg font-medium zen-text ${
                 gameState.winner === "red" ? "text-red-600" : "text-blue-600"
               }`}
             >
@@ -210,31 +210,29 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
             </span>
           </div>
         ) : (
-          <>
-            <div className="flex items-center space-x-1.5 sm:space-x-2">
-              <span className="text-stone-600 font-light zen-text text-sm sm:text-base">
-                {gameContent[language].currentTurn}
-              </span>
-              <div
-                className={`w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 rounded-full animate-pulse shadow-lg ${
-                  gameState.currentPlayer === "red"
-                    ? "bg-red-600 shadow-red-300"
-                    : "bg-blue-600 shadow-blue-300"
-                }`}
-              ></div>
-              <span
-                className={`font-bold text-base sm:text-lg zen-text ${
-                  gameState.currentPlayer === "red"
-                    ? "text-red-600"
-                    : "text-blue-600"
-                }`}
-              >
-                {gameState.currentPlayer === "red"
-                  ? gameContent[language].redPlayer
-                  : gameContent[language].bluePlayer}
-              </span>
-            </div>
-          </>
+          <div className="flex items-center space-x-0.5 sm:space-x-1">
+            <span className="text-stone-600 font-light zen-text text-xs sm:text-sm">
+              {gameContent[language].currentTurn}
+            </span>
+            <div
+              className={`w-3 h-3 sm:w-4 sm:h-4 lg:w-6 lg:h-6 rounded-full animate-pulse shadow-lg ${
+                gameState.currentPlayer === "red"
+                  ? "bg-red-600 shadow-red-300"
+                  : "bg-blue-600 shadow-blue-300"
+              }`}
+            ></div>
+            <span
+              className={`font-bold text-sm sm:text-base zen-text ${
+                gameState.currentPlayer === "red"
+                  ? "text-red-600"
+                  : "text-blue-600"
+              }`}
+            >
+              {gameState.currentPlayer === "red"
+                ? gameContent[language].redPlayer
+                : gameContent[language].bluePlayer}
+            </span>
+          </div>
         )}
       </div>
     );
@@ -253,11 +251,13 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
     }
 
     return (
-      <div className="w-full watercolor-wash">
-        <GameStatusSimple />
-
-        <div className="game-layout-grid">
-          <div style={{ gridArea: "board" }}>
+      <div className="w-full h-full flex flex-col watercolor-wash">
+        <div className="game-layout-grid flex-1">
+          <GameStatusSimple />
+          <div
+            style={{ gridArea: "board" }}
+            className="h-full flex items-center justify-center"
+          >
             <GameBoard
               gameState={gameState}
               onPieceClick={handlePieceClick}
@@ -318,13 +318,13 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
             language={language}
           />
 
-          {/* Shared Card */}
+          {/* Shared Card - positioned based on next player */}
           <Card
             card={gameState.sharedCard}
             gridArea={
-              gameState.sharedCard.color === "blue"
-                ? "shared-left"
-                : "shared-right"
+              gameState.currentPlayer === "blue"
+                ? "shared-left" // Blue's turn, shared card goes to red's area (left side)
+                : "shared-right" // Red's turn, shared card goes to blue's area (right side)
             }
             isSelected={false}
             playerOwner="shared"

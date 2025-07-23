@@ -79,58 +79,6 @@ function MoveGrid({ card, isRotated }: { card: MoveCard; isRotated: boolean }) {
   );
 }
 
-// Separate component for card header (shared card label)
-function CardHeader({
-  isShared,
-  language = "zh",
-}: {
-  isShared: boolean;
-  language?: Language;
-}) {
-  if (!isShared) return null;
-
-  return (
-    <>
-      <div className="text-xs sm:text-sm md:text-lg font-light text-stone-800 mb-2 sm:mb-3 md:mb-4 tracking-wide text-center zen-text relative">
-        <span className="bg-white/80 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">
-          {cardContent[language].sharedCard}
-        </span>
-      </div>
-      <div className="brush-stroke mx-auto mb-3 sm:mb-4 md:mb-6"></div>
-    </>
-  );
-}
-
-// Separate component for card footer (shared card info)
-function CardFooter({
-  isShared,
-  card,
-  language = "zh",
-}: {
-  isShared: boolean;
-  card: MoveCard;
-  language?: Language;
-}) {
-  if (!isShared) return null;
-
-  return (
-    <div className="mt-4 sm:mt-6 text-xs text-stone-500 font-light text-center zen-text">
-      <div className="bg-white/60 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm inline-block">
-        {cardContent[language].nextTurn}
-        <span
-          className={`ml-1 zen-text font-medium ${
-            card.color === "red" ? "text-red-600" : "text-blue-600"
-          }`}
-        >
-          {card.color === "red"
-            ? cardContent[language].redPlayer
-            : cardContent[language].bluePlayer}
-        </span>
-      </div>
-    </div>
-  );
-}
-
 // Main card component - simplified and focused
 export function Card({
   card,
@@ -140,7 +88,6 @@ export function Card({
   currentPlayer,
   cardIndex,
   onCardClick,
-  language = "zh",
 }: CardProps) {
   const isBlue = playerOwner === "blue";
   const isRed = playerOwner === "red";
@@ -154,37 +101,16 @@ export function Card({
     }
   };
 
-  const getCardStyles = () => {
-    const baseStyles =
-      "zen-card scroll-paper p-2 sm:p-3 md:p-4 border select-none w-24 sm:w-28 md:w-32 lg:w-36 xl:w-40 relative overflow-hidden";
-
-    const colorStyles = isRed
-      ? "border-red-300 shadow-red-100"
-      : isBlue
-      ? "border-blue-300 shadow-blue-100"
-      : "border-stone-300";
-
-    const selectionStyles = isSelected ? "shadow-xl shadow-amber-200/50" : "";
-
-    const interactionStyles = canInteract
-      ? "cursor-pointer hover:shadow-lg focus:focus-zen"
-      : "cursor-default";
-
-    const disabledStyles =
-      !canInteract && !isShared ? "opacity-40 grayscale" : "";
-
-    return `${baseStyles} ${colorStyles} ${selectionStyles} ${interactionStyles} ${disabledStyles}`.trim();
-  };
-
   return (
     <motion.div
       style={{ gridArea }}
-      className={getCardStyles()}
       animate={{
         rotate: isRotated ? 180 : 0,
         scale: isSelected ? 1.05 : 1,
         boxShadow: isSelected
           ? "0 0 20px rgba(251, 191, 36, 0.6)"
+          : isShared
+          ? "0 4px 12px rgba(147, 51, 234, 0.2)"
           : "0 2px 8px rgba(0, 0, 0, 0.1)",
       }}
       whileHover={{
@@ -200,8 +126,6 @@ export function Card({
         damping: 20,
       }}
     >
-      <CardHeader isShared={isShared} language={language} />
-
       <div
         className={`zen-card relative overflow-hidden ${
           isShared ? "p-1.5 sm:p-2 md:p-3" : "p-1.5 sm:p-2"
@@ -240,8 +164,6 @@ export function Card({
           </div>
         </div>
       </div>
-
-      <CardFooter isShared={isShared} card={card} language={language} />
     </motion.div>
   );
 }

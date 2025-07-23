@@ -30,7 +30,7 @@ const content = {
     },
     startGame: "始める",
     newGame: "新局",
-    backToHome: "← 返回首頁",
+    backToHome: "返回首頁",
     gameOverview: "遊戲概覽",
     victoryPaths: "勝利之道",
     howToPlay: "遊戲方式",
@@ -374,41 +374,52 @@ export default function OnitamaLanding() {
 
   if (showGame) {
     return (
-      <div className="min-h-screen scroll-paper ink-wash p-4 sm:p-6 lg:p-8">
-        <div className="container mx-auto max-w-7xl">
-          <div className="flex flex-col sm:flex-row items-center justify-between mb-6 sm:mb-8 lg:mb-12 gap-4 sm:gap-6">
-            <div className="flex items-center space-x-4 sm:space-x-6">
-              <Image
-                src="/Onitama_Logo.svg.png"
-                alt="Onitama"
-                width={160}
-                height={48}
-                className="object-contain zen-float sm:w-[200px] sm:h-[60px]"
-              />
-            </div>
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              <ZenButton
-                onClick={() => gameRef.current?.resetGame()}
-                variant="secondary"
-                className="px-4 py-2 text-sm sm:px-6 sm:py-3 sm:text-base"
-              >
-                {content[language].newGame}
-              </ZenButton>
-              <ZenButton
-                onClick={() => setShowGame(false)}
-                variant="secondary"
-                className="px-4 py-2 text-sm sm:px-6 sm:py-3 sm:text-base"
-              >
-                {content[language].backToHome}
-              </ZenButton>
+      <div className="h-screen flex flex-col scroll-paper ink-wash">
+        {/* Fixed Header */}
+        <div className="flex-shrink-0 p-2 sm:p-4 lg:p-6 border-b border-stone-200 bg-white/80 backdrop-blur-sm">
+          <div className="container mx-auto max-w-7xl">
+            <div className="flex items-center justify-between gap-2 sm:gap-4">
+              <div className="flex items-center">
+                <ZenButton
+                  onClick={() => setShowGame(false)}
+                  variant="secondary"
+                  className="px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm ml-2 sm:ml-4"
+                >
+                  {content[language].backToHome}
+                </ZenButton>
+              </div>
+              <div className="flex items-center">
+                <Image
+                  src="/Onitama_Logo.svg.png"
+                  alt="Onitama"
+                  width={120}
+                  height={36}
+                  className="object-contain zen-float sm:w-[160px] sm:h-[48px] lg:w-[200px] lg:h-[60px]"
+                />
+              </div>
+              <div className="flex items-center">
+                <ZenButton
+                  onClick={() => gameRef.current?.resetGame()}
+                  variant="secondary"
+                  className="px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm mr-2 sm:mr-4"
+                >
+                  {content[language].newGame}
+                </ZenButton>
+              </div>
             </div>
           </div>
-          <div className="zen-card p-4 sm:p-6 lg:p-8">
-            <OnitamaGame
-              ref={gameRef}
-              cardPack={getSelectedPackForGame()}
-              language={language}
-            />
+        </div>
+
+        {/* Game Content - Takes remaining height */}
+        <div className="flex-1 overflow-auto p-2 sm:p-4 lg:p-6">
+          <div className="container mx-auto max-w-7xl h-full">
+            <div className="zen-card p-2 sm:p-4 lg:p-6 h-full flex flex-col">
+              <OnitamaGame
+                ref={gameRef}
+                cardPack={getSelectedPackForGame()}
+                language={language}
+              />
+            </div>
           </div>
         </div>
       </div>

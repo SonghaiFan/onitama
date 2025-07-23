@@ -63,7 +63,7 @@ export function DraggablePiece({
   return (
     <motion.div
       className={`
-        w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-12 lg:h-12 rounded-full border-2 flex items-center justify-center
+        w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full border-2 flex items-center justify-center
         ${
           isRed
             ? "bg-red-600 border-red-700 text-white"
@@ -73,7 +73,7 @@ export function DraggablePiece({
         ${canDrag ? "cursor-grab" : "cursor-default"}
         ${isDraggedPiece ? "opacity-50 scale-75" : ""}
         ${isDraggedPiece && selectedCardIndex !== null ? "shadow-xl" : ""}
-        font-bold text-sm sm:text-base md:text-lg lg:text-xl
+        font-bold text-base sm:text-lg md:text-xl lg:text-2xl
       `}
       animate={{
         scale: isSelected ? 1.1 : isDraggedPiece ? 0.75 : 1,
@@ -128,7 +128,7 @@ export function DragOverlay({ piece }: DragOverlayProps) {
   return (
     <motion.div
       className={`
-        w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-12 lg:h-12 rounded-full border-2 flex items-center justify-center font-bold text-sm sm:text-base md:text-lg lg:text-xl
+        w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full border-2 flex items-center justify-center font-bold text-base sm:text-lg md:text-xl lg:text-2xl
         ${
           isRed
             ? "bg-red-600 border-red-700 text-white"
