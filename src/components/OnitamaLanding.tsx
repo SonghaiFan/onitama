@@ -410,7 +410,7 @@ export default function OnitamaLanding() {
         </div>
 
         {/* Game Content - Takes remaining height */}
-        <div className="flex-1 overflow-auto p-2 sm:p-4 lg:p-6">
+        <div className="flex-1 overflow-auto p-2 sm:p-4 lg:p-6 overflow-hidden">
           <div className="container mx-auto max-w-7xl h-full">
             <div className="zen-card p-2 sm:p-4 lg:p-6 h-full flex flex-col">
               <OnitamaGame

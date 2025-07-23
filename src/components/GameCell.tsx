@@ -21,7 +21,6 @@ export function DroppableCell({
   isSelected,
   isRedTempleArch,
   isBlueTempleArch,
-  isDragging,
   onClick,
   onKeyDown,
 }: DroppableCellProps) {
@@ -43,7 +42,7 @@ export function DroppableCell({
       data-cell-id={`cell-${row}-${col}`}
       className={`
         w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-18 lg:h-18 border border-stone-300 flex items-center justify-center cursor-pointer
-        transition-all duration-300 hover:shadow-md relative bg-stone-50 backdrop-blur-sm focus:focus-zen
+        transition-all duration-300 hover:shadow-md relative bg-stone-50 backdrop-blur-sm focus:focus-zen z-10
         ${
           isBlueTempleArch || isRedTempleArch
             ? "temple-arch bg-stone-200 border-stone-400 "

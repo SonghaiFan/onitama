@@ -79,7 +79,7 @@ function MoveGrid({ card, isRotated }: { card: MoveCard; isRotated: boolean }) {
   );
 }
 
-// Main card component - simplified and focused
+// Main card component
 export function Card({
   card,
   gridArea,
@@ -109,12 +109,10 @@ export function Card({
         scale: isSelected ? 1.05 : 1,
         boxShadow: isSelected
           ? "0 0 20px rgba(251, 191, 36, 0.6)"
-          : isShared
-          ? "0 4px 12px rgba(147, 51, 234, 0.2)"
-          : "0 2px 8px rgba(0, 0, 0, 0.1)",
+          : "0 4px 12px rgba(147, 51, 234, 0.2)",
       }}
       whileHover={{
-        scale: canInteract ? (isSelected ? 1.08 : 1.03) : 1,
+        scale: canInteract ? (isSelected ? 1.2 : 1.1) : 1,
       }}
       whileTap={{ scale: canInteract ? 0.95 : 1 }}
       onClick={handleClick}

@@ -38,7 +38,7 @@ function PieceIcon({
              ? "text-lg sm:text-xl md:text-2xl lg:text-4xl"
              : "text-base sm:text-lg md:text-xl lg:text-3xl"
          }
-        ${player === "blue" ? "rotate-180 translate-y-0.5" : "-translate-y-1"}
+        ${player === "blue" ? "rotate-180 translate-y-0.5" : "-translate-y-0.5"}
       `}
       aria-hidden="true"
     >
@@ -63,7 +63,7 @@ export function DraggablePiece({
   return (
     <motion.div
       className={`
-        w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full border-2 flex items-center justify-center
+        w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full border-2 flex items-center justify-center  z-50
         ${
           isRed
             ? "bg-red-600 border-red-700 text-white"
@@ -128,7 +128,7 @@ export function DragOverlay({ piece }: DragOverlayProps) {
   return (
     <motion.div
       className={`
-        w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full border-2 flex items-center justify-center font-bold text-base sm:text-lg md:text-xl lg:text-2xl
+        w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full border-2 flex items-center justify-center font-bold text-base sm:text-lg md:text-xl lg:text-2xl z-50
         ${
           isRed
             ? "bg-red-600 border-red-700 text-white"
