@@ -11,16 +11,16 @@ type Language = "zh" | "en";
 // Bilingual content for card components
 const cardContent = {
   zh: {
-    sharedCard: "交換區",
-    nextTurn: "下一回合換給",
-    redPlayer: "紅方",
-    bluePlayer: "藍方",
+    regularMoves: "师/徒",
+    windMoves: "風",
+    masterMoves: "师",
+    studentMoves: "徒",
   },
   en: {
-    sharedCard: "Exchange Area",
-    nextTurn: "Next turn to",
-    redPlayer: "Red",
-    bluePlayer: "Blue",
+    regularMoves: "Master/Student",
+    windMoves: "Wind",
+    masterMoves: "Master",
+    studentMoves: "Student",
   },
 };
 
@@ -136,24 +136,44 @@ export function Card({
             {/* Right section - Move grid(s) (50%) */}
             <div className="w-1/2 h-full flex items-center justify-center px-2 sm:px-3">
               {hasWindMoves ? (
-                <div className="flex flex-col items-center justify-center w-full space-y-2 sm:space-y-3">
-                  <MoveGrid card={card} isWind={false} isTrimmed={true} />
-                  <MoveGrid card={card} isWind={true} isTrimmed={true} />
+                <div className="flex flex-col items-center justify-center w-full">
+                  <div className="flex flex-col items-center space-y-1">
+                    <MoveGrid card={card} isWind={false} isTrimmed={true} />
+                    <div className="text-xs text-stone-500">
+                      {cardContent[language].regularMoves}
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center space-y-1">
+                    <MoveGrid card={card} isWind={true} isTrimmed={true} />
+                    <div className="text-xs text-stone-500">
+                      {cardContent[language].windMoves}
+                    </div>
+                  </div>
                 </div>
               ) : card.isDualCard ? (
-                <div className="flex flex-col items-center justify-center w-full space-y-2 sm:space-y-3">
-                  <MoveGrid
-                    card={card}
-                    isDual={true}
-                    isMaster={true}
-                    isTrimmed={true}
-                  />
-                  <MoveGrid
-                    card={card}
-                    isDual={true}
-                    isMaster={false}
-                    isTrimmed={true}
-                  />
+                <div className="flex flex-col items-center justify-center w-full">
+                  <div className="flex flex-col items-center space-y-1">
+                    <MoveGrid
+                      card={card}
+                      isDual={true}
+                      isMaster={true}
+                      isTrimmed={true}
+                    />
+                    <div className="text-xs text-stone-500">
+                      {cardContent[language].masterMoves}
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center space-y-1">
+                    <MoveGrid
+                      card={card}
+                      isDual={true}
+                      isMaster={false}
+                      isTrimmed={true}
+                    />
+                    <div className="text-xs text-stone-500">
+                      {cardContent[language].studentMoves}
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <MoveGrid card={card} />
@@ -162,7 +182,7 @@ export function Card({
           </div>
 
           {/* Bottom bar */}
-          <div className="flex justify-center mt-1.5 sm:mt-2 md:mt-3">
+          <div className="flex justify-center ">
             <div
               className={`w-6 h-1 sm:w-8 sm:h-1.5 shadow-sm ${
                 isRed

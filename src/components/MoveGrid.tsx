@@ -60,15 +60,7 @@ export function MoveGrid({
             return (
               <div
                 key={`${r}-${c}`}
-                className={`aspect-square flex items-center justify-center shadow-sm ${
-                  isWind && card.wind_move
-                    ? "bg-gradient-to-br from-cyan-600 to-blue-700"
-                    : isDual && card.isDualCard
-                    ? isMaster
-                      ? "bg-gradient-to-br from-amber-600 to-orange-700"
-                      : "bg-gradient-to-br from-emerald-600 to-green-700"
-                    : "bg-gradient-to-br from-stone-700 to-stone-900"
-                }`}
+                className="aspect-square flex items-center justify-center shadow-sm bg-black"
               />
             );
           }
@@ -80,13 +72,7 @@ export function MoveGrid({
               key={`${r}-${c}`}
               className={`aspect-square transition-colors flex items-center justify-center ${
                 hasMove
-                  ? isWind && card.wind_move
-                    ? "bg-cyan-400/80 shadow-sm"
-                    : isDual && card.isDualCard
-                    ? isMaster
-                      ? "bg-amber-400/80 shadow-sm"
-                      : "bg-emerald-400/80 shadow-sm"
-                    : "bg-emerald-400/80 shadow-sm"
+                  ? "bg-stone-400/80 shadow-sm"
                   : "bg-stone-50 hover:bg-stone-100"
               }`}
             />
