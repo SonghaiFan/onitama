@@ -2,12 +2,18 @@
 import { MoveCard } from "@/types/game";
 import React from "react";
 
-export function getArtName(card: MoveCard) {
+export function getArtName(card: MoveCard, size: "sm" | "md" | "lg" = "md") {
+  const sizeClasses = {
+    sm: "text-2xl sm:text-3xl lg:text-4xl",
+    md: "text-5xl sm:text-6xl lg:text-7xl",
+    lg: "text-6xl sm:text-7xl lg:text-8xl",
+  };
+
   return (
     <span
       className={`
         zen-text font-medium
-        text-5xl sm:text-6xl lg:text-7xl
+        ${sizeClasses[size]}
         leading-none
         ${
           String(card.displayName || card.name).length > 2
@@ -22,7 +28,15 @@ export function getArtName(card: MoveCard) {
       }}
     >
       {String(card.displayName || card.name).length > 1 ? (
-        <span className="flex flex-col items-center justify-center text-3xl sm:text-4xl lg:text-5xl">
+        <span
+          className={`flex flex-col items-center justify-center ${
+            size === "sm"
+              ? "text-xl sm:text-2xl lg:text-3xl"
+              : size === "md"
+              ? "text-3xl sm:text-4xl lg:text-5xl"
+              : "text-4xl sm:text-5xl lg:text-6xl"
+          }`}
+        >
           {String(card.displayName || card.name)
             .split("")
             .map((char, idx, arr) =>

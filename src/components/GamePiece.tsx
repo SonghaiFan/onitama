@@ -85,7 +85,7 @@ export function DraggablePiece({
     <motion.div
       key={`${piece.id}-${row}-${col}`}
       className={`
-        ${BASE_PIECE_CLASSES} relative z-30
+        ${BASE_PIECE_CLASSES} relative z-30 select-none
         ${pieceColor}
         ${canDrag ? "cursor-grab" : "cursor-default"}
         ${isDraggedPiece ? "opacity-50 scale-75 dragging" : ""}
@@ -144,7 +144,7 @@ export function DragOverlay({ piece }: DragOverlayProps) {
   return (
     <motion.div
       className={`
-        ${BASE_PIECE_CLASSES} relative z-50 shadow-xl
+        ${BASE_PIECE_CLASSES} relative z-50 shadow-xl select-none
         ${pieceColor}
       `}
     >

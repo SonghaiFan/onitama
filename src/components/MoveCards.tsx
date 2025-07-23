@@ -113,16 +113,16 @@ export function Card({
           {/* Main content area - 50/50 split */}
           <div className="flex-1 flex items-center">
             {/* Left section - Character and name (50%) */}
-            <div className="w-1/2 h-full flex flex-col items-center justify-center px-2 sm:px-3">
+            <div className="w-1/2 h-full flex flex-col items-center justify-center px-2 sm:px-3 space-y-2 sm:space-y-3">
               <div
-                className={`flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-18 lg:h-18 rounded-full shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] ring-1 ring-stone-300 ${
+                className={`flex items-center justify-center mt-5 w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-18 lg:h-18 rounded-full shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] ring-1 ring-stone-300 ${
                   isShared ? "bg-stone-200/70" : "bg-stone-100/90"
                 }`}
               >
-                {getArtName(card)}
+                {getArtName(card, "lg")}
               </div>
               <div
-                className={`text-sm sm:text-base mt-2 text-center ${
+                className={`text-sm sm:text-base text-center ${
                   isShared ? "text-stone-500" : "text-stone-600"
                 }`}
               >

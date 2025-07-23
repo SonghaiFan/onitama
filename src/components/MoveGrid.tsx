@@ -2,6 +2,7 @@
 import { MoveCard } from "@/types/game";
 import React from "react";
 
+// Responsive move grid with optional trimming and no borders; each cell is a square via aspect-square
 export function MoveGrid({
   card,
   isWind = false,
@@ -11,51 +12,43 @@ export function MoveGrid({
   isWind?: boolean;
   isTrimmed?: boolean;
 }) {
-  // Determine which set of moves to display
   const movesToShow = isWind && card.wind_move ? card.wind_move : card.moves;
+  const rows = [0, 1, 2, 3, 4];
+  const cols = [0, 1, 2, 3, 4];
 
-  // All potential row and column indices for a 5x5 grid
-  const allRowIndices = [0, 1, 2, 3, 4];
-  const colIndices = [0, 1, 2, 3, 4];
+  // Determine which rows have moves
+  const rowHasContent = rows.map((r) =>
+    r === 2
+      ? movesToShow.length > 0
+      : movesToShow.some((move) => 2 - move.y === r)
+  );
 
-  // Identify which rows contain any moves (or center if there are moves)
-  const rowHasContent = allRowIndices.map((row) => {
-    if (row === 2) {
-      // Show the center row if there are any moves at all
-      return movesToShow.length > 0;
-    }
-    return movesToShow.some((move) => {
-      const displayRow = 2 - move.y;
-      return displayRow === row;
-    });
-  });
-
-  // Slice out empty top/bottom rows if trimming is enabled
-  let visibleRowIndices = allRowIndices;
+  // Trim empty top/bottom rows
+  let visibleRows = rows;
   if (isTrimmed) {
-    const first = rowHasContent.findIndex((v) => v);
-    const last =
+    const start = rowHasContent.findIndex(Boolean);
+    const end =
       rowHasContent.length -
       1 -
-      [...rowHasContent].reverse().findIndex((v) => v);
-    visibleRowIndices = allRowIndices.slice(first, last + 1);
+      [...rowHasContent].reverse().findIndex(Boolean);
+    visibleRows = rows.slice(start, end + 1);
   }
 
   return (
     <div
-      className="w-12 sm:w-14 md:w-16 lg:w-18 bg-stone-100/95 border border-stone-300 grid grid-cols-5 gap-0.5 p-1 backdrop-blur-sm shadow-inner"
+      className="w-12 sm:w-14 md:w-16 lg:w-18 h-fit neoprene-mat scroll-texture border border-stone-300 shadow-2xl grid grid-cols-5 gap-0.5 p-1 backdrop-blur-sm shadow-inner"
       style={{
-        gridTemplateRows: `repeat(${visibleRowIndices.length}, minmax(0, 1fr))`,
+        gridTemplateRows: `repeat(${visibleRows.length}, minmax(0, 1fr))`,
       }}
     >
-      {visibleRowIndices.map((i) =>
-        colIndices.map((j) => {
-          const isCenter = i === 2 && j === 2;
+      {visibleRows.map((r) =>
+        cols.map((c) => {
+          const isCenter = r === 2 && c === 2;
           if (isCenter) {
             return (
               <div
-                key={`${i}-${j}`}
-                className={`w-1.5 h-1.5 sm:w-2 sm:h-2 md:w-2.5 md:h-2.5 lg:w-3 lg:h-3 border border-stone-400 flex items-center justify-center shadow-sm ${
+                key={`${r}-${c}`}
+                className={`aspect-square flex items-center justify-center shadow-sm ${
                   isWind && card.wind_move
                     ? "bg-gradient-to-br from-cyan-600 to-blue-700"
                     : "bg-gradient-to-br from-stone-700 to-stone-900"
@@ -63,21 +56,18 @@ export function MoveGrid({
               />
             );
           }
-          // Check if this cell corresponds to a move
-          const hasMove = movesToShow.some((move) => {
-            const displayRow = 2 - move.y;
-            const displayCol = 2 + move.x;
-            return displayRow === i && displayCol === j;
-          });
+          const hasMove = movesToShow.some(
+            ({ x, y }) => 2 - y === r && 2 + x === c
+          );
           return (
             <div
-              key={`${i}-${j}`}
-              className={`w-1.5 h-1.5 sm:w-2 sm:h-2 md:w-2.5 md:h-2.5 lg:w-3 lg:h-3 border transition-colors ${
+              key={`${r}-${c}`}
+              className={`aspect-square transition-colors flex items-center justify-center ${
                 hasMove
                   ? isWind && card.wind_move
                     ? "bg-cyan-400/80 shadow-sm"
                     : "bg-emerald-400/80 shadow-sm"
-                  : "bg-stone-50 hover:bg-stone-100 border-stone-300"
+                  : "bg-stone-50 hover:bg-stone-100"
               }`}
             />
           );
