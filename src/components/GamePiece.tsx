@@ -32,13 +32,13 @@ function PieceIcon({
     <span
       className={`
         absolute inset-0 flex items-center justify-center pointer-events-none z-0
-         font-serif  font-bold select-none opacity-90
-         ${isMaster ? "text-5xl" : "text-3xl"}
+         font-serif  font-bold select-none opacity-60
+         ${isMaster ? "text-4xl" : "text-3xl"}
         ${player === "blue" ? "rotate-180 translate-y-0.5" : "-translate-y-1"}
       `}
       aria-hidden="true"
     >
-      {isMaster ? "♝" : "♟"}
+      {isMaster ? "♟" : ""}
     </span>
   );
 }

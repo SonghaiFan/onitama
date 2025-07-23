@@ -5,6 +5,24 @@ import { motion } from "framer-motion";
 import { MoveCard, Player } from "@/types/game";
 import { getArtName } from "../utils/getArtName";
 
+type Language = "zh" | "en";
+
+// Bilingual content for card components
+const cardContent = {
+  zh: {
+    sharedCard: "交換區",
+    nextTurn: "下一回合換給",
+    redPlayer: "紅方",
+    bluePlayer: "藍方",
+  },
+  en: {
+    sharedCard: "Exchange Area",
+    nextTurn: "Next turn to",
+    redPlayer: "Red",
+    bluePlayer: "Blue",
+  },
+};
+
 interface CardProps {
   card: MoveCard;
   gridArea: string;
@@ -13,6 +31,7 @@ interface CardProps {
   currentPlayer: Player;
   cardIndex?: number;
   onCardClick: (cardIndex: number, player: Player) => void;
+  language?: Language;
 }
 
 // Separate component for the move grid
@@ -61,14 +80,20 @@ function MoveGrid({ card, isRotated }: { card: MoveCard; isRotated: boolean }) {
 }
 
 // Separate component for card header (shared card label)
-function CardHeader({ isShared }: { isShared: boolean }) {
+function CardHeader({
+  isShared,
+  language = "zh",
+}: {
+  isShared: boolean;
+  language?: Language;
+}) {
   if (!isShared) return null;
 
   return (
     <>
       <div className="text-sm sm:text-lg font-light text-stone-800 mb-3 sm:mb-4 tracking-wide text-center zen-text relative">
         <span className="bg-white/80 px-2 py-1 rounded backdrop-blur-sm">
-          共用牌
+          {cardContent[language].sharedCard}
         </span>
       </div>
       <div className="brush-stroke mx-auto mb-4 sm:mb-6"></div>
@@ -77,19 +102,29 @@ function CardHeader({ isShared }: { isShared: boolean }) {
 }
 
 // Separate component for card footer (shared card info)
-function CardFooter({ isShared, card }: { isShared: boolean; card: MoveCard }) {
+function CardFooter({
+  isShared,
+  card,
+  language = "zh",
+}: {
+  isShared: boolean;
+  card: MoveCard;
+  language?: Language;
+}) {
   if (!isShared) return null;
 
   return (
     <div className="mt-6 text-xs text-stone-500 font-light text-center zen-text">
       <div className="bg-white/60 px-2 py-1 rounded backdrop-blur-sm inline-block">
-        下一回合輪到
+        {cardContent[language].nextTurn}
         <span
           className={`ml-1 zen-text font-medium ${
             card.color === "red" ? "text-red-600" : "text-blue-600"
           }`}
         >
-          {card.color === "red" ? "紅方" : "藍方"}
+          {card.color === "red"
+            ? cardContent[language].redPlayer
+            : cardContent[language].bluePlayer}
         </span>
       </div>
     </div>
@@ -105,6 +140,7 @@ export function Card({
   currentPlayer,
   cardIndex,
   onCardClick,
+  language = "zh",
 }: CardProps) {
   const isBlue = playerOwner === "blue";
   const isRed = playerOwner === "red";
@@ -164,7 +200,7 @@ export function Card({
         damping: 20,
       }}
     >
-      <CardHeader isShared={isShared} />
+      <CardHeader isShared={isShared} language={language} />
 
       <div
         className={`zen-card relative overflow-hidden ${
@@ -182,7 +218,7 @@ export function Card({
             <div className="flex items-center justify-center w-10 h-10 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full bg-stone-100/90 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] ring-1 ring-stone-300">
               {getArtName(card)}
             </div>
-            <div className="text-[10px] text-stone-600 mt-0.5 text-center">
+            <div className="text-[12px] text-stone-600 mt-0.5 text-center">
               {card.name}
             </div>
           </div>
@@ -205,7 +241,7 @@ export function Card({
         </div>
       </div>
 
-      <CardFooter isShared={isShared} card={card} />
+      <CardFooter isShared={isShared} card={card} language={language} />
     </motion.div>
   );
 }

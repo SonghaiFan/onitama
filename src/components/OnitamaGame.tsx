@@ -17,12 +17,33 @@ import {
   createNewGameAsync,
 } from "@/utils/gameLogic";
 
+type Language = "zh" | "en";
+
+// Bilingual content for game interface
+const gameContent = {
+  zh: {
+    victory: "勝利！",
+    currentTurn: "當前回合:",
+    redPlayer: "紅方",
+    bluePlayer: "藍方",
+    loading: "載入卡牌包...",
+  },
+  en: {
+    victory: "Victory!",
+    currentTurn: "Current Turn:",
+    redPlayer: "Red",
+    bluePlayer: "Blue",
+    loading: "Loading card pack...",
+  },
+};
+
 interface OnitamaGameProps {
   cardPack?: "normal" | "senseis";
+  language?: Language;
 }
 
 const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
-  function OnitamaGame({ cardPack = "normal" }, ref) {
+  function OnitamaGame({ cardPack = "normal", language = "zh" }, ref) {
     const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -173,8 +194,6 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
       resetGame,
     }));
 
-    // The old 'staticCards' and 'cards' useMemo hooks are no longer needed and have been removed.
-
     const GameStatusSimple = () => (
       <div className="flex items-center justify-center space-x-8">
         {gameState.winner ? (
@@ -184,14 +203,17 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
                 gameState.winner === "red" ? "text-red-600" : "text-blue-600"
               }`}
             >
-              {gameState.winner === "red" ? "紅方" : "藍方"}勝利！
+              {gameState.winner === "red"
+                ? gameContent[language].redPlayer
+                : gameContent[language].bluePlayer}
+              {gameContent[language].victory}
             </span>
           </div>
         ) : (
           <>
             <div className="flex items-center space-x-2">
               <span className="text-stone-600 font-light zen-text">
-                當前回合:
+                {gameContent[language].currentTurn}
               </span>
               <div
                 className={`w-6 h-6 rounded-full animate-pulse shadow-lg ${
@@ -207,26 +229,10 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
                     : "text-blue-600"
                 }`}
               >
-                {gameState.currentPlayer === "red" ? "紅方" : "藍方"}
+                {gameState.currentPlayer === "red"
+                  ? gameContent[language].redPlayer
+                  : gameContent[language].bluePlayer}
               </span>
-            </div>
-            <div className="flex items-center space-x-4 text-sm text-stone-500 zen-text">
-              {gameState.selectedPiece && (
-                <div className="flex items-center space-x-1">
-                  <span>已選棋子:</span>
-                  <span className="font-mono bg-stone-100 px-2 py-1 rounded">
-                    ({gameState.selectedPiece[0]}, {gameState.selectedPiece[1]})
-                  </span>
-                </div>
-              )}
-              {gameState.selectedCard !== null && (
-                <div className="flex items-center space-x-1">
-                  <span>已選卡牌:</span>
-                  <span className="font-mono bg-stone-100 px-2 py-1 rounded">
-                    #{gameState.selectedCard + 1}
-                  </span>
-                </div>
-              )}
             </div>
           </>
         )}
@@ -238,7 +244,9 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-stone-600 mx-auto mb-4"></div>
-            <p className="text-stone-600 font-light">載入卡牌包...</p>
+            <p className="text-stone-600 font-light">
+              {gameContent[language].loading}
+            </p>
           </div>
         </div>
       );
@@ -269,6 +277,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
             currentPlayer={gameState.currentPlayer}
             cardIndex={0}
             onCardClick={handleCardClick}
+            language={language}
           />
           <Card
             card={gameState.players.blue.cards[1]}
@@ -280,6 +289,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
             currentPlayer={gameState.currentPlayer}
             cardIndex={1}
             onCardClick={handleCardClick}
+            language={language}
           />
 
           {/* Red Player's Cards */}
@@ -293,6 +303,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
             currentPlayer={gameState.currentPlayer}
             cardIndex={0}
             onCardClick={handleCardClick}
+            language={language}
           />
           <Card
             card={gameState.players.red.cards[1]}
@@ -304,6 +315,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
             currentPlayer={gameState.currentPlayer}
             cardIndex={1}
             onCardClick={handleCardClick}
+            language={language}
           />
 
           {/* Shared Card */}
@@ -318,6 +330,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
             playerOwner="shared"
             currentPlayer={gameState.currentPlayer}
             onCardClick={() => {}}
+            language={language}
           />
         </div>
       </div>
