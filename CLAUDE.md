@@ -17,35 +17,42 @@ This is a **Next.js 15 Onitama board game** implementation using React 19, TypeS
 - **Next.js 15** with App Router
 - **React 19** with hooks and TypeScript
 - **Tailwind CSS v4** with custom Zen-style utilities
-- **Framer Motion** for smooth animations
-- **Zustand** for state management (if needed for global state)
+- **Framer Motion** (`motion` package) for smooth animations
+- **@use-gesture/react** for touch and gesture handling
+- **Zustand** for state management (available but not currently used)
 
 ### Game Architecture
 
 #### Game State Structure (`src/types/game.ts`)
-- **GameState**: Central game state including board, players, cards, and current turn
-- **Player**: Either "red" or "blue" 
-- **Piece**: Game pieces with player, master status, and position
-- **MoveCard**: Cards containing movement patterns and player associations
+- **GameState**: Central game state including board, players, cards, current turn, and wind spirit position
+- **Player**: Either "red" or "blue" (pieces can also be "neutral" for wind spirit)
+- **Piece**: Game pieces with player, master status, position, and optional wind spirit properties
+- **MoveCard**: Cards containing movement patterns, player associations, and optional wind moves
 
 #### Game Logic (`src/utils/gameLogic.ts`)
-- Contains 16 official Onitama cards loaded from `onitama_16_cards.json`
+- **Multiple Card Packs**: Supports three card packs with 16 cards each:
+  - `onitama_16_cards_normal.json` - Standard Onitama cards
+  - `onitama_16_cards_senseis.json` - Sensei's Path expansion
+  - `onitama_16_cards_windway.json` - Wind Spirit expansion with wind mechanics
 - **Card Selection**: Randomly selects 5 cards per game (2 per player + 1 shared)
 - **Movement System**: Red player moves "forward" (negative y), Blue moves "backward" (positive y)
+- **Wind Spirit Mechanics**: Special cards with `wind_move` properties for enhanced gameplay
 - **Win Conditions**: Way of the Stone (capture Master) or Way of the Stream (Master reaches opponent's Temple Arch)
 - **Card Rotation**: Used cards are rotated 180° and become available to the opponent
 
 #### Component Structure
+- **OnitamaLanding** (`src/components/OnitamaLanding.tsx`): Landing page with card pack selection and game rules
 - **OnitamaGame** (`src/components/OnitamaGame.tsx`): Main game orchestration component with piece/card selection logic
-- **GameBoard** (`src/components/GameBoard.tsx`): 5×5 board rendering with piece interactions
-- **GameStatus** (`src/components/GameStatus.tsx`): Current player indicator and win state
-- **MoveCards** (`src/components/MoveCards.tsx`): Card display with movement patterns
-- **OnitamaLanding** (`src/components/OnitamaLanding.tsx`): Landing page component
+- **GameBoard** (`src/components/GameBoard.tsx`): 5×5 board rendering with drag-and-drop piece interactions
+- **GameCell** (`src/components/GameCell.tsx`): Individual board cells with drop zones and touch handling
+- **GamePiece** (`src/components/GamePiece.tsx`): Draggable pieces with visual feedback and gesture support
+- **MoveCards** (`src/components/MoveCards.tsx`): Card display with movement patterns and wind move grids
 
 #### Styling Approach
 - **Zen-style Design**: Custom CSS classes in `globals.css` with scroll textures, neoprene mat effects, and temple arch styling
+- **Traditional Aesthetics**: Chinese/Japanese font stacks and traditional visual elements
 - **Motion Integration**: Framer Motion animations for smooth card transitions and piece movements
-- **Responsive Layout**: Cards positioned absolutely around the central game board
+- **Responsive Layout**: Cards positioned absolutely around the central game board with mobile touch support
 
 ### Key Game Mechanics
 
@@ -64,13 +71,36 @@ This is a **Next.js 15 Onitama board game** implementation using React 19, TypeS
 #### Card Data Format
 Cards are defined in JSON with:
 - `moves`: Array of `{x, y}` offsets from current position
+- `wind_move`: Optional array for Wind Spirit cards with additional movement patterns
 - `firstPlayerColor`: Determines which player can use this card to start the game
+- `name`: Multilingual object with `en`, `zh`, and `ja` translations
 - Display uses 5×5 grid with center at `[2,2]` representing the piece's current position
+
+#### Card Pack Structure
+Three card packs are available in `/public/pack/`:
+- **Normal Pack**: Standard 16-card Onitama set
+- **Sensei's Path**: Advanced expansion cards
+- **Wind Spirit**: Cards with wind mechanics and dual movement grids
 
 ### Development Notes
 
-- The game uses imperative handles for game reset functionality
-- State management is primarily local with React hooks
-- Card positioning uses absolute positioning with Framer Motion animations
-- All text is localized in Chinese for the UI
-- Game board has temple arch highlighting and neoprene mat styling
+#### State Management
+- The game uses imperative handles for game reset functionality via `forwardRef`
+- State management is primarily local with React hooks (no global store currently used)
+- Game state is centralized in the `OnitamaGame` component and passed down via props
+
+#### Interaction Model
+- **Desktop**: Drag-and-drop interface for piece movement
+- **Mobile**: Touch gestures with `@use-gesture/react` for mobile-friendly interaction
+- **Card Selection**: Click/tap to select cards and view movement patterns
+
+#### Internationalization
+- All text content supports Chinese, English, and Japanese
+- UI is primarily displayed in Chinese with bilingual card names
+- Card pack metadata includes multilingual descriptions
+
+#### File Structure
+- Card data stored as JSON files in `/public/pack/`
+- Custom fonts located in `/public/fonts/`
+- Game logic separated into utility functions in `/src/utils/`
+- TypeScript interfaces centralized in `/src/types/`

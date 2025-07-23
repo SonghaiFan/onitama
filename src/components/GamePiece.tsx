@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Piece } from "@/types/game";
 
 // Draggable piece component
@@ -90,6 +90,7 @@ export function DraggablePiece({
         ${isDraggedPiece ? "opacity-50 scale-75 dragging" : ""}
         ${isDraggedPiece && selectedCardIndex !== null ? "shadow-xl" : ""}
       `}
+      initial={false} // Prevent initial animation on mount
       animate={{
         scale: isSelected ? 1.1 : isDraggedPiece ? 0.75 : 1,
         rotate: 0,
@@ -101,16 +102,18 @@ export function DraggablePiece({
         transition: { type: "spring", stiffness: 400, damping: 10 },
       }}
       whileTap={{ scale: canDrag ? 0.9 : 1 }}
-      exit={{
-        scale: 0,
-        rotate: 180,
-        transition: { duration: 0.3 },
-      }}
       transition={{
         type: "spring",
         stiffness: 260,
         damping: 20,
+        layout: {
+          type: "spring",
+          stiffness: 400,
+          damping: 25,
+          duration: 0.5
+        }
       }}
+      layout
       layoutId={piece.id}
       onContextMenu={(e) => {
         e.preventDefault();

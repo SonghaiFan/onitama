@@ -5,6 +5,7 @@ import { isTempleArch, getPossibleMoves } from "@/utils/gameLogic";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { DraggablePiece, DragOverlay } from "./GamePiece";
 import { DroppableCell } from "./GameCell";
+import { AnimatePresence } from "framer-motion";
 
 interface GameBoardProps {
   gameState: GameState;
@@ -290,7 +291,9 @@ export default function GameBoard({
                 onTouchStart={() => handleCellTouchStart(cellId)}
                 onTouchEnd={handleCellTouchEnd}
               >
-                {piece && renderPiece(piece, isSelected, row, col)}
+                <AnimatePresence mode="popLayout">
+                  {piece && renderPiece(piece, isSelected, row, col)}
+                </AnimatePresence>
               </DroppableCell>
             );
           })
