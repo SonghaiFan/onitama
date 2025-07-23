@@ -437,34 +437,19 @@ export function applyMove(
   const [fromRow, fromCol] = from;
   const [toRow, toCol] = to;
 
-  // Debug: log move attempt
-  console.log("[applyMove] Attempting move", {
-    from: [fromRow, fromCol],
-    to: [toRow, toCol],
-    currentPlayer,
-    piece: board[fromRow][fromCol],
-    targetPiece: board[toRow][toCol],
-  });
-
   // Check if move is valid
   if (!isValidPosition(toRow, toCol)) {
-    console.log("[applyMove] Invalid target position", { toRow, toCol });
     return board;
   }
 
   const piece = board[fromRow][fromCol];
   if (!piece) {
-    console.log("[applyMove] No piece at from position", { fromRow, fromCol });
     return board;
   }
 
   // For wind spirits, any player can move them
   // For regular pieces, only the owner can move them
   if (!piece.isWindSpirit && piece.player !== currentPlayer) {
-    console.log("[applyMove] Not allowed to move this piece", {
-      piece,
-      currentPlayer,
-    });
     return board;
   }
 
@@ -484,29 +469,25 @@ export function applyMove(
     const windSpirit = piece.isWindSpirit ? piece : targetPiece!;
     const student = piece.isWindSpirit ? targetPiece! : piece;
 
-    console.log("[applyMove] Wind spirit swap", { windSpirit, student });
+    // Elegantly handle wind spirit and student swap
+    const [windPos, studentPos] = piece.isWindSpirit
+      ? [
+          [toRow, toCol],
+          [fromRow, fromCol],
+        ]
+      : [
+          [fromRow, fromCol],
+          [toRow, toCol],
+        ];
 
-    const updatedWindSpirit = {
+    newBoard[windPos[0]][windPos[1]] = {
       ...windSpirit,
-      position: piece.isWindSpirit
-        ? ([toRow, toCol] as [number, number])
-        : ([fromRow, fromCol] as [number, number]),
+      position: windPos as [number, number],
     };
-    const updatedStudent = {
+    newBoard[studentPos[0]][studentPos[1]] = {
       ...student,
-      position: piece.isWindSpirit
-        ? ([fromRow, fromCol] as [number, number])
-        : ([toRow, toCol] as [number, number]),
+      position: studentPos as [number, number],
     };
-
-    newBoard[fromRow][fromCol] = piece.isWindSpirit
-      ? updatedStudent
-      : updatedWindSpirit;
-    newBoard[toRow][toCol] = piece.isWindSpirit
-      ? updatedWindSpirit
-      : updatedStudent;
-
-    console.log("[applyMove] Board after wind spirit swap", newBoard);
   } else {
     // Regular move or wind spirit to empty square
     newBoard[fromRow][fromCol] = null;
@@ -514,8 +495,6 @@ export function applyMove(
       ...piece,
       position: [toRow, toCol] as [number, number],
     };
-
-    console.log("[applyMove] Board after regular move", newBoard);
   }
 
   return newBoard;
