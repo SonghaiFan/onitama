@@ -118,10 +118,18 @@ export function Card({
     }
   };
 
+  // Create a layoutId that helps track cards across positions
+  // Include the original card name to help Motion track the same card
+  const layoutId = `card-${card.name}`;
+
   return (
     <motion.div
+      key={`${card.name}-${playerOwner}-${gridArea}`}
       style={{ gridArea }}
       className={`relative z-20 ${isShared ? "opacity-60" : ""}`}
+      layout
+      layoutId={layoutId}
+      initial={false}
       animate={{
         rotate: isRotated ? 180 : 0,
         scale: isSelected ? 1.05 : 1,
@@ -142,6 +150,12 @@ export function Card({
         type: "spring",
         stiffness: 260,
         damping: 20,
+        layout: {
+          type: "spring",
+          stiffness: 400,
+          damping: 25,
+          duration: 0.5,
+        },
       }}
     >
       <div

@@ -83,6 +83,7 @@ export function DraggablePiece({
 
   return (
     <motion.div
+      key={`${piece.id}-${row}-${col}`}
       className={`
         ${BASE_PIECE_CLASSES} relative z-30
         ${pieceColor}
@@ -110,8 +111,8 @@ export function DraggablePiece({
           type: "spring",
           stiffness: 400,
           damping: 25,
-          duration: 0.5
-        }
+          duration: 0.5,
+        },
       }}
       layout
       layoutId={piece.id}

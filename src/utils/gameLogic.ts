@@ -360,10 +360,7 @@ export function getPossibleMoves(
   const [pieceRow, pieceCol] = piece.position;
 
   // Wind spirits use wind_move if available, otherwise use regular moves
-  const movesToCheck =
-    piece.isWindSpirit
-      ? card.wind_move ?? []
-      : card.moves;
+  const movesToCheck = piece.isWindSpirit ? card.wind_move ?? [] : card.moves;
 
   // Check each move in the card
   for (const move of movesToCheck) {
@@ -393,14 +390,19 @@ export function getPossibleMoves(
 
       if (piece.isWindSpirit) {
         // Wind spirit can move to empty squares or swap with students (not masters or other wind spirits)
-        if (!targetPiece || (!targetPiece.isMaster && !targetPiece.isWindSpirit)) {
+        if (
+          !targetPiece ||
+          (!targetPiece.isMaster && !targetPiece.isWindSpirit)
+        ) {
           moves.push([targetRow, targetCol]);
         }
       } else {
         // Regular pieces can't land on own pieces, but can swap with wind spirits
-        if (!targetPiece || 
-            (targetPiece.player !== piece.player && !targetPiece.isWindSpirit) ||
-            (targetPiece.isWindSpirit && !piece.isMaster)) {
+        if (
+          !targetPiece ||
+          (targetPiece.player !== piece.player && !targetPiece.isWindSpirit) ||
+          (targetPiece.isWindSpirit && !piece.isMaster)
+        ) {
           moves.push([targetRow, targetCol]);
         }
       }
@@ -435,36 +437,85 @@ export function applyMove(
   const [fromRow, fromCol] = from;
   const [toRow, toCol] = to;
 
+  // Debug: log move attempt
+  console.log("[applyMove] Attempting move", {
+    from: [fromRow, fromCol],
+    to: [toRow, toCol],
+    currentPlayer,
+    piece: board[fromRow][fromCol],
+    targetPiece: board[toRow][toCol],
+  });
+
   // Check if move is valid
-  if (!isValidPosition(toRow, toCol)) return board;
+  if (!isValidPosition(toRow, toCol)) {
+    console.log("[applyMove] Invalid target position", { toRow, toCol });
+    return board;
+  }
 
   const piece = board[fromRow][fromCol];
-  if (!piece) return board;
+  if (!piece) {
+    console.log("[applyMove] No piece at from position", { fromRow, fromCol });
+    return board;
+  }
 
   // For wind spirits, any player can move them
   // For regular pieces, only the owner can move them
-  if (!piece.isWindSpirit && piece.player !== currentPlayer) return board;
+  if (!piece.isWindSpirit && piece.player !== currentPlayer) {
+    console.log("[applyMove] Not allowed to move this piece", {
+      piece,
+      currentPlayer,
+    });
+    return board;
+  }
 
   const targetPiece = board[toRow][toCol];
 
   // Create new board with move applied
   const newBoard = board.map((row) => [...row]);
 
-  if ((piece.isWindSpirit && targetPiece && !targetPiece.isMaster && !targetPiece.isWindSpirit) ||
-      (targetPiece?.isWindSpirit && !piece.isMaster && !piece.isWindSpirit)) {
+  if (
+    (piece.isWindSpirit &&
+      targetPiece &&
+      !targetPiece.isMaster &&
+      !targetPiece.isWindSpirit) ||
+    (targetPiece?.isWindSpirit && !piece.isMaster && !piece.isWindSpirit)
+  ) {
     // Wind spirit swap: handle both wind spirit moving to student or student moving to wind spirit
     const windSpirit = piece.isWindSpirit ? piece : targetPiece!;
     const student = piece.isWindSpirit ? targetPiece! : piece;
-    
-    const updatedWindSpirit = { ...windSpirit, position: piece.isWindSpirit ? [toRow, toCol] as [number, number] : [fromRow, fromCol] as [number, number] };
-    const updatedStudent = { ...student, position: piece.isWindSpirit ? [fromRow, fromCol] as [number, number] : [toRow, toCol] as [number, number] };
 
-    newBoard[fromRow][fromCol] = piece.isWindSpirit ? updatedStudent : updatedWindSpirit;
-    newBoard[toRow][toCol] = piece.isWindSpirit ? updatedWindSpirit : updatedStudent;
+    console.log("[applyMove] Wind spirit swap", { windSpirit, student });
+
+    const updatedWindSpirit = {
+      ...windSpirit,
+      position: piece.isWindSpirit
+        ? ([toRow, toCol] as [number, number])
+        : ([fromRow, fromCol] as [number, number]),
+    };
+    const updatedStudent = {
+      ...student,
+      position: piece.isWindSpirit
+        ? ([fromRow, fromCol] as [number, number])
+        : ([toRow, toCol] as [number, number]),
+    };
+
+    newBoard[fromRow][fromCol] = piece.isWindSpirit
+      ? updatedStudent
+      : updatedWindSpirit;
+    newBoard[toRow][toCol] = piece.isWindSpirit
+      ? updatedWindSpirit
+      : updatedStudent;
+
+    console.log("[applyMove] Board after wind spirit swap", newBoard);
   } else {
     // Regular move or wind spirit to empty square
     newBoard[fromRow][fromCol] = null;
-    newBoard[toRow][toCol] = { ...piece, position: [toRow, toCol] as [number, number] };
+    newBoard[toRow][toCol] = {
+      ...piece,
+      position: [toRow, toCol] as [number, number],
+    };
+
+    console.log("[applyMove] Board after regular move", newBoard);
   }
 
   return newBoard;
@@ -481,24 +532,33 @@ export function executeMove(
   const [fromRow, fromCol] = from;
   const [toRow, toCol] = to;
   const piece = gameState.board[fromRow][fromCol];
-  
+
   if (!piece) return gameState;
 
   // Apply the move using the unified applyMove function
-  newState.board = applyMove(gameState.board, from, to, gameState.currentPlayer);
+  newState.board = applyMove(
+    gameState.board,
+    from,
+    to,
+    gameState.currentPlayer
+  );
 
   // Update wind spirit position - handle both moving wind spirit and swapping scenarios
   const targetPiece = gameState.board[toRow][toCol];
-  
+
   if (piece.isWindSpirit) {
     // Wind spirit is being moved (either to empty square or swapping with student)
     newState.windSpiritPosition = [toRow, toCol];
-  } else if (targetPiece?.isWindSpirit && !piece.isMaster && !piece.isWindSpirit) {
+  } else if (
+    targetPiece?.isWindSpirit &&
+    !piece.isMaster &&
+    !piece.isWindSpirit
+  ) {
     // Student is moving into wind spirit position, causing a swap
     // Wind spirit gets moved to the "from" position
     newState.windSpiritPosition = [fromRow, fromCol];
   }
-  
+
   // If there's no wind spirit involved, keep the existing position
   // (This handles cases where wind spirit exists but isn't part of this move)
 
