@@ -141,17 +141,14 @@
 
 /* Game piece styling */
 .master-piece {
-  border: 3px solid rgba(146, 64, 14, 0.3);
   scale: 1.2;
 }
 
 .student-piece {
-  border: 1.5px solid rgba(55, 65, 81, 0.2);
   scale: 0.9;
 }
 
 .wind-spirit-piece {
-  border: 2px solid rgba(34, 211, 238, 0.4);
   scale: 1.1;
   animation: wind-float 4s ease-in-out infinite;
 }

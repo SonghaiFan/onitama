@@ -64,10 +64,15 @@ export default function GameBoard({
       const isRightDrag = e.button === 2;
       const cardIndex = isRightDrag ? 1 : 0; // Right = card 1, Left = card 0
 
-      if (
-        piece.player === gameStateRef.current.currentPlayer &&
-        !gameStateRef.current.winner
-      ) {
+      // Allow dragging if:
+      // 1. It's the current player's piece, OR
+      // 2. It's a wind spirit (both players can move wind spirits)
+      const canDrag =
+        (piece.player === gameStateRef.current.currentPlayer ||
+          !!piece.isWindSpirit) &&
+        !gameStateRef.current.winner;
+
+      if (canDrag) {
         // Update game state to select the card for consistent highlighting
         if (onCardSelect) {
           onCardSelect(cardIndex);
@@ -219,8 +224,13 @@ export default function GameBoard({
   ) => {
     if (!piece || row === undefined || col === undefined) return null;
 
+    // Allow dragging if:
+    // 1. It's the current player's piece, OR
+    // 2. It's a wind spirit (both players can move wind spirits)
     const canDrag =
-      piece.player === gameState.currentPlayer && !gameState.winner;
+      (piece.player === gameState.currentPlayer || !!piece.isWindSpirit) &&
+      !gameState.winner;
+
     const isDraggedPiece =
       dragState.isDragging &&
       dragState.draggedPiece?.position[0] === row &&

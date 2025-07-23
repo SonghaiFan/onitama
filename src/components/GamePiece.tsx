@@ -19,47 +19,50 @@ interface DraggablePieceProps {
   ) => void;
 }
 
-// Piece icon component (minimal, similar to TempleArchIcon approach)
-function PieceIcon({
-  player,
-  isMaster,
-  isWindSpirit,
-}: {
-  player: "red" | "blue" | "neutral";
-  isMaster: boolean;
-  isWindSpirit?: boolean;
-}) {
-  if (isWindSpirit) {
-    return (
-      <span
-        className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl"
-        style={{ fontFamily: "DuanNing" }}
-      >
-        風
-      </span>
-    );
-  }
+// Simple piece configuration - just icons and basic info
+const PIECE_ICONS = {
+  student: "徒",
+  master: "师",
+  "wind-spirit": "風",
+} as const;
 
-  if (isMaster) {
-    return (
-      <span
-        className="text-xl sm:text-2xl md:text-3xl lg:text-4xl"
-        style={{ fontFamily: "DuanNing" }}
-      >
-        ♔
-      </span>
-    );
-  }
+const PIECE_COLORS = {
+  red: "bg-red-600 border-red-700 text-white",
+  blue: "bg-blue-600 border-blue-700 text-white",
+  neutral: "bg-neutral-400 border-neutral-500 text-white", // For wind spirits
+} as const;
+
+// Helper to get piece type
+const getPieceType = (piece: Piece) => {
+  if (piece.isWindSpirit) return "wind-spirit";
+  if (piece.isMaster) return "master";
+  return "student";
+};
+
+// Simple piece styling - just color based on player/type
+const getPieceColor = (piece: Piece) => {
+  if (piece.isWindSpirit) return PIECE_COLORS.neutral;
+  return PIECE_COLORS[piece.player as keyof typeof PIECE_COLORS];
+};
+
+// Simple piece icon component - just shows the right icon
+function PieceIcon({ piece }: { piece: Piece }) {
+  const pieceType = getPieceType(piece);
+  const icon = PIECE_ICONS[pieceType];
 
   return (
     <span
       className="text-lg sm:text-xl md:text-2xl lg:text-3xl"
       style={{ fontFamily: "DuanNing" }}
     >
-      ♙
+      {icon}
     </span>
   );
 }
+
+// Base piece classes
+const BASE_PIECE_CLASSES =
+  "w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full border-2 flex items-center justify-center font-bold text-base sm:text-lg md:text-xl lg:text-2xl";
 
 export function DraggablePiece({
   piece,
@@ -71,41 +74,26 @@ export function DraggablePiece({
   selectedCardIndex,
   onDragStart,
 }: DraggablePieceProps) {
-  const isRed = piece.player === "red";
-  const isMaster = piece.isMaster;
-  const isWindSpirit = piece.isWindSpirit;
+  const pieceColor = getPieceColor(piece);
 
-  // Determine piece styling based on type
-  const getPieceStyling = () => {
-    if (isWindSpirit) {
-      return "bg-gradient-to-br from-cyan-400 to-blue-500 border-cyan-600 text-white shadow-lg";
-    }
-    if (isRed) {
-      return "bg-red-600 border-red-700 text-white";
-    }
-    return "bg-blue-600 border-blue-700 text-white";
+  const getBoxShadow = () => {
+    if (isSelected) return "0 0 20px rgba(251, 191, 36, 0.6)";
+    return "0 2px 4px rgba(0, 0, 0, 0.1)";
   };
 
   return (
     <motion.div
       className={`
-        w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full border-2 flex items-center justify-center relative z-30
-        ${getPieceStyling()}
-        ${isMaster ? "master-piece text-amber-100 shadow-lg" : "student-piece"}
-        ${isWindSpirit ? "wind-spirit-piece shadow-xl" : ""}
+        ${BASE_PIECE_CLASSES} relative z-30
+        ${pieceColor}
         ${canDrag ? "cursor-grab" : "cursor-default"}
         ${isDraggedPiece ? "opacity-50 scale-75 dragging" : ""}
         ${isDraggedPiece && selectedCardIndex !== null ? "shadow-xl" : ""}
-        font-bold text-base sm:text-lg md:text-xl lg:text-2xl
       `}
       animate={{
         scale: isSelected ? 1.1 : isDraggedPiece ? 0.75 : 1,
         rotate: 0,
-        boxShadow: isSelected
-          ? "0 0 20px rgba(251, 191, 36, 0.6)"
-          : isWindSpirit
-          ? "0 0 15px rgba(34, 211, 238, 0.4)"
-          : "0 2px 4px rgba(0, 0, 0, 0.1)",
+        boxShadow: getBoxShadow(),
         opacity: isDraggedPiece ? 0.5 : 1,
       }}
       whileHover={{
@@ -134,11 +122,7 @@ export function DraggablePiece({
       }}
     >
       <div className="relative w-full h-full flex items-center justify-center">
-        <PieceIcon
-          player={piece.player}
-          isMaster={isMaster}
-          isWindSpirit={isWindSpirit}
-        />
+        <PieceIcon piece={piece} />
       </div>
     </motion.div>
   );
@@ -151,37 +135,17 @@ interface DragOverlayProps {
 }
 
 export function DragOverlay({ piece }: DragOverlayProps) {
-  const isRed = piece.player === "red";
-  const isMaster = piece.isMaster;
-  const isWindSpirit = piece.isWindSpirit;
-
-  // Determine piece styling based on type
-  const getPieceStyling = () => {
-    if (isWindSpirit) {
-      return "bg-gradient-to-br from-cyan-400 to-blue-500 border-cyan-600 text-white shadow-lg";
-    }
-    if (isRed) {
-      return "bg-red-600 border-red-700 text-white";
-    }
-    return "bg-blue-600 border-blue-700 text-white";
-  };
+  const pieceColor = getPieceColor(piece);
 
   return (
     <motion.div
       className={`
-        w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full border-2 flex items-center justify-center font-bold text-base sm:text-lg md:text-xl lg:text-2xl relative z-50
-        ${getPieceStyling()}
-        ${isMaster ? "master-piece text-amber-100 shadow-lg" : "student-piece"}
-        ${isWindSpirit ? "wind-spirit-piece shadow-xl" : ""}
-        shadow-xl
+        ${BASE_PIECE_CLASSES} relative z-50 shadow-xl
+        ${pieceColor}
       `}
     >
       <div className="relative w-full h-full flex items-center justify-center">
-        <PieceIcon
-          player={piece.player}
-          isMaster={isMaster}
-          isWindSpirit={isWindSpirit}
-        />
+        <PieceIcon piece={piece} />
       </div>
     </motion.div>
   );
