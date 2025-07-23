@@ -1,7 +1,7 @@
 "use client";
 
 import { GameState, Piece } from "@/types/game";
-import { isTempleArch, getPossibleMoves } from "@/utils/gameLogic";
+import { isTempleArch, getPossibleMoves, isValidMove } from "@/utils/gameLogic";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { DraggablePiece, DragOverlay } from "./GamePiece";
 import { DroppableCell } from "./GameCell";
@@ -131,20 +131,16 @@ export default function GameBoard({
               const currentPlayerCards =
                 gameStateRef.current.players[currentPlayer].cards;
 
-              // Check if it's a valid move using the existing possibleMoves logic
-              const possibleMoves = getPossibleMoves(
-                dragState.draggedPiece.piece,
+              // Check if it's a valid move using the isValidMove function
+              const moveIsValid = isValidMove(
+                dragState.draggedPiece.position,
+                [targetRow, targetCol],
                 currentPlayerCards[dragState.draggedPiece.cardIndex],
                 currentBoard,
                 currentPlayer
               );
 
-              const isValidMove = possibleMoves.some(
-                ([moveRow, moveCol]) =>
-                  moveRow === targetRow && moveCol === targetCol
-              );
-
-              if (isValidMove && onPieceMove) {
+              if (moveIsValid && onPieceMove) {
                 onPieceMove(
                   dragState.draggedPiece.position,
                   [targetRow, targetCol],

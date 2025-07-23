@@ -420,7 +420,12 @@ export function isValidMove(
   if (!piece) return false;
 
   const possibleMoves = getPossibleMoves(piece, card, board, currentPlayer);
-  return possibleMoves.some(([row, col]) => row === to[0] && col === to[1]);
+  const isValidMove = possibleMoves.some(
+    ([row, col]) => row === to[0] && col === to[1]
+  );
+  console.log("currentPlayer", currentPlayer);
+  console.log("isValidMove", isValidMove);
+  return isValidMove;
 }
 
 // Apply move to board (works for both regular pieces and wind spirits)

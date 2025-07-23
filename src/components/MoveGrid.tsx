@@ -36,7 +36,7 @@ export function MoveGrid({
 
   return (
     <div
-      className="w-12 sm:w-14 md:w-16 lg:w-18 h-fit neoprene-mat scroll-texture border border-stone-300 shadow-2xl grid grid-cols-5 gap-0.5 p-1 backdrop-blur-sm shadow-inner"
+      className="w-12 sm:w-14 md:w-16 lg:w-18 h-fit neoprene-mat scroll-texture border border-stone-300 grid grid-cols-5 gap-0.5 p-1 backdrop-blur-sm shadow-inner"
       style={{
         gridTemplateRows: `repeat(${visibleRows.length}, minmax(0, 1fr))`,
       }}

@@ -88,7 +88,8 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
               gameState.selectedPiece,
               position,
               selectedCard,
-              gameState.board
+              gameState.board,
+              gameState.currentPlayer
             )
           ) {
             const newGameState = executeMove(
@@ -122,7 +123,8 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
                 gameState.selectedPiece,
                 position,
                 selectedCard,
-                gameState.board
+                gameState.board,
+                gameState.currentPlayer
               )
             ) {
               const newGameState = executeMove(
@@ -174,7 +176,15 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
         const selectedCard =
           gameState.players[gameState.currentPlayer].cards[cardIndex];
 
-        if (isValidMove(from, to, selectedCard, gameState.board)) {
+        if (
+          isValidMove(
+            from,
+            to,
+            selectedCard,
+            gameState.board,
+            gameState.currentPlayer
+          )
+        ) {
           const newGameState = executeMove(gameState, from, to, cardIndex);
           setGameState(newGameState);
         }
