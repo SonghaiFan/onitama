@@ -1,0 +1,164 @@
+{
+  "metadata": {
+    "name": "Onitama: Way of the Wind",
+    "description": "Onitama: Way of the Wind is an expansion for Onitama that introduces the wind spirit, a neutral piece that adds a new layer of interaction to the game. The expansion includes 8 new Wind Spirit cards , 2 new move cards, and 1 wind spirit miniature.",
+    "author": "the Scroll of Onitama",
+    "version": "1.0.0"
+  },
+  "cards": [
+    {
+      "id": "bat",
+      "name": { "en": "Bat", "zh": "蝙蝠", "ja": "蝙蝠" },
+      "color": "#6D4C41",
+      "moves": [
+        { "x": 0, "y": 1 },
+        { "x": 0, "y": -1 }
+      ],
+      "wind_move": [
+        { "x": -2, "y": 1 },
+        { "x": -1, "y": 1 },
+        { "x": 1, "y": 1 },
+        { "x": 2, "y": 1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "eagle",
+      "name": { "en": "Eagle", "zh": "鷹", "ja": "鷲" },
+      "color": "#BDB76B",
+      "moves": [
+        { "x": -1, "y": 1 },
+        { "x": 1, "y": 1 }
+      ],
+      "wind_move": [
+        { "x": -2, "y": 2 },
+        { "x": 2, "y": 2 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "hawk",
+      "name": { "en": "Hawk", "zh": "隼", "ja": "隼" },
+      "color": "#A0522D",
+      "moves": [
+        { "x": -1, "y": 1 },
+        { "x": -1, "y": -1 }
+      ],
+      "wind_move": [
+        { "x": -2, "y": 0 },
+        { "x": -2, "y": 1 },
+        { "x": 2, "y": 0 },
+        { "x": 2, "y": 1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "lion",
+      "name": { "en": "Lion", "zh": "獅", "ja": "獅子" },
+      "color": "#FFD700",
+      "moves": [
+        { "x": 1, "y": 1 },
+        { "x": -1, "y": -1 }
+      ],
+      "wind_move": [
+        { "x": 0, "y": 1 },
+        { "x": 0, "y": 2 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "octopus",
+      "type": "wind_spirit",
+      "name": { "en": "Octopus", "zh": "章魚", "ja": "蛸" },
+      "color": "#8A2BE2",
+      "moves": [
+        { "x": -1, "y": 1 },
+        { "x": 1, "y": -1 }
+      ],
+      "wind_move": [
+        { "x": 0, "y": 1 },
+        { "x": -1, "y": 0 },
+        { "x": 1, "y": 0 },
+        { "x": -1, "y": -1 },
+        { "x": 0, "y": -1 },
+        { "x": 1, "y": -1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "rhinoceros",
+      "type": "wind_spirit",
+      "name": { "en": "Rhinoceros", "zh": "犀牛", "ja": "犀" },
+      "color": "#708090",
+      "moves": [
+        { "x": -1, "y": 1 },
+        { "x": 0, "y": -1 }
+      ],
+      "wind_move": [
+        { "x": 0, "y": 1 },
+        { "x": 0, "y": 2 },
+        { "x": 0, "y": -1 },
+        { "x": 0, "y": -2 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "scorpion",
+      "type": "wind_spirit",
+      "name": { "en": "Scorpion", "zh": "蠍", "ja": "蠍" },
+      "color": "#A0522D",
+      "moves": [
+        { "x": 1, "y": 1 },
+        { "x": 1, "y": -1 }
+      ],
+      "wind_move": [
+        { "x": -2, "y": 1 },
+        { "x": -1, "y": 2 },
+        { "x": 1, "y": 2 },
+        { "x": 2, "y": 1 }
+      ],
+      "firstPlayerColor": "blue"
+    },
+    {
+      "id": "spider",
+      "type": "wind_spirit",
+      "name": { "en": "Spider", "zh": "蜘蛛", "ja": "蜘蛛" },
+      "color": "#222222",
+      "moves": [
+        { "x": 1, "y": 1 },
+        { "x": 0, "y": -1 }
+      ],
+      "wind_move": [
+        { "x": -1, "y": 1 },
+        { "x": 0, "y": 1 },
+        { "x": 1, "y": 1 },
+        { "x": 0, "y": -1 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "goat",
+      "type": "move_card",
+      "name": { "en": "Goat", "zh": "山羊", "ja": "山羊" },
+      "color": "#C0C0C0",
+      "moves": [
+        { "x": -1, "y": 0 },
+        { "x": 0, "y": -1 },
+        { "x": 1, "y": 1 }
+      ],
+      "firstPlayerColor": "red"
+    },
+    {
+      "id": "sheep",
+      "type": "move_card",
+      "name": { "en": "Sheep", "zh": "綿羊", "ja": "羊" },
+      "color": "#F5F5DC",
+      "moves": [
+        { "x": -1, "y": 1 },
+        { "x": 0, "y": -1 },
+        { "x": 1, "y": 0 }
+      ],
+      "firstPlayerColor": "blue"
+    }
+  ]
+}

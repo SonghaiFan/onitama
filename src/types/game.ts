@@ -55,6 +55,7 @@ export interface SenseisCardPackCard {
   };
   color: string;
   moves: Move[];
+  wind_move?: Move[];
   firstPlayerColor: Player;
 }
 
