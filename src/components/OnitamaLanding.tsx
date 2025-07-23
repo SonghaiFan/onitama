@@ -363,8 +363,8 @@ export default function OnitamaLanding() {
     setSelectedPacks(newPacks);
   };
 
-  const getSelectedPackForGame = (): CardPack => {
-    return Array.from(selectedPacks)[0];
+  const getSelectedPacksForGame = (): CardPack[] => {
+    return Array.from(selectedPacks);
   };
 
   const toggleLanguage = () => {
@@ -415,7 +415,7 @@ export default function OnitamaLanding() {
             <div className="zen-card p-2 sm:p-4 lg:p-6 h-full flex flex-col">
               <OnitamaGame
                 ref={gameRef}
-                cardPack={getSelectedPackForGame()}
+                cardPacks={getSelectedPacksForGame()}
                 language={language}
               />
             </div>

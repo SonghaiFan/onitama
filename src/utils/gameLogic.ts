@@ -89,28 +89,34 @@ async function loadCardPack(
 // Cache for loaded card packs
 const cardPackCache: Record<string, MoveCard[]> = {};
 
-// Function to get cards for a specific pack
-async function getCardsForPack(
-  packName: "normal" | "senseis"
+// Function to get cards for multiple packs
+async function getCardsForPacks(
+  packNames: ("normal" | "senseis")[]
 ): Promise<MoveCard[]> {
-  if (cardPackCache[packName]) {
-    return cardPackCache[packName];
+  const allCards: MoveCard[] = [];
+
+  for (const packName of packNames) {
+    if (cardPackCache[packName]) {
+      allCards.push(...cardPackCache[packName]);
+    } else {
+      const cards = await loadCardPack(packName);
+      cardPackCache[packName] = cards;
+      allCards.push(...cards);
+    }
   }
 
-  const cards = await loadCardPack(packName);
-  cardPackCache[packName] = cards;
-  return cards;
+  return allCards;
 }
 
-// Function to randomly select 5 cards for a game
+// Function to randomly select 5 cards from multiple packs
 async function selectRandomCardsAsync(
-  cardPack: "normal" | "senseis" = "normal"
+  cardPacks: ("normal" | "senseis")[] = ["normal"]
 ): Promise<{
   playerCards: MoveCard[];
   sharedCard: MoveCard;
 }> {
-  const cards = await getCardsForPack(cardPack);
-  const shuffled = [...cards].sort(() => Math.random() - 0.5);
+  const allCards = await getCardsForPacks(cardPacks);
+  const shuffled = [...allCards].sort(() => Math.random() - 0.5);
   const selected = shuffled.slice(0, 5);
 
   return {
@@ -264,10 +270,10 @@ export const INITIAL_GAME_STATE: GameState = createInitialGameState();
 
 // Async version for loading card packs
 export async function createNewGameAsync(
-  cardPack: "normal" | "senseis" = "normal"
+  cardPacks: ("normal" | "senseis")[] = ["normal"]
 ): Promise<GameState> {
   try {
-    const { playerCards, sharedCard } = await selectRandomCardsAsync(cardPack);
+    const { playerCards, sharedCard } = await selectRandomCardsAsync(cardPacks);
 
     // Validate that we have valid cards
     if (!sharedCard || !playerCards || playerCards.length < 4) {

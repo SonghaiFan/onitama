@@ -38,24 +38,24 @@ const gameContent = {
 };
 
 interface OnitamaGameProps {
-  cardPack?: "normal" | "senseis";
+  cardPacks?: ("normal" | "senseis")[];
   language?: Language;
 }
 
 const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
-  function OnitamaGame({ cardPack = "normal", language = "zh" }, ref) {
+  function OnitamaGame({ cardPacks = ["normal"], language = "zh" }, ref) {
     const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Load the appropriate card pack when component mounts or cardPack changes
+    // Load the appropriate card pack when component mounts or cardPacks changes
     useEffect(() => {
       const loadGame = async () => {
         setIsLoading(true);
         try {
-          const newGameState = await createNewGameAsync(cardPack);
+          const newGameState = await createNewGameAsync(cardPacks);
           setGameState(newGameState);
         } catch (error) {
-          console.error("Failed to load card pack:", error);
+          console.error("Failed to load card packs:", error);
           // Fallback to normal game state
           setGameState(INITIAL_GAME_STATE);
         } finally {
@@ -64,7 +64,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
       };
 
       loadGame();
-    }, [cardPack]);
+    }, [cardPacks]);
 
     const handlePieceClick = useCallback(
       (position: [number, number]) => {
@@ -180,7 +180,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
     const resetGame = useCallback(async () => {
       setIsLoading(true);
       try {
-        const newGameState = await createNewGameAsync(cardPack);
+        const newGameState = await createNewGameAsync(cardPacks);
         setGameState(newGameState);
       } catch (error) {
         console.error("Failed to reset game:", error);
@@ -188,7 +188,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
       } finally {
         setIsLoading(false);
       }
-    }, [cardPack]);
+    }, [cardPacks]);
 
     useImperativeHandle(ref, () => ({
       resetGame,
