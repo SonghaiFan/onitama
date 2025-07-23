@@ -43,7 +43,7 @@ export function DroppableCell({
       data-cell-id={`cell-${row}-${col}`}
       className={`
         w-16 h-16 border border-stone-300 flex items-center justify-center cursor-pointer
-        transition-all duration-300 hover:shadow-md relative backdrop-blur-sm focus:focus-zen
+        transition-all duration-300 hover:shadow-md relative bg-stone-50 backdrop-blur-sm focus:focus-zen
         ${
           isBlueTempleArch || isRedTempleArch
             ? "temple-arch bg-stone-200 border-stone-400 "
@@ -51,17 +51,13 @@ export function DroppableCell({
         }
         ${
           isSelected
-            ? " shadow-lg"
+            ? "ring-2 ring-amber-400 bg-amber-100 shadow-lg"
             : isPossibleMove
-            ? "shadow-md"
-            : "bg-stone-50"
-        }
-        ${!children && !isPossibleMove ? "hover:bg-stone-100" : ""}
-        ${
-          isPossibleMove && isDragging
-            ? "ring-4 ring-emerald-300 bg-emerald-100"
+            ? "ring-2 ring-emerald-400 bg-emerald-50 shadow-md"
             : ""
         }
+        ${!children && !isPossibleMove ? "hover:bg-stone-100" : ""}
+       
       `}
     >
       {/* Temple arch text floats underneath content */}

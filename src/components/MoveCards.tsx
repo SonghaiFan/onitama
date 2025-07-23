@@ -154,38 +154,12 @@ export function Card({
     }
   };
 
-  const getCardStyles = () => {
-    const baseStyles =
-      "zen-card scroll-paper p-3 sm:p-4 border select-none w-32 md:w-36 lg:w-40 relative overflow-hidden";
-
-    const colorStyles = isRed
-      ? "border-red-300 shadow-red-100"
-      : isBlue
-      ? "border-blue-300 shadow-blue-100"
-      : "border-stone-300";
-
-    const selectionStyles = isSelected ? "shadow-xl shadow-amber-200/50" : "";
-
-    const interactionStyles = canInteract
-      ? "cursor-pointer hover:shadow-lg focus:focus-zen"
-      : "cursor-default";
-
-    const disabledStyles =
-      !canInteract && !isShared ? "opacity-40 grayscale" : "";
-
-    return `${baseStyles} ${colorStyles} ${selectionStyles} ${interactionStyles} ${disabledStyles}`.trim();
-  };
-
   return (
     <motion.div
       style={{ gridArea }}
-      className={getCardStyles()}
       animate={{
         rotate: isRotated ? 180 : 0,
         scale: isSelected ? 1.1 : 1,
-        boxShadow: isSelected
-          ? "0 0 20px rgba(251, 191, 36, 0.6)"
-          : "0 2px 8px rgba(0, 0, 0, 0.1)",
       }}
       whileHover={{
         scale: canInteract ? (isSelected ? 1.12 : 1.05) : 1,
@@ -205,7 +179,7 @@ export function Card({
       <div
         className={`zen-card relative overflow-hidden ${
           isShared ? "p-2 sm:p-3" : "p-2"
-        } border border-stone-300`}
+        } cursor-pointer`}
       >
         {/* Decorative Corner Elements */}
         <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-stone-300/50 pointer-events-none"></div>
