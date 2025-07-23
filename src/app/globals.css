@@ -213,23 +213,25 @@
 /* Responsive game layout utilities */
 @media (max-width: 1024px) {
   .zen-card {
-    transform: scale(0.95) !important;
+    transform: scale(0.95);
   }
 
   .game-container {
-    padding: 1rem;
-    min-height: 85vh;
+    padding: 0.5rem;
+    height: 100%;
+    min-height: 100%;
   }
 }
 
 @media (max-width: 768px) {
   .zen-card {
-    transform: scale(1) !important;
+    transform: scale(0.9);
   }
 
   .game-container {
-    padding: 0.5rem;
-    min-height: 80vh;
+    padding: 0.25rem;
+    height: 100%;
+    min-height: 100%;
   }
 }
 
@@ -240,7 +242,8 @@
 
   .game-container {
     padding: 0.125rem;
-    min-height: 75vh;
+    height: 100%;
+    min-height: 100%;
   }
 
   /* Adjust card positioning for mobile */
@@ -256,7 +259,8 @@
 
   .game-container {
     padding: 0.0625rem;
-    min-height: 70vh;
+    height: 100%;
+    min-height: 100%;
   }
 }
 
