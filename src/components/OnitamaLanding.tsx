@@ -89,6 +89,15 @@ const content = {
         title: "先手",
         description: "共用牌的顏色決定誰先手。",
       },
+      windSpirit: {
+        title: "風靈",
+        description:
+          "風靈位於棋盤中央，任何玩家都可移動。風靈可與學徒交換位置。",
+      },
+      dualCards: {
+        title: "摹形卡牌",
+        description: "摹形卡牌有兩種移動模式：師傅專用移動和學徒專用移動。",
+      },
     },
     // Gameplay details
     gameplayDetails: {
@@ -105,10 +114,28 @@ const content = {
       exchange: {
         title: "交換牌片",
         steps: [
-          "使用的牌放到對手右側（對手下回合拿取）",
-          "拿取自己右側的共用牌",
+          "使用的牌放到對手右側",
+          "拿取自己右側的交替牌",
           "五張牌在兩人間輪流使用",
           "三思而後行 - 對手將得到你的牌！",
+        ],
+      },
+      windSpirit: {
+        title: "風靈移動",
+        steps: [
+          "風靈可使用風靈卡牌的風靈移動模式",
+          "風靈可移動到空位或與學徒交換位置",
+          "風靈不能與師傅或其他風靈交換",
+          "任何玩家都可移動風靈",
+        ],
+      },
+      dualCards: {
+        title: "摹形卡牌使用",
+        steps: [
+          "師傅只能使用摹形卡牌的師傅移動模式",
+          "學徒只能使用摹形卡牌的學徒移動模式",
+          "移動模式在卡牌上以不同顏色標示",
+          "其他規則與普通卡牌相同",
         ],
       },
     },
@@ -214,6 +241,16 @@ const content = {
         title: "First Move",
         description: "The shared card's color determines who goes first.",
       },
+      windSpirit: {
+        title: "Wind Spirit",
+        description:
+          "Wind spirit is placed in the center. Any player can move it. Wind spirit can swap with students.",
+      },
+      dualCards: {
+        title: "Mimicry Cards",
+        description:
+          "Mimicry cards have two movement patterns: master-only moves and student-only moves.",
+      },
     },
     // Gameplay details
     gameplayDetails: {
@@ -230,10 +267,28 @@ const content = {
       exchange: {
         title: "Exchange Cards",
         steps: [
-          "Used card goes to opponent's right (they take it next turn)",
-          "Take the shared card from your right",
+          "Used card goes to opponent's right",
+          "Take the exchange card from your right",
           "Five cards circulate between players",
           "Think twice - your opponent will get your card!",
+        ],
+      },
+      windSpirit: {
+        title: "Wind Spirit Movement",
+        steps: [
+          "Wind spirit can use wind spirit card's wind movement pattern",
+          "Wind spirit can move to empty squares or swap with students",
+          "Wind spirit cannot swap with masters or other wind spirits",
+          "Any player can move the wind spirit",
+        ],
+      },
+      dualCards: {
+        title: "Using Mimicry Cards",
+        steps: [
+          "Masters can only use the master movement pattern",
+          "Students can only use the student movement pattern",
+          "Movement patterns are shown in different colors on the card",
+          "Other rules remain the same as regular cards",
         ],
       },
     },
@@ -671,6 +726,28 @@ export default function OnitamaLanding() {
                 </p>
               </div>
             </div>
+
+            {/* Additional setup cards for special packs */}
+            <div className="grid grid-cols-1 mx-10 md:grid-cols-2 gap-8 sm:gap-12 mt-8 sm:mt-12">
+              <div className="zen-card p-6 sm:p-8 text-center">
+                <IconCircle size="w-12 h-12 sm:w-16 sm:h-16">風</IconCircle>
+                <h4 className="font-medium text-stone-800 mb-3 sm:mb-4 text-sm sm:text-base">
+                  {content[language].setupDetails.windSpirit.title}
+                </h4>
+                <p className="text-stone-600 font-light leading-relaxed text-xs sm:text-sm">
+                  {content[language].setupDetails.windSpirit.description}
+                </p>
+              </div>
+              <div className="zen-card p-6 sm:p-8 text-center">
+                <IconCircle size="w-12 h-12 sm:w-16 sm:h-16">摹</IconCircle>
+                <h4 className="font-medium text-stone-800 mb-3 sm:mb-4 text-sm sm:text-base">
+                  {content[language].setupDetails.dualCards.title}
+                </h4>
+                <p className="text-stone-600 font-light leading-relaxed text-xs sm:text-sm">
+                  {content[language].setupDetails.dualCards.description}
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Gameplay */}
@@ -715,6 +792,50 @@ export default function OnitamaLanding() {
                 </div>
                 <ul className="space-y-2 sm:space-y-3 text-stone-600 font-light text-xs sm:text-sm">
                   {content[language].gameplayDetails.exchange.steps.map(
+                    (step, index) => (
+                      <li key={index}>• {step}</li>
+                    )
+                  )}
+                </ul>
+              </div>
+            </div>
+
+            {/* Additional gameplay sections for special packs */}
+            <div className="grid grid-cols-1 mx-10 lg:grid-cols-2 gap-8 sm:gap-12 mt-8 sm:mt-12">
+              <div className="zen-card p-6 sm:p-8 lg:p-10">
+                <div className="flex items-center mb-4 sm:mb-6">
+                  <IconCircle
+                    size="w-8 h-8 sm:w-12 sm:h-12"
+                    className="mr-3 sm:mr-4 mb-0"
+                  >
+                    風
+                  </IconCircle>
+                  <h4 className="font-medium text-stone-800 text-lg sm:text-xl">
+                    {content[language].gameplayDetails.windSpirit.title}
+                  </h4>
+                </div>
+                <ul className="space-y-2 sm:space-y-3 text-stone-600 font-light text-xs sm:text-sm">
+                  {content[language].gameplayDetails.windSpirit.steps.map(
+                    (step, index) => (
+                      <li key={index}>• {step}</li>
+                    )
+                  )}
+                </ul>
+              </div>
+              <div className="zen-card p-6 sm:p-8 lg:p-10">
+                <div className="flex items-center mb-4 sm:mb-6">
+                  <IconCircle
+                    size="w-8 h-8 sm:w-12 sm:h-12"
+                    className="mr-3 sm:mr-4 mb-0"
+                  >
+                    摹
+                  </IconCircle>
+                  <h4 className="font-medium text-stone-800 text-lg sm:text-xl">
+                    {content[language].gameplayDetails.dualCards.title}
+                  </h4>
+                </div>
+                <ul className="space-y-2 sm:space-y-3 text-stone-600 font-light text-xs sm:text-sm">
+                  {content[language].gameplayDetails.dualCards.steps.map(
                     (step, index) => (
                       <li key={index}>• {step}</li>
                     )

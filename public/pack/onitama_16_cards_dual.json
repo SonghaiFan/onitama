@@ -9,11 +9,11 @@
         "ja": "麤"
       },
       "color": "blue",
-      "master_moves": [
+      "master_moves": [{ "x": 0, "y": 1 }],
+      "student_moves": [
         { "x": -2, "y": 1 },
         { "x": 2, "y": 1 }
       ],
-      "student_moves": [{ "x": 0, "y": 1 }],
       "firstPlayerColor": "blue",
       "type": "dual_card"
     },
@@ -26,11 +26,11 @@
         "ja": "鹿"
       },
       "color": "red",
-      "master_moves": [{ "x": 0, "y": 1 }],
-      "student_moves": [
-        { "x": -2, "y": 1 },
-        { "x": 2, "y": 1 }
+      "master_moves": [
+        { "x": -2, "y": 2 },
+        { "x": 2, "y": 2 }
       ],
+      "student_moves": [{ "x": 0, "y": 1 }],
       "firstPlayerColor": "red",
       "type": "dual_card"
     },
