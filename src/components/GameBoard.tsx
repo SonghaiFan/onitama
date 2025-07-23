@@ -227,10 +227,10 @@ export default function GameBoard({
 
   return (
     <div
-      className="neoprene-mat scroll-texture p-8 border border-stone-300 shadow-2xl"
+      className="neoprene-mat scroll-texture p-2 sm:p-4 md:p-6 lg:p-8 border border-stone-300 shadow-2xl"
       onContextMenu={handleContextMenu}
     >
-      <div className="grid grid-cols-5 gap-2 bg-stone-100 p-4 border border-stone-200 shadow-inner ink-wash">
+      <div className="grid grid-cols-5 gap-1 sm:gap-1.5 md:gap-2 bg-stone-100 p-2 sm:p-3 md:p-4 border border-stone-200 shadow-inner ink-wash">
         {Array.from({ length: 5 }, (_, row) =>
           Array.from({ length: 5 }, (_, col) => {
             const piece = gameState.board[row][col];

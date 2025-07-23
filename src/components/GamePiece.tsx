@@ -33,7 +33,11 @@ function PieceIcon({
       className={`
         absolute inset-0 flex items-center justify-center pointer-events-none z-0
          font-serif  font-bold select-none opacity-60
-         ${isMaster ? "text-4xl" : "text-3xl"}
+         ${
+           isMaster
+             ? "text-lg sm:text-xl md:text-2xl lg:text-4xl"
+             : "text-base sm:text-lg md:text-xl lg:text-3xl"
+         }
         ${player === "blue" ? "rotate-180 translate-y-0.5" : "-translate-y-1"}
       `}
       aria-hidden="true"
@@ -59,7 +63,7 @@ export function DraggablePiece({
   return (
     <motion.div
       className={`
-        w-12 h-12 rounded-full border-2 flex items-center justify-center
+        w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-12 lg:h-12 rounded-full border-2 flex items-center justify-center
         ${
           isRed
             ? "bg-red-600 border-red-700 text-white"
@@ -69,7 +73,7 @@ export function DraggablePiece({
         ${canDrag ? "cursor-grab" : "cursor-default"}
         ${isDraggedPiece ? "opacity-50 scale-75" : ""}
         ${isDraggedPiece && selectedCardIndex !== null ? "shadow-xl" : ""}
-        font-bold text-xl
+        font-bold text-sm sm:text-base md:text-lg lg:text-xl
       `}
       animate={{
         scale: isSelected ? 1.1 : isDraggedPiece ? 0.75 : 1,
@@ -124,7 +128,7 @@ export function DragOverlay({ piece }: DragOverlayProps) {
   return (
     <motion.div
       className={`
-        w-12 h-12 rounded-full border-2 flex items-center justify-center font-bold text-xl
+        w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-12 lg:h-12 rounded-full border-2 flex items-center justify-center font-bold text-sm sm:text-base md:text-lg lg:text-xl
         ${
           isRed
             ? "bg-red-600 border-red-700 text-white"

@@ -29,7 +29,7 @@ export function DroppableCell({
     <span
       className={`
           absolute inset-0 flex items-center justify-center pointer-events-none z-0
-          font-serif text-5xl select-none opacity-50 text-stone-100
+          font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl select-none opacity-50 text-stone-100
           ${isBlueTempleArch ? "" : "rotate-180"}
         `}
       aria-hidden="true"
@@ -42,7 +42,7 @@ export function DroppableCell({
     <div
       data-cell-id={`cell-${row}-${col}`}
       className={`
-        w-16 h-16 border border-stone-300 flex items-center justify-center cursor-pointer
+        w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 border border-stone-300 flex items-center justify-center cursor-pointer
         transition-all duration-300 hover:shadow-md relative bg-stone-50 backdrop-blur-sm focus:focus-zen
         ${
           isBlueTempleArch || isRedTempleArch

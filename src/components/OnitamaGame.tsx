@@ -195,11 +195,11 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
     }));
 
     const GameStatusSimple = () => (
-      <div className="flex items-center justify-center space-x-8">
+      <div className="flex items-center justify-center space-x-4 sm:space-x-6 lg:space-x-8 mb-4 sm:mb-6 lg:mb-8">
         {gameState.winner ? (
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-3">
             <span
-              className={`text-xl font-medium zen-text ${
+              className={`text-lg sm:text-xl font-medium zen-text ${
                 gameState.winner === "red" ? "text-red-600" : "text-blue-600"
               }`}
             >
@@ -211,19 +211,19 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
           </div>
         ) : (
           <>
-            <div className="flex items-center space-x-2">
-              <span className="text-stone-600 font-light zen-text">
+            <div className="flex items-center space-x-1.5 sm:space-x-2">
+              <span className="text-stone-600 font-light zen-text text-sm sm:text-base">
                 {gameContent[language].currentTurn}
               </span>
               <div
-                className={`w-6 h-6 rounded-full animate-pulse shadow-lg ${
+                className={`w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 rounded-full animate-pulse shadow-lg ${
                   gameState.currentPlayer === "red"
                     ? "bg-red-600 shadow-red-300"
                     : "bg-blue-600 shadow-blue-300"
                 }`}
               ></div>
               <span
-                className={`font-bold text-lg zen-text ${
+                className={`font-bold text-base sm:text-lg zen-text ${
                   gameState.currentPlayer === "red"
                     ? "text-red-600"
                     : "text-blue-600"
@@ -241,10 +241,10 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
 
     if (isLoading) {
       return (
-        <div className="flex items-center justify-center h-64">
+        <div className="flex items-center justify-center h-48 sm:h-64">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-stone-600 mx-auto mb-4"></div>
-            <p className="text-stone-600 font-light">
+            <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-stone-600 mx-auto mb-3 sm:mb-4"></div>
+            <p className="text-stone-600 font-light text-sm sm:text-base">
               {gameContent[language].loading}
             </p>
           </div>

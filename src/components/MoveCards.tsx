@@ -37,7 +37,7 @@ interface CardProps {
 // Separate component for the move grid
 function MoveGrid({ card, isRotated }: { card: MoveCard; isRotated: boolean }) {
   return (
-    <div className="w-16 h-16 sm:w-18 sm:h-18 lg:w-20 lg:h-20 mx-auto bg-stone-100/95 border border-stone-300 grid grid-cols-5 gap-0.5 p-1 backdrop-blur-sm shadow-inner">
+    <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-18 md:h-18 lg:w-20 lg:h-20 mx-auto bg-stone-100/95 border border-stone-300 grid grid-cols-5 gap-0.5 p-1 backdrop-blur-sm shadow-inner">
       {Array.from({ length: 5 }, (_, i) =>
         Array.from({ length: 5 }, (_, j) => {
           const actualI = isRotated ? 4 - i : i;
@@ -47,7 +47,7 @@ function MoveGrid({ card, isRotated }: { card: MoveCard; isRotated: boolean }) {
             return (
               <div
                 key={`${i}-${j}`}
-                className="w-2.5 h-2.5 sm:w-3 sm:h-3 border border-stone-400 bg-gradient-to-br from-stone-700 to-stone-900 flex items-center justify-center shadow-sm"
+                className="w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 border border-stone-400 bg-gradient-to-br from-stone-700 to-stone-900 flex items-center justify-center shadow-sm"
               />
             );
           }
@@ -66,7 +66,7 @@ function MoveGrid({ card, isRotated }: { card: MoveCard; isRotated: boolean }) {
           return (
             <div
               key={`${i}-${j}`}
-              className={`w-2.5 h-2.5 sm:w-3 sm:h-3 border border-stone-300 transition-colors ${
+              className={`w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 border border-stone-300 transition-colors ${
                 hasMove
                   ? "bg-emerald-400/80 shadow-sm"
                   : "bg-stone-50 hover:bg-stone-100"
@@ -91,12 +91,12 @@ function CardHeader({
 
   return (
     <>
-      <div className="text-sm sm:text-lg font-light text-stone-800 mb-3 sm:mb-4 tracking-wide text-center zen-text relative">
-        <span className="bg-white/80 px-2 py-1 rounded backdrop-blur-sm">
+      <div className="text-xs sm:text-sm md:text-lg font-light text-stone-800 mb-2 sm:mb-3 md:mb-4 tracking-wide text-center zen-text relative">
+        <span className="bg-white/80 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">
           {cardContent[language].sharedCard}
         </span>
       </div>
-      <div className="brush-stroke mx-auto mb-4 sm:mb-6"></div>
+      <div className="brush-stroke mx-auto mb-3 sm:mb-4 md:mb-6"></div>
     </>
   );
 }
@@ -114,8 +114,8 @@ function CardFooter({
   if (!isShared) return null;
 
   return (
-    <div className="mt-6 text-xs text-stone-500 font-light text-center zen-text">
-      <div className="bg-white/60 px-2 py-1 rounded backdrop-blur-sm inline-block">
+    <div className="mt-4 sm:mt-6 text-xs text-stone-500 font-light text-center zen-text">
+      <div className="bg-white/60 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm inline-block">
         {cardContent[language].nextTurn}
         <span
           className={`ml-1 zen-text font-medium ${
@@ -154,15 +154,41 @@ export function Card({
     }
   };
 
+  const getCardStyles = () => {
+    const baseStyles =
+      "zen-card scroll-paper p-2 sm:p-3 md:p-4 border select-none w-24 sm:w-28 md:w-32 lg:w-36 xl:w-40 relative overflow-hidden";
+
+    const colorStyles = isRed
+      ? "border-red-300 shadow-red-100"
+      : isBlue
+      ? "border-blue-300 shadow-blue-100"
+      : "border-stone-300";
+
+    const selectionStyles = isSelected ? "shadow-xl shadow-amber-200/50" : "";
+
+    const interactionStyles = canInteract
+      ? "cursor-pointer hover:shadow-lg focus:focus-zen"
+      : "cursor-default";
+
+    const disabledStyles =
+      !canInteract && !isShared ? "opacity-40 grayscale" : "";
+
+    return `${baseStyles} ${colorStyles} ${selectionStyles} ${interactionStyles} ${disabledStyles}`.trim();
+  };
+
   return (
     <motion.div
       style={{ gridArea }}
+      className={getCardStyles()}
       animate={{
         rotate: isRotated ? 180 : 0,
-        scale: isSelected ? 1.1 : 1,
+        scale: isSelected ? 1.05 : 1,
+        boxShadow: isSelected
+          ? "0 0 20px rgba(251, 191, 36, 0.6)"
+          : "0 2px 8px rgba(0, 0, 0, 0.1)",
       }}
       whileHover={{
-        scale: canInteract ? (isSelected ? 1.12 : 1.05) : 1,
+        scale: canInteract ? (isSelected ? 1.08 : 1.03) : 1,
       }}
       whileTap={{ scale: canInteract ? 0.95 : 1 }}
       onClick={handleClick}
@@ -178,30 +204,30 @@ export function Card({
 
       <div
         className={`zen-card relative overflow-hidden ${
-          isShared ? "p-2 sm:p-3" : "p-2"
-        } cursor-pointer`}
+          isShared ? "p-1.5 sm:p-2 md:p-3" : "p-1.5 sm:p-2"
+        } border border-stone-300`}
       >
         {/* Decorative Corner Elements */}
-        <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-stone-300/50 pointer-events-none"></div>
-        <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-stone-300/50 pointer-events-none"></div>
-        <div className="absolute bottom-1 left-1 w-2 h-2 border-l border-b border-stone-300/50 pointer-events-none"></div>
-        <div className="absolute bottom-1 right-1 w-2 h-2 border-r border-b border-stone-300/50 pointer-events-none"></div>
+        <div className="absolute top-0.5 left-0.5 sm:top-1 sm:left-1 w-1.5 h-1.5 sm:w-2 sm:h-2 border-l border-t border-stone-300/50 pointer-events-none"></div>
+        <div className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1 w-1.5 h-1.5 sm:w-2 sm:h-2 border-r border-t border-stone-300/50 pointer-events-none"></div>
+        <div className="absolute bottom-0.5 left-0.5 sm:bottom-1 sm:left-1 w-1.5 h-1.5 sm:w-2 sm:h-2 border-l border-b border-stone-300/50 pointer-events-none"></div>
+        <div className="absolute bottom-0.5 right-0.5 sm:bottom-1 sm:right-1 w-1.5 h-1.5 sm:w-2 sm:h-2 border-r border-b border-stone-300/50 pointer-events-none"></div>
 
         <div className="relative z-10">
-          <div className="flex flex-col items-center justify-center mb-2 sm:mb-3">
-            <div className="flex items-center justify-center w-10 h-10 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full bg-stone-100/90 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] ring-1 ring-stone-300">
+          <div className="flex flex-col items-center justify-center mb-1.5 sm:mb-2 md:mb-3">
+            <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full bg-stone-100/90 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] ring-1 ring-stone-300">
               {getArtName(card)}
             </div>
-            <div className="text-[12px] text-stone-600 mt-0.5 text-center">
+            <div className="text-[8px] sm:text-[10px] text-stone-600 mt-0.5 text-center">
               {card.name}
             </div>
           </div>
 
           <MoveGrid card={card} isRotated={isRotated} />
 
-          <div className="flex justify-center mt-2 sm:mt-3">
+          <div className="flex justify-center mt-1.5 sm:mt-2 md:mt-3">
             <div
-              className={`w-8 h-1.5 shadow-sm ${
+              className={`w-6 h-1 sm:w-8 sm:h-1.5 shadow-sm ${
                 isRed
                   ? "bg-gradient-to-r from-red-500 to-red-600"
                   : isBlue

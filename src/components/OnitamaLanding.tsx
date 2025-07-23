@@ -290,19 +290,21 @@ function CardPackButton({
   return (
     <button
       onClick={onClick}
-      className={`relative zen-card border-2 px-8 py-6 transition-all duration-500 hover:shadow-xl hover:-translate-y-2 tracking-wide font-light zen-text focus:focus-zen overflow-hidden ${
+      className={`relative zen-card border-2 px-4 py-4 sm:px-6 sm:py-5 lg:px-8 lg:py-6 transition-all duration-500 hover:shadow-xl hover:-translate-y-1 sm:hover:-translate-y-2 tracking-wide font-light zen-text focus:focus-zen overflow-hidden ${
         isSelected
           ? "border-stone-600 text-stone-800 bg-gradient-to-br from-stone-50 to-stone-100 shadow-lg scale-105"
           : "border-stone-300 text-stone-600 hover:border-stone-500 hover:bg-stone-50"
       }`}
     >
       {isSelected && (
-        <div className="absolute top-0 right-0 w-0 h-0 border-l-[20px] border-l-transparent border-t-[20px] border-t-stone-600"></div>
+        <div className="absolute top-0 right-0 w-0 h-0 border-l-[16px] sm:border-l-[20px] border-l-transparent border-t-[16px] sm:border-t-[20px] border-t-stone-600"></div>
       )}
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full transition-transform duration-700 group-hover:translate-x-full"></div>
       <div className="text-center relative z-10">
-        <div className="text-lg font-medium mb-2">{packData.name}</div>
-        <div className="text-sm text-stone-500 mb-3">
+        <div className="text-base sm:text-lg font-medium mb-1 sm:mb-2">
+          {packData.name}
+        </div>
+        <div className="text-xs sm:text-sm text-stone-500 mb-2 sm:mb-3">
           {packData.description}
         </div>
         <div className="text-xs text-stone-400">
@@ -372,36 +374,36 @@ export default function OnitamaLanding() {
 
   if (showGame) {
     return (
-      <div className="min-h-screen scroll-paper ink-wash p-8">
+      <div className="min-h-screen scroll-paper ink-wash p-4 sm:p-6 lg:p-8">
         <div className="container mx-auto max-w-7xl">
-          <div className="flex items-center justify-between mb-12">
-            <div className="flex items-center space-x-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-6 sm:mb-8 lg:mb-12 gap-4 sm:gap-6">
+            <div className="flex items-center space-x-4 sm:space-x-6">
               <Image
                 src="/Onitama_Logo.svg.png"
                 alt="Onitama"
-                width={200}
-                height={60}
-                className="object-contain zen-float"
+                width={160}
+                height={48}
+                className="object-contain zen-float sm:w-[200px] sm:h-[60px]"
               />
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <ZenButton
                 onClick={() => gameRef.current?.resetGame()}
                 variant="secondary"
-                className="px-6 py-3"
+                className="px-4 py-2 text-sm sm:px-6 sm:py-3 sm:text-base"
               >
                 {content[language].newGame}
               </ZenButton>
               <ZenButton
                 onClick={() => setShowGame(false)}
                 variant="secondary"
-                className="px-6 py-3"
+                className="px-4 py-2 text-sm sm:px-6 sm:py-3 sm:text-base"
               >
                 {content[language].backToHome}
               </ZenButton>
             </div>
           </div>
-          <div className="zen-card p-8">
+          <div className="zen-card p-4 sm:p-6 lg:p-8">
             <OnitamaGame
               ref={gameRef}
               cardPack={getSelectedPackForGame()}
@@ -416,43 +418,43 @@ export default function OnitamaLanding() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-stone-50 via-zinc-50 to-stone-100 scroll-texture">
       {/* Language Toggle */}
-      <div className="absolute top-4 right-4 z-10">
+      <div className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10">
         <ZenButton
           onClick={toggleLanguage}
           variant="secondary"
-          className="px-4 py-2 text-sm"
+          className="px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm"
         >
           {language === "zh" ? "EN" : "中文"}
         </ZenButton>
       </div>
 
       {/* Header */}
-      <header className="text-center py-24">
+      <header className="text-center py-12 sm:py-16 lg:py-24">
         <div className="container mx-auto px-4 max-w-4xl">
-          <div className="flex justify-center mb-8">
+          <div className="flex justify-center mb-6 sm:mb-8">
             <div className="flex items-center justify-center w-full">
               <Image
                 src="/Onitama_Logo.svg.png"
                 alt="Onitama"
-                width={260}
-                height={78}
-                className="object-contain mr-6"
+                width={200}
+                height={60}
+                className="object-contain sm:w-[260px] sm:h-[78px]"
                 priority
               />
             </div>
           </div>
-          <p className="text-4xl text-stone-600 mb-16 font-light tracking-wide leading-relaxed zen-text">
-            <span className="text-lg text-stone-500">
+          <p className="text-2xl sm:text-3xl lg:text-4xl text-stone-600 mb-8 sm:mb-12 lg:mb-16 font-light tracking-wide leading-relaxed zen-text">
+            <span className="text-base sm:text-lg text-stone-500">
               {content[language].title}
             </span>
           </p>
 
           {/* Card Pack Selection */}
-          <div className="mb-12">
-            <h3 className="text-lg text-stone-700 mb-6 font-light tracking-wide zen-text">
+          <div className="mb-8 sm:mb-12">
+            <h3 className="text-base sm:text-lg text-stone-700 mb-4 sm:mb-6 font-light tracking-wide zen-text">
               {content[language].cardPacks.title}
             </h3>
-            <div className="flex justify-center space-x-8">
+            <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 lg:gap-8">
               <CardPackButton
                 pack="normal"
                 isSelected={selectedPacks.has("normal")}
@@ -470,7 +472,7 @@ export default function OnitamaLanding() {
 
           <ZenButton
             onClick={() => setShowGame(true)}
-            className="text-lg py-6 px-12"
+            className="text-base sm:text-lg py-4 sm:py-6 px-8 sm:px-12"
           >
             {content[language].startGame}
           </ZenButton>
@@ -478,67 +480,73 @@ export default function OnitamaLanding() {
       </header>
 
       {/* Game Overview */}
-      <section className="py-32 bg-white">
-        <div className="container mx-auto px-8 max-w-3xl">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl font-light text-stone-800 mb-4 tracking-wide zen-text">
+      <section className="py-16 sm:py-24 lg:py-32 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
+          <div className="text-center mb-12 sm:mb-16 lg:mb-20">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-light text-stone-800 mb-4 tracking-wide zen-text">
               {content[language].gameOverview}
             </h2>
             <div className="brush-stroke mx-auto"></div>
           </div>
-          <div className="space-y-16">
+          <div className="space-y-12 sm:space-y-16">
             <div className="text-center">
-              <p className="text-xl text-stone-600 mb-8 font-light leading-relaxed max-w-2xl mx-auto zen-text">
+              <p className="text-lg sm:text-xl text-stone-600 mb-6 sm:mb-8 font-light leading-relaxed max-w-2xl mx-auto zen-text">
                 {content[language].subtitle}
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-2xl mx-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12 max-w-2xl mx-auto">
                 <div className="text-center">
-                  <IconCircle>速</IconCircle>
-                  <span className="text-stone-700 font-light zen-text">
+                  <IconCircle size="w-12 h-12 sm:w-16 sm:h-16">速</IconCircle>
+                  <span className="text-sm sm:text-base text-stone-700 font-light zen-text">
                     {content[language].gameFeatures.fast}
                   </span>
                 </div>
                 <div className="text-center">
-                  <IconCircle>智</IconCircle>
-                  <span className="text-stone-700 font-light zen-text">
+                  <IconCircle size="w-12 h-12 sm:w-16 sm:h-16">智</IconCircle>
+                  <span className="text-sm sm:text-base text-stone-700 font-light zen-text">
                     {content[language].gameFeatures.wisdom}
                   </span>
                 </div>
                 <div className="text-center">
-                  <IconCircle>勝</IconCircle>
-                  <span className="text-stone-700 font-light zen-text">
+                  <IconCircle size="w-12 h-12 sm:w-16 sm:h-16">勝</IconCircle>
+                  <span className="text-sm sm:text-base text-stone-700 font-light zen-text">
                     {content[language].gameFeatures.victory}
                   </span>
                 </div>
               </div>
             </div>
-            <div className="zen-card scroll-paper p-12 mx-8">
-              <h3 className="text-2xl font-light text-stone-800 mb-8 text-center zen-text">
+            <div className="zen-card scroll-paper p-6 sm:p-8 lg:p-12 mx-2 sm:mx-4 lg:mx-8">
+              <h3 className="text-xl sm:text-2xl font-light text-stone-800 mb-6 sm:mb-8 text-center zen-text">
                 {content[language].victoryPaths}
               </h3>
-              <div className="space-y-8">
+              <div className="space-y-6 sm:space-y-8">
                 <div className="text-center">
-                  <IconCircle size="w-12 h-12" className="mb-3">
+                  <IconCircle
+                    size="w-8 h-8 sm:w-12 sm:h-12"
+                    className="mb-2 sm:mb-3"
+                  >
                     石
                   </IconCircle>
                   <div>
-                    <div className="font-medium text-stone-800 mb-1">
+                    <div className="font-medium text-stone-800 mb-1 text-sm sm:text-base">
                       {content[language].victoryPathsDetail.stone.name}
                     </div>
-                    <div className="text-stone-600 font-light">
+                    <div className="text-stone-600 font-light text-xs sm:text-sm">
                       {content[language].victoryPathsDetail.stone.description}
                     </div>
                   </div>
                 </div>
                 <div className="text-center">
-                  <IconCircle size="w-12 h-12" className="mb-3">
+                  <IconCircle
+                    size="w-8 h-8 sm:w-12 sm:h-12"
+                    className="mb-2 sm:mb-3"
+                  >
                     流
                   </IconCircle>
                   <div>
-                    <div className="font-medium text-stone-800 mb-1">
+                    <div className="font-medium text-stone-800 mb-1 text-sm sm:text-base">
                       {content[language].victoryPathsDetail.stream.name}
                     </div>
-                    <div className="text-stone-600 font-light">
+                    <div className="text-stone-600 font-light text-xs sm:text-sm">
                       {content[language].victoryPathsDetail.stream.description}
                     </div>
                   </div>
@@ -550,47 +558,47 @@ export default function OnitamaLanding() {
       </section>
 
       {/* How to Play */}
-      <section className="py-32 bg-stone-25 scroll-paper">
-        <div className="container mx-auto px-8 max-w-4xl">
-          <div className="text-center mb-24">
-            <h2 className="text-4xl font-light text-stone-800 mb-4 tracking-wide zen-text">
+      <section className="py-16 sm:py-24 lg:py-32 bg-stone-25 scroll-paper">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+          <div className="text-center mb-16 sm:mb-20 lg:mb-24">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-light text-stone-800 mb-4 tracking-wide zen-text">
               {content[language].howToPlay}
             </h2>
             <div className="brush-stroke mx-auto"></div>
           </div>
 
           {/* Setup */}
-          <div className="mb-24">
+          <div className="mb-16 sm:mb-20 lg:mb-24">
             <SectionTitle
               number="一"
               title={content[language].setup}
               lang={language}
             />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-              <div className="zen-card p-8 text-center">
-                <IconCircle>棋</IconCircle>
-                <h4 className="font-medium text-stone-800 mb-4 zen-text">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-12">
+              <div className="zen-card p-6 sm:p-8 text-center">
+                <IconCircle size="w-12 h-12 sm:w-16 sm:h-16">棋</IconCircle>
+                <h4 className="font-medium text-stone-800 mb-3 sm:mb-4 zen-text text-sm sm:text-base">
                   {content[language].setupDetails.board.title}
                 </h4>
-                <p className="text-stone-600 font-light leading-relaxed zen-text">
+                <p className="text-stone-600 font-light leading-relaxed zen-text text-xs sm:text-sm">
                   {content[language].setupDetails.board.description}
                 </p>
               </div>
-              <div className="zen-card p-8 text-center">
-                <IconCircle>牌</IconCircle>
-                <h4 className="font-medium text-stone-800 mb-4">
+              <div className="zen-card p-6 sm:p-8 text-center">
+                <IconCircle size="w-12 h-12 sm:w-16 sm:h-16">牌</IconCircle>
+                <h4 className="font-medium text-stone-800 mb-3 sm:mb-4 text-sm sm:text-base">
                   {content[language].setupDetails.cards.title}
                 </h4>
-                <p className="text-stone-600 font-light leading-relaxed">
+                <p className="text-stone-600 font-light leading-relaxed text-xs sm:text-sm">
                   {content[language].setupDetails.cards.description}
                 </p>
               </div>
-              <div className="zen-card p-8 text-center">
-                <IconCircle>先</IconCircle>
-                <h4 className="font-medium text-stone-800 mb-4">
+              <div className="zen-card p-6 sm:p-8 text-center">
+                <IconCircle size="w-12 h-12 sm:w-16 sm:h-16">先</IconCircle>
+                <h4 className="font-medium text-stone-800 mb-3 sm:mb-4 text-sm sm:text-base">
                   {content[language].setupDetails.first.title}
                 </h4>
-                <p className="text-stone-600 font-light leading-relaxed">
+                <p className="text-stone-600 font-light leading-relaxed text-xs sm:text-sm">
                   {content[language].setupDetails.first.description}
                 </p>
               </div>
@@ -598,23 +606,26 @@ export default function OnitamaLanding() {
           </div>
 
           {/* Gameplay */}
-          <div className="mb-24">
+          <div className="mb-16 sm:mb-20 lg:mb-24">
             <SectionTitle
               number="二"
               title={content[language].gameplay}
               lang={language}
             />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              <div className="zen-card p-10">
-                <div className="flex items-center mb-6">
-                  <IconCircle size="w-12 h-12" className="mr-4 mb-0">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12">
+              <div className="zen-card p-6 sm:p-8 lg:p-10">
+                <div className="flex items-center mb-4 sm:mb-6">
+                  <IconCircle
+                    size="w-8 h-8 sm:w-12 sm:h-12"
+                    className="mr-3 sm:mr-4 mb-0"
+                  >
                     行
                   </IconCircle>
-                  <h4 className="font-medium text-stone-800 text-xl">
+                  <h4 className="font-medium text-stone-800 text-lg sm:text-xl">
                     {content[language].gameplayDetails.move.title}
                   </h4>
                 </div>
-                <ul className="space-y-3 text-stone-600 font-light">
+                <ul className="space-y-2 sm:space-y-3 text-stone-600 font-light text-xs sm:text-sm">
                   {content[language].gameplayDetails.move.steps.map(
                     (step, index) => (
                       <li key={index}>• {step}</li>
@@ -622,16 +633,19 @@ export default function OnitamaLanding() {
                   )}
                 </ul>
               </div>
-              <div className="zen-card p-10">
-                <div className="flex items-center mb-6">
-                  <IconCircle size="w-12 h-12" className="mr-4 mb-0">
+              <div className="zen-card p-6 sm:p-8 lg:p-10">
+                <div className="flex items-center mb-4 sm:mb-6">
+                  <IconCircle
+                    size="w-8 h-8 sm:w-12 sm:h-12"
+                    className="mr-3 sm:mr-4 mb-0"
+                  >
                     换
                   </IconCircle>
-                  <h4 className="font-medium text-stone-800 text-xl">
+                  <h4 className="font-medium text-stone-800 text-lg sm:text-xl">
                     {content[language].gameplayDetails.exchange.title}
                   </h4>
                 </div>
-                <ul className="space-y-3 text-stone-600 font-light">
+                <ul className="space-y-2 sm:space-y-3 text-stone-600 font-light text-xs sm:text-sm">
                   {content[language].gameplayDetails.exchange.steps.map(
                     (step, index) => (
                       <li key={index}>• {step}</li>
@@ -643,37 +657,37 @@ export default function OnitamaLanding() {
           </div>
 
           {/* Strategy Tips */}
-          <div className="mb-24">
+          <div className="mb-16 sm:mb-20 lg:mb-24">
             <SectionTitle
               number="三"
               title={content[language].strategy}
               lang={language}
             />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-              <div className="zen-card p-8 text-center">
-                <IconCircle>思</IconCircle>
-                <h4 className="font-medium text-stone-800 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-12">
+              <div className="zen-card p-6 sm:p-8 text-center">
+                <IconCircle size="w-12 h-12 sm:w-16 sm:h-16">思</IconCircle>
+                <h4 className="font-medium text-stone-800 mb-3 sm:mb-4 text-sm sm:text-base">
                   {content[language].strategyTips.think.title}
                 </h4>
-                <p className="text-stone-600 font-light leading-relaxed">
+                <p className="text-stone-600 font-light leading-relaxed text-xs sm:text-sm">
                   {content[language].strategyTips.think.description}
                 </p>
               </div>
-              <div className="zen-card p-8 text-center">
-                <IconCircle>中</IconCircle>
-                <h4 className="font-medium text-stone-800 mb-4">
+              <div className="zen-card p-6 sm:p-8 text-center">
+                <IconCircle size="w-12 h-12 sm:w-16 sm:h-16">中</IconCircle>
+                <h4 className="font-medium text-stone-800 mb-3 sm:mb-4 text-sm sm:text-base">
                   {content[language].strategyTips.center.title}
                 </h4>
-                <p className="text-stone-600 font-light leading-relaxed">
+                <p className="text-stone-600 font-light leading-relaxed text-xs sm:text-sm">
                   {content[language].strategyTips.center.description}
                 </p>
               </div>
-              <div className="zen-card p-8 text-center">
-                <IconCircle>平</IconCircle>
-                <h4 className="font-medium text-stone-800 mb-4">
+              <div className="zen-card p-6 sm:p-8 text-center">
+                <IconCircle size="w-12 h-12 sm:w-16 sm:h-16">平</IconCircle>
+                <h4 className="font-medium text-stone-800 mb-3 sm:mb-4 text-sm sm:text-base">
                   {content[language].strategyTips.balance.title}
                 </h4>
-                <p className="text-stone-600 font-light leading-relaxed">
+                <p className="text-stone-600 font-light leading-relaxed text-xs sm:text-sm">
                   {content[language].strategyTips.balance.description}
                 </p>
               </div>
@@ -683,17 +697,17 @@ export default function OnitamaLanding() {
       </section>
 
       {/* Call to Action */}
-      <section className="py-32 bg-stone-900 text-white">
-        <div className="container mx-auto px-8 text-center max-w-3xl">
-          <h2 className="text-4xl font-light mb-6 tracking-wide text-stone-100 zen-text">
+      <section className="py-16 sm:py-24 lg:py-32 bg-stone-900 text-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-3xl">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-light mb-4 sm:mb-6 tracking-wide text-stone-100 zen-text">
             {content[language].readyToChallenge}
           </h2>
-          <p className="text-xl mb-12 text-stone-300 font-light leading-relaxed zen-text">
+          <p className="text-lg sm:text-xl mb-8 sm:mb-12 text-stone-300 font-light leading-relaxed zen-text">
             {content[language].callToAction.subtitle}
           </p>
           <ZenButton
             onClick={() => setShowGame(true)}
-            className="text-xl py-6 px-16 border-stone-400 text-stone-800"
+            className="text-lg sm:text-xl py-4 sm:py-6 px-12 sm:px-16 border-stone-400 text-stone-800"
           >
             {content[language].challengeStart}
           </ZenButton>
@@ -701,10 +715,10 @@ export default function OnitamaLanding() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-stone-50 py-16">
-        <div className="container mx-auto px-8 text-center">
-          <div className="brush-stroke mx-auto mb-6"></div>
-          <p className="text-stone-500 font-light tracking-wide zen-text">
+      <footer className="bg-stone-50 py-12 sm:py-16">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="brush-stroke mx-auto mb-4 sm:mb-6"></div>
+          <p className="text-stone-500 font-light tracking-wide zen-text text-sm sm:text-base">
             {content[language].footer}
           </p>
         </div>
