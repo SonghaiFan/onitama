@@ -137,21 +137,11 @@ export function Card({
             <div className="w-1/2 h-full flex items-center justify-center px-2 sm:px-3">
               {hasWindMoves ? (
                 <div className="flex flex-col items-center justify-center w-full space-y-2 sm:space-y-3">
-                  <MoveGrid
-                    card={card}
-                    isRotated={isRotated}
-                    isWind={false}
-                    isTrimmed={true}
-                  />
-                  <MoveGrid
-                    card={card}
-                    isRotated={isRotated}
-                    isWind={true}
-                    isTrimmed={true}
-                  />
+                  <MoveGrid card={card} isWind={false} isTrimmed={true} />
+                  <MoveGrid card={card} isWind={true} isTrimmed={true} />
                 </div>
               ) : (
-                <MoveGrid card={card} isRotated={isRotated} />
+                <MoveGrid card={card} />
               )}
             </div>
           </div>

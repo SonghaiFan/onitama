@@ -135,7 +135,8 @@ export default function GameBoard({
               const possibleMoves = getPossibleMoves(
                 dragState.draggedPiece.piece,
                 currentPlayerCards[dragState.draggedPiece.cardIndex],
-                currentBoard
+                currentBoard,
+                currentPlayer
               );
 
               const isValidMove = possibleMoves.some(
@@ -214,7 +215,12 @@ export default function GameBoard({
 
     const selectedCard =
       gameState.players[gameState.currentPlayer].cards[cardIndex];
-    return getPossibleMoves(piece, selectedCard, gameState.board);
+    return getPossibleMoves(
+      piece,
+      selectedCard,
+      gameState.board,
+      gameState.currentPlayer
+    );
   })();
 
   const renderPiece = (

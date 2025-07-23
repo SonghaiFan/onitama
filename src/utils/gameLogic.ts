@@ -354,7 +354,8 @@ export function isTempleArch(
 export function getPossibleMoves(
   piece: Piece,
   card: MoveCard,
-  board: (Piece | null)[][]
+  board: (Piece | null)[][],
+  currentPlayer: Player
 ): [number, number][] {
   const moves: [number, number][] = [];
   const [pieceRow, pieceCol] = piece.position;
@@ -367,15 +368,15 @@ export function getPossibleMoves(
     let targetRow: number;
     let targetCol: number;
 
-    // Regular pieces apply move with direction based on player
-    if (piece.player === "red") {
+    // Apply move with direction based on current player's turn
+    if (currentPlayer === "red") {
       // Red player: y=1 means forward (up, negative row)
       targetRow = pieceRow - move.y;
       targetCol = pieceCol + move.x;
     } else {
       // Blue player: flip the moves (y=1 means forward, which is down for blue)
       targetRow = pieceRow + move.y;
-      targetCol = pieceCol + move.x;
+      targetCol = pieceCol - move.x;
     }
 
     // Check if move is valid
@@ -411,13 +412,14 @@ export function isValidMove(
   from: [number, number],
   to: [number, number],
   card: MoveCard,
-  board: (Piece | null)[][]
+  board: (Piece | null)[][],
+  currentPlayer: Player
 ): boolean {
   const [fromRow, fromCol] = from;
   const piece = board[fromRow][fromCol];
   if (!piece) return false;
 
-  const possibleMoves = getPossibleMoves(piece, card, board);
+  const possibleMoves = getPossibleMoves(piece, card, board, currentPlayer);
   return possibleMoves.some(([row, col]) => row === to[0] && col === to[1]);
 }
 
