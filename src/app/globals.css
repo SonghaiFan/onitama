@@ -173,7 +173,7 @@
   background-color: rgb(37, 99, 235);
   border-color: rgb(30, 64, 175);
   color: white;
-  rotate: 180deg;
+  transform: rotate(180deg);
 }
 
 .neutral-piece {
