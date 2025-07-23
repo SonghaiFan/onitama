@@ -293,12 +293,10 @@ export default function GameBoard({
         dragState.dragPosition && (
           <div className="fixed inset-0 w-full h-full pointer-events-none z-9999">
             <div
+              className="absolute pointer-events-none -translate-x-1/2 -translate-y-1/2"
               style={{
-                position: "absolute",
                 left: dragState.dragPosition.x,
                 top: dragState.dragPosition.y,
-                transform: "translate(-50%, -50%)",
-                pointerEvents: "none",
               }}
             >
               <DragOverlay

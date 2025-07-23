@@ -104,16 +104,18 @@ export function Card({
   return (
     <motion.div
       style={{ gridArea }}
-      className="relative z-20"
+      className={`relative z-20 ${isShared ? "opacity-60" : ""}`}
       animate={{
         rotate: isRotated ? 180 : 0,
         scale: isSelected ? 1.05 : 1,
         boxShadow: isSelected
           ? "0 0 20px rgba(251, 191, 36, 0.6)"
           : "0 4px 12px rgba(147, 51, 234, 0.2)",
+        opacity: isShared ? 0.6 : 1,
       }}
       whileHover={{
         scale: canInteract ? (isSelected ? 1.2 : 1.1) : 1,
+        opacity: isShared ? 0.8 : 1,
       }}
       whileTap={{ scale: canInteract ? 0.95 : 1 }}
       onClick={handleClick}
@@ -128,7 +130,7 @@ export function Card({
       <div
         className={`zen-card relative overflow-hidden ${
           isShared ? "p-1.5 sm:p-2 md:p-3" : "p-1.5 sm:p-2"
-        } border border-stone-300`}
+        } border border-stone-300 ${isShared ? "bg-stone-50/80" : ""}`}
       >
         {/* Decorative Corner Elements */}
         <div className="absolute top-0.5 left-0.5 sm:top-1 sm:left-1 w-1.5 h-1.5 sm:w-2 sm:h-2 border-l border-t border-stone-300/50 pointer-events-none"></div>
@@ -138,10 +140,18 @@ export function Card({
 
         <div className="relative z-10">
           <div className="flex flex-col items-center justify-center mb-1.5 sm:mb-2 md:mb-3">
-            <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full bg-stone-100/90 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] ring-1 ring-stone-300">
+            <div
+              className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] ring-1 ring-stone-300 ${
+                isShared ? "bg-stone-200/70" : "bg-stone-100/90"
+              }`}
+            >
               {getArtName(card)}
             </div>
-            <div className="text-[8px] sm:text-[10px] text-stone-600 mt-0.5 text-center">
+            <div
+              className={`text-xs sm:text-base mt-2 text-center ${
+                isShared ? "text-stone-500" : "text-stone-600"
+              }`}
+            >
               {card.name}
             </div>
           </div>
@@ -158,7 +168,7 @@ export function Card({
                   : card.color === "red"
                   ? "bg-gradient-to-r from-red-500 to-red-600"
                   : "bg-gradient-to-r from-blue-500 to-blue-600"
-              }`}
+              } ${isShared ? "opacity-50" : ""}`}
             />
           </div>
         </div>
