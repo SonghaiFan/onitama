@@ -1,9 +1,10 @@
 export type Player = "red" | "blue";
 
 export interface Piece {
-  id: string; // Unique identifier like "red_1", "blue_master", etc.
-  player: Player;
+  id: string; // Unique identifier like "red_1", "blue_master", "wind_spirit", etc.
+  player: Player | "neutral"; // Add neutral for wind spirit
   isMaster: boolean;
+  isWindSpirit?: boolean; // New property for wind spirit
   position: [number, number];
 }
 
@@ -16,7 +17,9 @@ export interface MoveCard {
   name: string;
   displayName?: string;
   moves: Move[];
+  wind_move?: Move[]; // Add wind moves for wind spirit cards
   color: Player;
+  isWindSpiritCard?: boolean; // Flag to identify wind spirit cards
 }
 
 export interface PlayerState {
@@ -33,6 +36,7 @@ export interface GameState {
   currentPlayer: Player;
   selectedPiece: [number, number] | null;
   selectedCard: number | null;
+  windSpiritPosition: [number, number] | null; // Track wind spirit position
   winner: Player | null;
   gamePhase: "setup" | "playing" | "finished";
 }
@@ -57,6 +61,7 @@ export interface SenseisCardPackCard {
   moves: Move[];
   wind_move?: Move[];
   firstPlayerColor: Player;
+  type?: "wind_spirit" | "move_card"; // Card type for wind spirit vs regular cards
 }
 
 export interface SenseisCardPack {

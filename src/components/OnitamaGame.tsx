@@ -15,6 +15,9 @@ import {
   isValidMove,
   executeMove,
   createNewGameAsync,
+  isValidWindSpiritMove,
+  applyWindSpiritMove,
+  checkWinConditions,
 } from "@/utils/gameLogic";
 
 type Language = "zh" | "en";
@@ -38,7 +41,7 @@ const gameContent = {
 };
 
 interface OnitamaGameProps {
-  cardPacks?: ("normal" | "senseis")[];
+  cardPacks?: ("normal" | "senseis" | "windway")[];
   language?: Language;
 }
 
@@ -46,6 +49,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
   function OnitamaGame({ cardPacks = ["normal"], language = "zh" }, ref) {
     const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
     const [isLoading, setIsLoading] = useState(true);
+    const [windSpiritMovePhase, setWindSpiritMovePhase] = useState(false);
 
     // Load the appropriate card pack when component mounts or cardPacks changes
     useEffect(() => {
@@ -54,10 +58,12 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
         try {
           const newGameState = await createNewGameAsync(cardPacks);
           setGameState(newGameState);
+          setWindSpiritMovePhase(false);
         } catch (error) {
           console.error("Failed to load card packs:", error);
           // Fallback to normal game state
           setGameState(INITIAL_GAME_STATE);
+          setWindSpiritMovePhase(false);
         } finally {
           setIsLoading(false);
         }
@@ -73,6 +79,53 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
         const [row, col] = position;
         const piece = gameState.board[row][col];
 
+        // Handle wind spirit movement phase
+        if (windSpiritMovePhase && gameState.windSpiritPosition) {
+          const selectedCard =
+            gameState.players[gameState.currentPlayer].cards[
+              gameState.selectedCard!
+            ];
+
+          if (
+            isValidWindSpiritMove(
+              gameState.windSpiritPosition,
+              position,
+              selectedCard,
+              gameState.board
+            )
+          ) {
+            // Apply wind spirit move
+            const newBoard = applyWindSpiritMove(
+              gameState.board,
+              gameState.windSpiritPosition,
+              position
+            );
+            const newWindSpiritPosition = position;
+
+            // Complete the turn by exchanging cards
+            const newGameState: GameState = {
+              ...gameState,
+              board: newBoard,
+              windSpiritPosition: newWindSpiritPosition,
+              selectedPiece: null,
+              selectedCard: null,
+              currentPlayer: gameState.currentPlayer === "red" ? "blue" : "red",
+            };
+
+            // Check win conditions
+            const winner = checkWinConditions(newGameState);
+            if (winner) {
+              newGameState.winner = winner;
+            }
+
+            setGameState(newGameState);
+            setWindSpiritMovePhase(false);
+            return;
+          }
+          return;
+        }
+
+        // Handle normal piece movement
         if (
           !piece &&
           gameState.selectedPiece &&
@@ -96,7 +149,14 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
               position,
               gameState.selectedCard
             );
-            setGameState(newGameState);
+
+            // Check if this was a wind spirit card and wind spirit exists
+            if (selectedCard.isWindSpiritCard && gameState.windSpiritPosition) {
+              setWindSpiritMovePhase(true);
+              setGameState(newGameState);
+            } else {
+              setGameState(newGameState);
+            }
           }
           return;
         }
@@ -127,7 +187,17 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
                 position,
                 gameState.selectedCard
               );
-              setGameState(newGameState);
+
+              // Check if this was a wind spirit card and wind spirit exists
+              if (
+                selectedCard.isWindSpiritCard &&
+                gameState.windSpiritPosition
+              ) {
+                setWindSpiritMovePhase(true);
+                setGameState(newGameState);
+              } else {
+                setGameState(newGameState);
+              }
             }
           }
         } else {
@@ -138,7 +208,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
           });
         }
       },
-      [gameState]
+      [gameState, windSpiritMovePhase]
     );
 
     const handleCardClick = useCallback(
@@ -212,7 +282,9 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
         ) : (
           <div className="flex items-center space-x-0.5 sm:space-x-1">
             <span className="text-stone-600 font-light zen-text text-xs sm:text-sm">
-              {gameContent[language].currentTurn}
+              {windSpiritMovePhase
+                ? "風靈移動"
+                : gameContent[language].currentTurn}
             </span>
             <div
               className={`w-3 h-3 sm:w-4 sm:h-4 lg:w-6 lg:h-6 rounded-full animate-pulse shadow-lg ${
@@ -232,6 +304,11 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
                 ? gameContent[language].redPlayer
                 : gameContent[language].bluePlayer}
             </span>
+            {windSpiritMovePhase && (
+              <span className="text-cyan-600 font-light zen-text text-xs sm:text-sm ml-1">
+                (風靈)
+              </span>
+            )}
           </div>
         )}
       </div>

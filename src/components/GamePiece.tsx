@@ -23,26 +23,40 @@ interface DraggablePieceProps {
 function PieceIcon({
   player,
   isMaster,
+  isWindSpirit,
 }: {
-  player: "red" | "blue";
+  player: "red" | "blue" | "neutral";
   isMaster: boolean;
+  isWindSpirit?: boolean;
 }) {
-  // Use a Unicode chess king for master, pawn for student, rotate for blue
+  if (isWindSpirit) {
+    return (
+      <span
+        className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl"
+        style={{ fontFamily: "DuanNing" }}
+      >
+        風
+      </span>
+    );
+  }
+
+  if (isMaster) {
+    return (
+      <span
+        className="text-xl sm:text-2xl md:text-3xl lg:text-4xl"
+        style={{ fontFamily: "DuanNing" }}
+      >
+        ♔
+      </span>
+    );
+  }
+
   return (
     <span
-      className={`
-        absolute inset-0 flex items-center justify-center pointer-events-none z-20
-         font-serif  font-bold select-none opacity-60
-         ${
-           isMaster
-             ? "text-lg sm:text-xl md:text-2xl lg:text-4xl"
-             : "text-base sm:text-lg md:text-xl lg:text-3xl"
-         }
-        ${player === "blue" ? "rotate-180 translate-y-0.5" : "-translate-y-0.5"}
-      `}
-      aria-hidden="true"
+      className="text-lg sm:text-xl md:text-2xl lg:text-3xl"
+      style={{ fontFamily: "DuanNing" }}
     >
-      {isMaster ? "♟" : ""}
+      ♙
     </span>
   );
 }
@@ -59,17 +73,26 @@ export function DraggablePiece({
 }: DraggablePieceProps) {
   const isRed = piece.player === "red";
   const isMaster = piece.isMaster;
+  const isWindSpirit = piece.isWindSpirit;
+
+  // Determine piece styling based on type
+  const getPieceStyling = () => {
+    if (isWindSpirit) {
+      return "bg-gradient-to-br from-cyan-400 to-blue-500 border-cyan-600 text-white shadow-lg";
+    }
+    if (isRed) {
+      return "bg-red-600 border-red-700 text-white";
+    }
+    return "bg-blue-600 border-blue-700 text-white";
+  };
 
   return (
     <motion.div
       className={`
         w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full border-2 flex items-center justify-center relative z-30
-        ${
-          isRed
-            ? "bg-red-600 border-red-700 text-white"
-            : "bg-blue-600 border-blue-700 text-white"
-        }
+        ${getPieceStyling()}
         ${isMaster ? "master-piece text-amber-100 shadow-lg" : "student-piece"}
+        ${isWindSpirit ? "wind-spirit-piece shadow-xl" : ""}
         ${canDrag ? "cursor-grab" : "cursor-default"}
         ${isDraggedPiece ? "opacity-50 scale-75 dragging" : ""}
         ${isDraggedPiece && selectedCardIndex !== null ? "shadow-xl" : ""}
@@ -80,6 +103,8 @@ export function DraggablePiece({
         rotate: 0,
         boxShadow: isSelected
           ? "0 0 20px rgba(251, 191, 36, 0.6)"
+          : isWindSpirit
+          ? "0 0 15px rgba(34, 211, 238, 0.4)"
           : "0 2px 4px rgba(0, 0, 0, 0.1)",
         opacity: isDraggedPiece ? 0.5 : 1,
       }}
@@ -109,7 +134,11 @@ export function DraggablePiece({
       }}
     >
       <div className="relative w-full h-full flex items-center justify-center">
-        <PieceIcon player={piece.player} isMaster={isMaster} />
+        <PieceIcon
+          player={piece.player}
+          isMaster={isMaster}
+          isWindSpirit={isWindSpirit}
+        />
       </div>
     </motion.div>
   );
@@ -124,22 +153,35 @@ interface DragOverlayProps {
 export function DragOverlay({ piece }: DragOverlayProps) {
   const isRed = piece.player === "red";
   const isMaster = piece.isMaster;
+  const isWindSpirit = piece.isWindSpirit;
+
+  // Determine piece styling based on type
+  const getPieceStyling = () => {
+    if (isWindSpirit) {
+      return "bg-gradient-to-br from-cyan-400 to-blue-500 border-cyan-600 text-white shadow-lg";
+    }
+    if (isRed) {
+      return "bg-red-600 border-red-700 text-white";
+    }
+    return "bg-blue-600 border-blue-700 text-white";
+  };
 
   return (
     <motion.div
       className={`
         w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full border-2 flex items-center justify-center font-bold text-base sm:text-lg md:text-xl lg:text-2xl relative z-50
-        ${
-          isRed
-            ? "bg-red-600 border-red-700 text-white"
-            : "bg-blue-600 border-blue-700 text-white"
-        }
+        ${getPieceStyling()}
         ${isMaster ? "master-piece text-amber-100 shadow-lg" : "student-piece"}
+        ${isWindSpirit ? "wind-spirit-piece shadow-xl" : ""}
         shadow-xl
       `}
     >
       <div className="relative w-full h-full flex items-center justify-center">
-        <PieceIcon player={piece.player} isMaster={isMaster} />
+        <PieceIcon
+          player={piece.player}
+          isMaster={isMaster}
+          isWindSpirit={isWindSpirit}
+        />
       </div>
     </motion.div>
   );

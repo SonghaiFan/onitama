@@ -35,7 +35,18 @@ interface CardProps {
 }
 
 // Separate component for the move grid
-function MoveGrid({ card, isRotated }: { card: MoveCard; isRotated: boolean }) {
+function MoveGrid({
+  card,
+  isRotated,
+  showWindMoves = false,
+}: {
+  card: MoveCard;
+  isRotated: boolean;
+  showWindMoves?: boolean;
+}) {
+  const movesToShow =
+    showWindMoves && card.wind_move ? card.wind_move : card.moves;
+
   return (
     <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-18 md:h-18 lg:w-20 lg:h-20 mx-auto bg-stone-100/95 border border-stone-300 grid grid-cols-5 gap-0.5 p-1 backdrop-blur-sm shadow-inner">
       {Array.from({ length: 5 }, (_, i) =>
@@ -47,12 +58,16 @@ function MoveGrid({ card, isRotated }: { card: MoveCard; isRotated: boolean }) {
             return (
               <div
                 key={`${i}-${j}`}
-                className="w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 border border-stone-400 bg-gradient-to-br from-stone-700 to-stone-900 flex items-center justify-center shadow-sm"
+                className={`w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 border border-stone-400 flex items-center justify-center shadow-sm ${
+                  showWindMoves && card.wind_move
+                    ? "bg-gradient-to-br from-cyan-600 to-blue-700"
+                    : "bg-gradient-to-br from-stone-700 to-stone-900"
+                }`}
               />
             );
           }
 
-          const hasMove = card.moves.some((move) => {
+          const hasMove = movesToShow.some((move) => {
             let displayMove = move;
             if (isRotated) {
               displayMove = { x: move.x, y: -move.y };
@@ -68,7 +83,9 @@ function MoveGrid({ card, isRotated }: { card: MoveCard; isRotated: boolean }) {
               key={`${i}-${j}`}
               className={`w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 border border-stone-300 transition-colors ${
                 hasMove
-                  ? "bg-emerald-400/80 shadow-sm"
+                  ? showWindMoves && card.wind_move
+                    ? "bg-cyan-400/80 shadow-sm"
+                    : "bg-emerald-400/80 shadow-sm"
                   : "bg-stone-50 hover:bg-stone-100"
               }`}
             />
@@ -156,7 +173,29 @@ export function Card({
             </div>
           </div>
 
-          <MoveGrid card={card} isRotated={isRotated} />
+          {/* Show dual grids for wind spirit cards */}
+          {card.isWindSpiritCard && card.wind_move ? (
+            <div className="flex flex-col gap-1 sm:gap-2">
+              <div className="text-center">
+                <div className="text-xs text-stone-500 mb-1">Normal Move</div>
+                <MoveGrid
+                  card={card}
+                  isRotated={isRotated}
+                  showWindMoves={false}
+                />
+              </div>
+              <div className="text-center">
+                <div className="text-xs text-cyan-600 mb-1">Wind Move</div>
+                <MoveGrid
+                  card={card}
+                  isRotated={isRotated}
+                  showWindMoves={true}
+                />
+              </div>
+            </div>
+          ) : (
+            <MoveGrid card={card} isRotated={isRotated} />
+          )}
 
           <div className="flex justify-center mt-1.5 sm:mt-2 md:mt-3">
             <div

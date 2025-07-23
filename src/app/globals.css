@@ -150,6 +150,22 @@
   scale: 0.9;
 }
 
+.wind-spirit-piece {
+  border: 2px solid rgba(34, 211, 238, 0.4);
+  scale: 1.1;
+  animation: wind-float 4s ease-in-out infinite;
+}
+
+@keyframes wind-float {
+  0%,
+  100% {
+    transform: translateY(0px) scale(1.1);
+  }
+  50% {
+    transform: translateY(-3px) scale(1.15);
+  }
+}
+
 /* ==========================================================================
    DECORATIVE ELEMENTS
    ========================================================================== */

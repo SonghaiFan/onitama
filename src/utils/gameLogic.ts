@@ -13,7 +13,9 @@ function convertCardToGameFormat(card: SenseisCardPackCard): MoveCard {
     name: card.name.en,
     displayName: card.name.zh,
     moves: card.moves,
+    wind_move: card.wind_move,
     color: card.firstPlayerColor === "red" ? "red" : "blue",
+    isWindSpiritCard: !!card.wind_move || card.type === "wind_spirit",
   };
 }
 
@@ -73,7 +75,7 @@ const FALLBACK_CARDS: MoveCard[] = [
 
 // Function to load card pack data
 async function loadCardPack(
-  packName: "normal" | "senseis"
+  packName: "normal" | "senseis" | "windway"
 ): Promise<MoveCard[]> {
   try {
     const response = await fetch(`/pack/onitama_16_cards_${packName}.json`);
@@ -91,7 +93,7 @@ const cardPackCache: Record<string, MoveCard[]> = {};
 
 // Function to get cards for multiple packs
 async function getCardsForPacks(
-  packNames: ("normal" | "senseis")[]
+  packNames: ("normal" | "senseis" | "windway")[]
 ): Promise<MoveCard[]> {
   const allCards: MoveCard[] = [];
 
@@ -110,7 +112,7 @@ async function getCardsForPacks(
 
 // Function to randomly select 5 cards from multiple packs
 async function selectRandomCardsAsync(
-  cardPacks: ("normal" | "senseis")[] = ["normal"]
+  cardPacks: ("normal" | "senseis" | "windway")[] = ["normal"]
 ): Promise<{
   playerCards: MoveCard[];
   sharedCard: MoveCard;
@@ -213,39 +215,36 @@ function createInitialBoard(): (Piece | null)[][] {
   return board;
 }
 
-// Generate initial game state with random cards
-function createInitialGameState(): GameState {
-  const { playerCards, sharedCard } = selectRandomCards();
+// Check if wind spirit should be included based on selected packs
+function shouldIncludeWindSpirit(
+  cardPacks: ("normal" | "senseis" | "windway")[]
+): boolean {
+  return cardPacks.includes("windway");
+}
 
-  // Validate that we have valid cards
-  if (!sharedCard || !playerCards || playerCards.length < 4) {
-    console.error("Invalid card selection, using fallback");
-    // Use fallback cards
-    const fallbackCards = [...FALLBACK_CARDS];
-    const shuffled = fallbackCards.sort(() => Math.random() - 0.5);
-    const selected = shuffled.slice(0, 5);
+// Create initial board with optional wind spirit
+function createInitialBoardWithWindSpirit(
+  includeWindSpirit: boolean = false
+): (Piece | null)[][] {
+  const board = createInitialBoard();
 
-    return {
-      board: createInitialBoard(),
-      players: {
-        red: {
-          cards: [selected[0], selected[1]],
-        },
-        blue: {
-          cards: [selected[2], selected[3]],
-        },
-      },
-      sharedCard: selected[4],
-      currentPlayer: selected[4].color,
-      selectedPiece: null,
-      selectedCard: null,
-      winner: null,
-      gamePhase: "playing",
+  if (includeWindSpirit) {
+    // Place wind spirit in center (2, 2)
+    board[2][2] = {
+      id: "wind_spirit",
+      player: "neutral",
+      isMaster: false,
+      isWindSpirit: true,
+      position: [2, 2],
     };
   }
 
-  // Determine starting player based on shared card color
-  const startingPlayer = sharedCard.color;
+  return board;
+}
+
+// Create initial game state
+function createInitialGameState(): GameState {
+  const { playerCards, sharedCard } = selectRandomCards();
 
   return {
     board: createInitialBoard(),
@@ -258,9 +257,10 @@ function createInitialGameState(): GameState {
       },
     },
     sharedCard: sharedCard,
-    currentPlayer: startingPlayer,
+    currentPlayer: sharedCard.color,
     selectedPiece: null,
     selectedCard: null,
+    windSpiritPosition: null,
     winner: null,
     gamePhase: "playing",
   };
@@ -270,10 +270,11 @@ export const INITIAL_GAME_STATE: GameState = createInitialGameState();
 
 // Async version for loading card packs
 export async function createNewGameAsync(
-  cardPacks: ("normal" | "senseis")[] = ["normal"]
+  cardPacks: ("normal" | "senseis" | "windway")[] = ["normal"]
 ): Promise<GameState> {
   try {
     const { playerCards, sharedCard } = await selectRandomCardsAsync(cardPacks);
+    const includeWindSpirit = shouldIncludeWindSpirit(cardPacks);
 
     // Validate that we have valid cards
     if (!sharedCard || !playerCards || playerCards.length < 4) {
@@ -285,7 +286,7 @@ export async function createNewGameAsync(
     const startingPlayer = sharedCard.color;
 
     return {
-      board: createInitialBoard(),
+      board: createInitialBoardWithWindSpirit(includeWindSpirit),
       players: {
         red: {
           cards: [playerCards[0], playerCards[1]],
@@ -298,6 +299,7 @@ export async function createNewGameAsync(
       currentPlayer: startingPlayer,
       selectedPiece: null,
       selectedCard: null,
+      windSpiritPosition: includeWindSpirit ? [2, 2] : null,
       winner: null,
       gamePhase: "playing",
     };
@@ -310,9 +312,10 @@ export async function createNewGameAsync(
     const fallbackCards = [...FALLBACK_CARDS];
     const shuffled = fallbackCards.sort(() => Math.random() - 0.5);
     const selected = shuffled.slice(0, 5);
+    const includeWindSpirit = shouldIncludeWindSpirit(cardPacks);
 
     return {
-      board: createInitialBoard(),
+      board: createInitialBoardWithWindSpirit(includeWindSpirit),
       players: {
         red: {
           cards: [selected[0], selected[1]],
@@ -325,6 +328,7 @@ export async function createNewGameAsync(
       currentPlayer: selected[4].color,
       selectedPiece: null,
       selectedCard: null,
+      windSpiritPosition: includeWindSpirit ? [2, 2] : null,
       winner: null,
       gamePhase: "playing",
     };
@@ -577,4 +581,102 @@ export function getCardDisplayPattern(card: MoveCard): string[][] {
   });
 
   return pattern;
+}
+
+// Get possible wind spirit moves
+export function getPossibleWindSpiritMoves(
+  windSpiritPosition: [number, number],
+  card: MoveCard,
+  board: (Piece | null)[][]
+): [number, number][] {
+  if (!card.wind_move) return [];
+
+  const moves: [number, number][] = [];
+  const [spiritRow, spiritCol] = windSpiritPosition;
+
+  // Check each wind move in the card
+  for (const move of card.wind_move) {
+    const targetRow = spiritRow + move.y;
+    const targetCol = spiritCol + move.x;
+
+    if (isValidPosition(targetRow, targetCol)) {
+      const targetPiece = board[targetRow][targetCol];
+
+      // Wind spirit can only move to empty squares or swap with students
+      if (
+        !targetPiece ||
+        (!targetPiece.isMaster && !targetPiece.isWindSpirit)
+      ) {
+        moves.push([targetRow, targetCol]);
+      }
+    }
+  }
+
+  return moves;
+}
+
+// Check if a wind spirit move is valid
+export function isValidWindSpiritMove(
+  from: [number, number],
+  to: [number, number],
+  card: MoveCard,
+  board: (Piece | null)[][]
+): boolean {
+  if (!card.wind_move) return false;
+
+  const [fromRow, fromCol] = from;
+  const [toRow, toCol] = to;
+
+  // Check if the move is in the wind_move array
+  const moveVector = { x: toCol - fromCol, y: toRow - fromRow };
+  const isValidMove = card.wind_move.some(
+    (move) => move.x === moveVector.x && move.y === moveVector.y
+  );
+
+  if (!isValidMove) return false;
+
+  // Check if target position is valid
+  if (!isValidPosition(toRow, toCol)) return false;
+
+  const targetPiece = board[toRow][toCol];
+
+  // Wind spirit can move to empty squares or swap with students (not masters)
+  return !targetPiece || (!targetPiece.isMaster && !targetPiece.isWindSpirit);
+}
+
+// Apply wind spirit move (including swap logic)
+export function applyWindSpiritMove(
+  board: (Piece | null)[][],
+  from: [number, number],
+  to: [number, number]
+): (Piece | null)[][] {
+  const newBoard = board.map((row) => [...row]);
+  const [fromRow, fromCol] = from;
+  const [toRow, toCol] = to;
+
+  const windSpirit = newBoard[fromRow][fromCol];
+  const targetPiece = newBoard[toRow][toCol];
+
+  if (!windSpirit?.isWindSpirit) return board;
+
+  // If target is empty, just move wind spirit
+  if (!targetPiece) {
+    newBoard[toRow][toCol] = {
+      ...windSpirit,
+      position: [toRow, toCol],
+    };
+    newBoard[fromRow][fromCol] = null;
+  } else {
+    // Swap with student piece
+    newBoard[toRow][toCol] = {
+      ...windSpirit,
+      position: [toRow, toCol],
+    };
+    newBoard[fromRow][fromCol] = {
+      ...targetPiece,
+      position: [fromRow, fromCol],
+    };
+  }
+
+  return newBoard;
 }

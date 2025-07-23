@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import OnitamaGame from "./OnitamaGame";
 
-type CardPack = "normal" | "senseis";
+type CardPack = "normal" | "senseis" | "windway";
 type Language = "zh" | "en";
 
 // Bilingual content
@@ -24,6 +24,12 @@ const content = {
       senseis: {
         name: "大師之路",
         description: "16張進階卡牌",
+        selected: "✓ 已選擇",
+        unselected: "點擊選擇",
+      },
+      windway: {
+        name: "風之道",
+        description: "風靈擴展包",
         selected: "✓ 已選擇",
         unselected: "點擊選擇",
       },
@@ -129,6 +135,12 @@ const content = {
       senseis: {
         name: "Way of the Sensei",
         description: "16 Advanced Cards",
+        selected: "✓ Selected",
+        unselected: "Click to select",
+      },
+      windway: {
+        name: "Way of the Wind",
+        description: "Wind Spirit Expansion Pack",
         selected: "✓ Selected",
         unselected: "Click to select",
       },
@@ -475,6 +487,12 @@ export default function OnitamaLanding() {
                 pack="senseis"
                 isSelected={selectedPacks.has("senseis")}
                 onClick={() => togglePack("senseis")}
+                lang={language}
+              />
+              <CardPackButton
+                pack="windway"
+                isSelected={selectedPacks.has("windway")}
+                onClick={() => togglePack("windway")}
                 lang={language}
               />
             </div>

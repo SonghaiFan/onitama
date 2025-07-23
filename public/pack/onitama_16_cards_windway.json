@@ -105,7 +105,7 @@
     {
       "id": "scorpion",
       "type": "wind_spirit",
-      "name": { "en": "Scorpion", "zh": "蠍", "ja": "蠍" },
+      "name": { "en": "Scorpion", "zh": "蝎", "ja": "蠍" },
       "color": "#A0522D",
       "moves": [
         { "x": 1, "y": 1 },
