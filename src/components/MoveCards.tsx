@@ -51,7 +51,6 @@ export function Card({
   const isShared = playerOwner === "shared";
   const isRotated = isBlue || (isShared && gridArea === "shared-left");
   const canInteract = !isShared && playerOwner === currentPlayer;
-  const hasWindMoves = card.isWindSpiritCard && card.wind_move;
 
   const handleClick = () => {
     if (canInteract && cardIndex !== undefined) {
@@ -127,7 +126,7 @@ export function Card({
 
             {/* Right section - Move grid(s) (50%) */}
             <div className="w-1/2 h-full flex items-center justify-center px-2 sm:px-3">
-              {hasWindMoves ? (
+              {card.isWindCard ? (
                 <div className="flex flex-col items-center justify-center w-full">
                   <div className="flex flex-col items-center space-y-1">
                     <MoveGrid card={card} isWind={false} isTrimmed={true} />

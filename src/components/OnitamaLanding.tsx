@@ -7,7 +7,6 @@ import { LandingHeader } from "./landing/LandingHeader";
 import { CardPackSelection } from "./landing/CardPackSelection";
 import { GameOverview } from "./landing/GameOverview";
 import { HowToPlay } from "./landing/HowToPlay";
-import { CallToAction } from "./landing/CallToAction";
 import { Footer } from "./landing/Footer";
 
 type CardPack = "normal" | "senseis" | "windway" | "promo" | "dual";
@@ -82,7 +81,6 @@ export default function OnitamaLanding() {
 
       <GameOverview language={language} />
       <HowToPlay language={language} />
-      <CallToAction language={language} onStartGame={() => setShowGame(true)} />
       <Footer language={language} />
     </div>
   );

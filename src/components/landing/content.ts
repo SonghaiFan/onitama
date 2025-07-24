@@ -39,6 +39,16 @@ export const content = {
         unselected: "點擊選擇",
       },
     },
+    // Card validation messages
+    cardValidation: {
+      checking: "檢查卡牌中...",
+      availableCards: "可用卡牌",
+      needMoreCards: "需要至少5張卡牌",
+      noPacksSelected: "未選擇卡牌包",
+      failedToLoad: "載入失敗",
+      invalidData: "卡牌數據無效",
+      notEnoughCards: "卡牌不足",
+    },
     startGame: "始める",
     newGame: "新局",
     backToHome: "返回首頁",
@@ -189,6 +199,16 @@ export const content = {
         selected: "✓ Selected",
         unselected: "Click to select",
       },
+    },
+    // Card validation messages
+    cardValidation: {
+      checking: "Checking cards...",
+      availableCards: "Available Cards",
+      needMoreCards: "Need at least 5 cards",
+      noPacksSelected: "No card packs selected",
+      failedToLoad: "Failed to load",
+      invalidData: "Invalid card data",
+      notEnoughCards: "Not enough cards",
     },
     startGame: "Begin",
     newGame: "New Game",

@@ -15,14 +15,15 @@ export interface Move {
 
 export interface MoveCard {
   name: string;
+  type: "wind_card" | "normal_card" | "dual_card";
   displayName?: string;
   moves: Move[];
   wind_move?: Move[]; // Add wind moves for wind spirit cards
   master_moves?: Move[]; // Add master moves for dual cards
   student_moves?: Move[]; // Add student moves for dual cards
   color: Player;
-  isWindSpiritCard?: boolean; // Flag to identify wind spirit cards
   isDualCard?: boolean; // Flag to identify dual cards
+  isWindCard?: boolean; // Flag to identify wind spirit cards
 }
 
 export interface PlayerState {
@@ -55,6 +56,7 @@ export interface PackMetadata {
 
 export interface PackCard {
   id: string;
+  type: "wind_card" | "normal_card" | "dual_card";
   name: {
     en: string;
     hu?: string;
@@ -67,7 +69,6 @@ export interface PackCard {
   master_moves?: Move[];
   student_moves?: Move[];
   firstPlayerColor: Player;
-  type?: "wind_card" | "normal_card" | "dual_card";
 }
 
 export interface Pack {

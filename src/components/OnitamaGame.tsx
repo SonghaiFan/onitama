@@ -10,12 +10,8 @@ import React, {
 import GameBoard from "./GameBoard";
 import Card from "./MoveCards";
 import { GameState, Player } from "@/types/game";
-import {
-  INITIAL_GAME_STATE,
-  isValidMove,
-  executeMove,
-  createNewGameAsync,
-} from "@/utils/gameLogic";
+import { INITIAL_GAME_STATE, createNewGameAsync } from "@/utils/gameLogic";
+import { isValidMove, executeMove } from "@/utils/coreGameMechanics";
 
 type Language = "zh" | "en";
 
@@ -27,6 +23,8 @@ const gameContent = {
     redPlayer: "紅方",
     bluePlayer: "藍方",
     loading: "載入卡牌包...",
+    warnings: "警告",
+    close: "關閉",
   },
   en: {
     victory: "Victory!",
@@ -34,6 +32,8 @@ const gameContent = {
     redPlayer: "Red",
     bluePlayer: "Blue",
     loading: "Loading card pack...",
+    warnings: "Warnings",
+    close: "Close",
   },
 };
 
@@ -46,18 +46,30 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
   function OnitamaGame({ cardPacks = ["normal"], language = "zh" }, ref) {
     const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
     const [isLoading, setIsLoading] = useState(true);
+    const [warnings, setWarnings] = useState<string[]>([]);
+    const [showWarnings, setShowWarnings] = useState(false);
 
     // Load the appropriate card pack when component mounts or cardPacks changes
     useEffect(() => {
       const loadGame = async () => {
         setIsLoading(true);
         try {
-          const newGameState = await createNewGameAsync(cardPacks);
-          setGameState(newGameState);
+          const result = await createNewGameAsync(cardPacks);
+          setGameState(result.gameState);
+          setWarnings(result.warnings);
+          if (result.warnings.length > 0) {
+            setShowWarnings(true);
+          }
         } catch (error) {
           console.error("Failed to load card packs:", error);
           // Fallback to normal game state
           setGameState(INITIAL_GAME_STATE);
+          setWarnings([
+            `Failed to load card packs: ${
+              error instanceof Error ? error.message : "Unknown error"
+            }`,
+          ]);
+          setShowWarnings(true);
         } finally {
           setIsLoading(false);
         }
@@ -195,11 +207,21 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
     const resetGame = useCallback(async () => {
       setIsLoading(true);
       try {
-        const newGameState = await createNewGameAsync(cardPacks);
-        setGameState(newGameState);
+        const result = await createNewGameAsync(cardPacks);
+        setGameState(result.gameState);
+        setWarnings(result.warnings);
+        if (result.warnings.length > 0) {
+          setShowWarnings(true);
+        }
       } catch (error) {
         console.error("Failed to reset game:", error);
         setGameState(INITIAL_GAME_STATE);
+        setWarnings([
+          `Failed to reset game: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`,
+        ]);
+        setShowWarnings(true);
       } finally {
         setIsLoading(false);
       }
@@ -267,6 +289,38 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
 
     return (
       <div className="w-full h-full flex flex-col watercolor-wash z-10">
+        {/* Warning Modal */}
+        {showWarnings && warnings.length > 0 && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-96 overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-red-600">
+                  {gameContent[language].warnings}
+                </h3>
+                <button
+                  onClick={() => setShowWarnings(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="space-y-2">
+                {warnings.map((warning, index) => (
+                  <p key={index} className="text-sm text-gray-700">
+                    {warning}
+                  </p>
+                ))}
+              </div>
+              <button
+                onClick={() => setShowWarnings(false)}
+                className="mt-4 w-full bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition-colors"
+              >
+                {gameContent[language].close}
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="game-layout-grid flex-1">
           <GameStatusSimple />
           <div

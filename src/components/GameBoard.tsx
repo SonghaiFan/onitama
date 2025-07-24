@@ -1,7 +1,11 @@
 "use client";
 
 import { GameState, Piece } from "@/types/game";
-import { isTempleArch, getPossibleMoves, isValidMove } from "@/utils/gameLogic";
+import {
+  isTempleArch,
+  getPossibleMoves,
+  isValidMove,
+} from "@/utils/coreGameMechanics";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { DraggablePiece, DragOverlay } from "./GamePiece";
 import { DroppableCell } from "./GameCell";
