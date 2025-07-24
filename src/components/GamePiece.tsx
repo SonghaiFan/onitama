@@ -3,7 +3,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Piece } from "@/types/game";
 
-// Draggable piece component
 interface DraggablePieceProps {
   piece: Piece;
   row: number;
@@ -19,56 +18,6 @@ interface DraggablePieceProps {
   ) => void;
 }
 
-// Simple piece configuration - just icons and basic info
-const PIECE_ICONS = {
-  student: "徒",
-  master: "师",
-  "wind-spirit": "風",
-} as const;
-
-// Helper to get piece type and CSS class
-const getPieceType = (piece: Piece) => {
-  switch (true) {
-    case !!piece.isWindSpirit:
-      return "wind-spirit";
-    case !!piece.isMaster:
-      return "master";
-    default:
-      return "student";
-  }
-};
-
-// Get piece CSS class based on type and player
-const getPieceClass = (piece: Piece) => {
-  const pieceType = getPieceType(piece);
-  const playerClass =
-    piece.player === "red"
-      ? "red"
-      : piece.player === "blue"
-      ? "blue"
-      : "neutral";
-  return `${pieceType}-piece ${playerClass}-piece`;
-};
-
-// Simple piece icon component - just shows the right icon
-function PieceIcon({ piece }: { piece: Piece }) {
-  const pieceType = getPieceType(piece);
-  const icon = PIECE_ICONS[pieceType];
-
-  return (
-    <span
-      className="text-lg sm:text-xl md:text-2xl lg:text-3xl opacity-30"
-      style={{ fontFamily: "DuanNing" }}
-    >
-      {icon}
-    </span>
-  );
-}
-
-// Base piece classes
-const BASE_PIECE_CLASSES =
-  "w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full border-2 flex items-center justify-center font-bold text-base sm:text-lg md:text-xl lg:text-2xl";
-
 export function DraggablePiece({
   piece,
   row,
@@ -79,28 +28,55 @@ export function DraggablePiece({
   selectedCardIndex,
   onDragStart,
 }: DraggablePieceProps) {
-  const pieceClass = getPieceClass(piece);
+  // Simple piece styling based on type and player
+  let pieceStyle = "";
+  let pieceIcon = "";
 
-  const getBoxShadow = () => {
-    if (isSelected) return "0 0 20px rgba(251, 191, 36, 0.6)";
-    return "0 2px 4px rgba(0, 0, 0, 0.1)";
-  };
+  // Determine piece type and icon
+  if (piece.isWindSpirit) {
+    pieceStyle = "wind-spirit-piece";
+    pieceIcon = "風";
+  } else if (piece.isMaster) {
+    pieceStyle = "master-piece";
+    pieceIcon = "师";
+  } else {
+    pieceStyle = "student-piece";
+    pieceIcon = "徒";
+  }
+
+  // Add player color
+  if (piece.player === "red") {
+    pieceStyle += " red-piece";
+  } else if (piece.player === "blue") {
+    pieceStyle += " blue-piece";
+  } else {
+    pieceStyle += " neutral-piece";
+  }
+
+  // Simple shadow logic
+  let shadow = "0 2px 4px rgba(0, 0, 0, 0.1)";
+  if (isSelected) {
+    shadow = "0 0 20px rgba(251, 191, 36, 0.6)";
+  }
 
   return (
     <motion.div
       key={`${piece.id}-${row}-${col}`}
       className={`
-        ${BASE_PIECE_CLASSES} relative z-30 select-none
-        ${pieceClass}
+        w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 
+        rounded-full border-2 flex items-center justify-center 
+        font-bold text-base sm:text-lg md:text-xl lg:text-2xl
+        relative z-30 select-none
+        ${pieceStyle}
         ${canDrag ? "cursor-grab" : "cursor-default"}
         ${isDraggedPiece ? "opacity-50 scale-75 dragging" : ""}
         ${isDraggedPiece && selectedCardIndex !== null ? "shadow-xl" : ""}
       `}
-      initial={false} // Prevent initial animation on mount
+      initial={false}
       animate={{
         scale: isSelected ? 1.1 : isDraggedPiece ? 0.75 : 1,
         rotate: 0,
-        boxShadow: getBoxShadow(),
+        boxShadow: shadow,
         opacity: isDraggedPiece ? 0.5 : 1,
       }}
       whileHover={{
@@ -131,30 +107,63 @@ export function DraggablePiece({
       }}
     >
       <div className="relative w-full h-full flex items-center justify-center">
-        <PieceIcon piece={piece} />
+        <span
+          className="text-lg sm:text-xl md:text-2xl lg:text-3xl opacity-30"
+          style={{ fontFamily: "DuanNing" }}
+        >
+          {pieceIcon}
+        </span>
       </div>
     </motion.div>
   );
 }
 
-// Drag overlay component
 interface DragOverlayProps {
   piece: Piece;
   cardIndex: number;
 }
 
 export function DragOverlay({ piece }: DragOverlayProps) {
-  const pieceClass = getPieceClass(piece);
+  // Simple piece styling for drag overlay
+  let pieceStyle = "";
+  let pieceIcon = "";
+
+  if (piece.isWindSpirit) {
+    pieceStyle = "wind-spirit-piece";
+    pieceIcon = "風";
+  } else if (piece.isMaster) {
+    pieceStyle = "master-piece";
+    pieceIcon = "师";
+  } else {
+    pieceStyle = "student-piece";
+    pieceIcon = "徒";
+  }
+
+  if (piece.player === "red") {
+    pieceStyle += " red-piece";
+  } else if (piece.player === "blue") {
+    pieceStyle += " blue-piece";
+  } else {
+    pieceStyle += " neutral-piece";
+  }
 
   return (
     <motion.div
       className={`
-        ${BASE_PIECE_CLASSES} relative z-50 shadow-xl select-none
-        ${pieceClass}
+        w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 
+        rounded-full border-2 flex items-center justify-center 
+        font-bold text-base sm:text-lg md:text-xl lg:text-2xl
+        relative z-50 shadow-xl select-none
+        ${pieceStyle}
       `}
     >
       <div className="relative w-full h-full flex items-center justify-center">
-        <PieceIcon piece={piece} />
+        <span
+          className="text-lg sm:text-xl md:text-2xl lg:text-3xl opacity-30"
+          style={{ fontFamily: "DuanNing" }}
+        >
+          {pieceIcon}
+        </span>
       </div>
     </motion.div>
   );
