@@ -17,7 +17,7 @@ function convertCardToGameFormat(card: PackCard): MoveCard {
     master_moves: card.master_moves,
     student_moves: card.student_moves,
     color: card.firstPlayerColor === "red" ? "red" : "blue",
-    isWindSpiritCard: !!card.wind_move || card.type === "wind_spirit",
+    isWindSpiritCard: !!card.wind_move || card.type === "wind_card",
     isDualCard:
       !!card.master_moves || !!card.student_moves || card.type === "dual_card",
   };
