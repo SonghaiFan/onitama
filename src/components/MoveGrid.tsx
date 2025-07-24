@@ -8,22 +8,30 @@ export function MoveGrid({
   isWind = false,
   isDual = false,
   isMaster = false,
+  isStudent = false,
   isTrimmed = false,
 }: {
   card: MoveCard;
   isWind?: boolean;
   isDual?: boolean;
   isMaster?: boolean;
+  isStudent?: boolean;
   isTrimmed?: boolean;
 }) {
   // Determine which moves to show based on card type and parameters
   let movesToShow: Move[];
-  if (isWind && card.wind_move) {
-    movesToShow = card.wind_move;
-  } else if (isDual && card.isDualCard) {
-    movesToShow = isMaster ? card.master_moves ?? [] : card.student_moves ?? [];
-  } else {
-    movesToShow = card.moves;
+  switch (true) {
+    case isWind && !!card.wind_move:
+      movesToShow = card.wind_move!;
+      break;
+    case isMaster && !!card.master_moves:
+      movesToShow = card.master_moves!;
+      break;
+    case isStudent && !!card.student_moves:
+      movesToShow = card.student_moves!;
+      break;
+    default:
+      movesToShow = card.moves;
   }
   const rows = [0, 1, 2, 3, 4];
   const cols = [0, 1, 2, 3, 4];

@@ -15,14 +15,14 @@ export interface Move {
 
 export interface MoveCard {
   name: string;
-  type: "wind_card" | "normal_card" | "dual_card";
+  type: "wind_card" | "normal_card" | "mock_card";
   displayName?: string;
   moves: Move[];
   wind_move?: Move[]; // Add wind moves for wind spirit cards
   master_moves?: Move[]; // Add master moves for dual cards
   student_moves?: Move[]; // Add student moves for dual cards
   color: Player;
-  isDualCard?: boolean; // Flag to identify dual cards
+  isMockCard?: boolean; // Flag to identify dual cards
   isWindCard?: boolean; // Flag to identify wind spirit cards
 }
 
@@ -44,6 +44,13 @@ export interface GameState {
   winner: Player | null;
   gamePhase: "setup" | "playing" | "finished";
   cardPacks?: ("normal" | "senseis" | "windway" | "promo" | "dual")[]; // Track which packs are active
+  // New properties for wind spirit dual move execution
+  isDualMoveInProgress?: boolean; // Whether we're in the middle of a dual move
+  firstMove?: {
+    from: [number, number];
+    to: [number, number];
+    cardIndex: number;
+  }; // Track the first move of a dual move sequence
 }
 
 // Type for the Sensei's Path card pack JSON structure
@@ -56,7 +63,7 @@ export interface PackMetadata {
 
 export interface PackCard {
   id: string;
-  type: "wind_card" | "normal_card" | "dual_card";
+  type: "wind_card" | "normal_card" | "mock_card";
   name: {
     en: string;
     hu?: string;

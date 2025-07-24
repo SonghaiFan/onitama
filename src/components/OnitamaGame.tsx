@@ -10,8 +10,12 @@ import React, {
 import GameBoard from "./GameBoard";
 import Card from "./MoveCards";
 import { GameState, Player } from "@/types/game";
-import { INITIAL_GAME_STATE, createNewGameAsync } from "@/utils/gameLogic";
-import { isValidMove, executeMove } from "@/utils/coreGameMechanics";
+import { INITIAL_GAME_STATE, createNewGameAsync } from "@/utils/dataLoader";
+import {
+  isValidMove,
+  executeMove,
+  getAllPossibleMoves,
+} from "@/utils/gameManager";
 
 type Language = "zh" | "en";
 
@@ -95,15 +99,15 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
             gameState.players[gameState.currentPlayer].cards[
               gameState.selectedCard
             ];
-          if (
-            isValidMove(
-              gameState.selectedPiece,
-              position,
-              selectedCard,
-              gameState.board,
-              gameState.currentPlayer
-            )
-          ) {
+
+          // Use getAllPossibleMoves for validation
+          const possibleMoves = getAllPossibleMoves(
+            gameState,
+            gameState.selectedPiece,
+            gameState.selectedCard
+          );
+
+          if (possibleMoves.some(([r, c]) => r === row && c === col)) {
             const newGameState = executeMove(
               gameState,
               gameState.selectedPiece,
@@ -117,6 +121,15 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
 
         // Handle piece selection or capture
         if (piece) {
+          // In dual move mode, only allow wind spirit selection
+          if (gameState.isDualMoveInProgress) {
+            if (piece.isWindSpirit) {
+              const newGameState = { ...gameState, selectedPiece: position };
+              setGameState(newGameState);
+            }
+            return;
+          }
+
           // Select own piece or wind spirit (any player can select wind spirits)
           if (piece.player === gameState.currentPlayer || piece.isWindSpirit) {
             const newGameState = { ...gameState, selectedPiece: position };
@@ -130,15 +143,15 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
               gameState.players[gameState.currentPlayer].cards[
                 gameState.selectedCard
               ];
-            if (
-              isValidMove(
-                gameState.selectedPiece,
-                position,
-                selectedCard,
-                gameState.board,
-                gameState.currentPlayer
-              )
-            ) {
+
+            // Use getAllPossibleMoves for validation
+            const possibleMoves = getAllPossibleMoves(
+              gameState,
+              gameState.selectedPiece,
+              gameState.selectedCard
+            );
+
+            if (possibleMoves.some(([r, c]) => r === row && c === col)) {
               const newGameState = executeMove(
                 gameState,
                 gameState.selectedPiece,
@@ -164,6 +177,8 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
       (cardIndex: number, player: Player) => {
         if (gameState.winner) return;
         if (player !== gameState.currentPlayer) return;
+        // Prevent card changes during dual move sequence
+        if (gameState.isDualMoveInProgress) return;
 
         const newGameState = { ...gameState, selectedCard: cardIndex };
         setGameState(newGameState);
@@ -174,6 +189,8 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
     const handleCardSelect = useCallback(
       (cardIndex: number) => {
         if (gameState.winner) return;
+        // Prevent card changes during dual move sequence
+        if (gameState.isDualMoveInProgress) return;
 
         const newGameState = { ...gameState, selectedCard: cardIndex };
         setGameState(newGameState);
@@ -269,6 +286,14 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
                 ? gameContent[language].redPlayer
                 : gameContent[language].bluePlayer}
             </span>
+            {gameState.isDualMoveInProgress && (
+              <div className="flex items-center space-x-1 ml-2">
+                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                <span className="text-blue-600 font-medium text-xs sm:text-sm">
+                  {language === "zh" ? "雙重移動" : "Dual Move"}
+                </span>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -347,6 +372,9 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
             cardIndex={0}
             onCardClick={handleCardClick}
             language={language}
+            isDualMoveInProgress={
+              gameState.isDualMoveInProgress && gameState.selectedCard === 0
+            }
           />
           <Card
             card={gameState.players.blue.cards[1]}
@@ -359,6 +387,9 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
             cardIndex={1}
             onCardClick={handleCardClick}
             language={language}
+            isDualMoveInProgress={
+              gameState.isDualMoveInProgress && gameState.selectedCard === 1
+            }
           />
 
           {/* Red Player's Cards */}
@@ -373,6 +404,9 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
             cardIndex={0}
             onCardClick={handleCardClick}
             language={language}
+            isDualMoveInProgress={
+              gameState.isDualMoveInProgress && gameState.selectedCard === 0
+            }
           />
           <Card
             card={gameState.players.red.cards[1]}
@@ -385,6 +419,9 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
             cardIndex={1}
             onCardClick={handleCardClick}
             language={language}
+            isDualMoveInProgress={
+              gameState.isDualMoveInProgress && gameState.selectedCard === 1
+            }
           />
 
           {/* Shared Card - positioned based on next player */}

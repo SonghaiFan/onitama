@@ -126,7 +126,8 @@ export const content = {
       windSpirit: {
         title: "風靈移動",
         steps: [
-          "風靈可使用風靈卡牌的風靈移動模式",
+          "風靈卡牌：先移動你的棋子，再移動風靈",
+          "普通卡牌：可移動你的棋子或風靈",
           "風靈可移動到空位或與學徒交換位置",
           "風靈不能與師傅或其他風靈交換",
           "任何玩家都可移動風靈",
@@ -289,7 +290,8 @@ export const content = {
       windSpirit: {
         title: "Wind Spirit Movement",
         steps: [
-          "Wind spirit can use wind spirit card's wind movement pattern",
+          "Wind Spirit cards: First move your piece, then move the wind spirit",
+          "Regular cards: Can move your pieces or the wind spirit",
           "Wind spirit can move to empty squares or swap with students",
           "Wind spirit cannot swap with masters or other wind spirits",
           "Any player can move the wind spirit",

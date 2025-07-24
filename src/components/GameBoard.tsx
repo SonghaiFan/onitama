@@ -5,7 +5,8 @@ import {
   isTempleArch,
   getPossibleMoves,
   isValidMove,
-} from "@/utils/coreGameMechanics";
+  getAllPossibleMoves,
+} from "@/utils/gameManager";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { DraggablePiece, DragOverlay } from "./GamePiece";
 import { DroppableCell } from "./GameCell";
@@ -213,14 +214,7 @@ export default function GameBoard({
     const cardIndex = gameState.selectedCard;
     if (cardIndex === null || cardIndex === undefined) return [];
 
-    const selectedCard =
-      gameState.players[gameState.currentPlayer].cards[cardIndex];
-    return getPossibleMoves(
-      piece,
-      selectedCard,
-      gameState.board,
-      gameState.currentPlayer
-    );
+    return getAllPossibleMoves(gameState, piecePosition, cardIndex);
   })();
 
   const renderPiece = (

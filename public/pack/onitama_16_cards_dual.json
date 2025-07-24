@@ -15,7 +15,7 @@
         { "x": 2, "y": 1 }
       ],
       "firstPlayerColor": "blue",
-      "type": "dual_card"
+      "type": "mock_card"
     },
     {
       "id": "deer",
@@ -32,7 +32,7 @@
       ],
       "student_moves": [{ "x": 0, "y": 1 }],
       "firstPlayerColor": "red",
-      "type": "dual_card"
+      "type": "mock_card"
     },
     {
       "id": "sasori",
@@ -52,7 +52,7 @@
         { "x": 2, "y": 0 }
       ],
       "firstPlayerColor": "red",
-      "type": "dual_card"
+      "type": "mock_card"
     },
     {
       "id": "kumo",
@@ -72,7 +72,7 @@
         { "x": 1, "y": 2 }
       ],
       "firstPlayerColor": "blue",
-      "type": "dual_card"
+      "type": "mock_card"
     }
   ]
 }

@@ -33,6 +33,7 @@ interface CardProps {
   cardIndex?: number;
   onCardClick: (cardIndex: number, player: Player) => void;
   language?: Language;
+  isDualMoveInProgress?: boolean;
 }
 
 // Main card component
@@ -45,6 +46,7 @@ export function Card({
   cardIndex,
   onCardClick,
   language = "en",
+  isDualMoveInProgress = false,
 }: CardProps) {
   const isBlue = playerOwner === "blue";
   const isRed = playerOwner === "red";
@@ -72,7 +74,9 @@ export function Card({
       animate={{
         rotate: isRotated ? 180 : 0,
         scale: isSelected ? 1.05 : 1,
-        boxShadow: isSelected
+        boxShadow: isDualMoveInProgress
+          ? "0 0 25px rgba(59, 130, 246, 0.8)"
+          : isSelected
           ? "0 0 20px rgba(251, 191, 36, 0.6)"
           : "0 4px 12px rgba(147, 51, 234, 0.2)",
         opacity: isShared ? 0.3 : 1,
@@ -141,7 +145,7 @@ export function Card({
                     </div>
                   </div>
                 </div>
-              ) : card.isDualCard ? (
+              ) : card.isMockCard ? (
                 <div className="flex flex-col items-center justify-center w-full">
                   <div className="flex flex-col items-center space-y-1">
                     <MoveGrid
@@ -158,7 +162,7 @@ export function Card({
                     <MoveGrid
                       card={card}
                       isDual={true}
-                      isMaster={false}
+                      isStudent={true}
                       isTrimmed={true}
                     />
                     <div className="text-xs text-stone-500">

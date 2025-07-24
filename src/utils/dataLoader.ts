@@ -1,4 +1,6 @@
+import { CardPack } from "@/components/landing/CardPackSelection";
 import { GameState, MoveCard, Piece, PackCard } from "@/types/game";
+import { createInitialGameState } from "./gameManager";
 
 // Convert card data from JSON format to our game format
 function convertCardToGameFormat(card: PackCard): MoveCard {
@@ -12,7 +14,7 @@ function convertCardToGameFormat(card: PackCard): MoveCard {
     student_moves: card.student_moves,
     color: card.firstPlayerColor === "red" ? "red" : "blue",
     isWindCard: card.type === "wind_card",
-    isDualCard: card.type === "dual_card",
+    isMockCard: card.type === "mock_card",
   };
 }
 
@@ -257,29 +259,15 @@ function createInitialBoard(
   return board;
 }
 
-// Create initial game state
-function createInitialGameState(): GameState {
-  return {
-    board: createInitialBoard(),
-    players: {
-      red: {
-        cards: [],
-      },
-      blue: {
-        cards: [],
-      },
-    },
-    sharedCard: {} as MoveCard,
-    currentPlayer: "red",
-    selectedPiece: null,
-    selectedCard: null,
-    windSpiritPosition: null,
-    winner: null,
-    gamePhase: "setup",
-  };
-}
-
-export const INITIAL_GAME_STATE: GameState = createInitialGameState();
+export const INITIAL_GAME_STATE: GameState = createInitialGameState(
+  createInitialBoard(),
+  {
+    red: { cards: [] },
+    blue: { cards: [] },
+  },
+  {} as MoveCard,
+  "red"
+);
 
 // Async version for loading card packs
 export async function createNewGameAsync(
@@ -296,9 +284,9 @@ export async function createNewGameAsync(
   const startingPlayer = sharedCard.color;
 
   return {
-    gameState: {
-      board: createInitialBoard(includeWindSpirit),
-      players: {
+    gameState: createInitialGameState(
+      createInitialBoard(includeWindSpirit),
+      {
         red: {
           cards: [playerCards[0], playerCards[1]],
         },
@@ -306,15 +294,99 @@ export async function createNewGameAsync(
           cards: [playerCards[2], playerCards[3]],
         },
       },
-      sharedCard: sharedCard,
-      currentPlayer: startingPlayer,
-      selectedPiece: null,
-      selectedCard: null,
-      windSpiritPosition: includeWindSpirit ? [2, 2] : null,
-      winner: null,
-      gamePhase: "playing",
-      cardPacks: cardPacks,
-    },
+      sharedCard,
+      startingPlayer,
+      cardPacks
+    ),
     warnings,
   };
+}
+
+// Function to check if selected packs have enough cards
+export async function checkCardAvailability(
+  selectedPacks: Set<CardPack>
+): Promise<{
+  hasEnoughCards: boolean;
+  totalCards: number;
+  warnings: string[];
+  failedPacks: Set<CardPack>;
+}> {
+  if (selectedPacks.size === 0) {
+    return {
+      hasEnoughCards: false,
+      totalCards: 0,
+      warnings: ["No card packs selected"],
+      failedPacks: new Set(),
+    };
+  }
+
+  const allCards: any[] = [];
+  const warnings: string[] = [];
+  const failedPacks = new Set<CardPack>();
+
+  for (const packName of selectedPacks) {
+    try {
+      const response = await fetch(`/pack/onitama_16_cards_${packName}.json`);
+      if (!response.ok) {
+        warnings.push(
+          `Failed to load ${packName} pack: HTTP ${response.status}`
+        );
+        failedPacks.add(packName);
+        continue;
+      }
+      const cardData = await response.json();
+      if (cardData.cards && Array.isArray(cardData.cards)) {
+        allCards.push(...cardData.cards);
+      } else {
+        warnings.push(`Invalid card data in ${packName} pack`);
+        failedPacks.add(packName);
+      }
+    } catch (error) {
+      warnings.push(
+        `Failed to load ${packName} pack: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+      failedPacks.add(packName);
+    }
+  }
+
+  const totalCards = allCards.length;
+  const hasEnoughCards = totalCards >= 5;
+
+  if (!hasEnoughCards) {
+    warnings.push(
+      `Not enough cards available. Need 5 cards, but only ${totalCards} cards were loaded.`
+    );
+  }
+
+  return { hasEnoughCards, totalCards, warnings, failedPacks };
+}
+
+// Function to check all available packs
+export async function checkAllPacks(): Promise<Set<CardPack>> {
+  const allPacks: CardPack[] = [
+    "normal",
+    "senseis",
+    "windway",
+    "promo",
+    "dual",
+  ];
+  const availablePacks = new Set<CardPack>();
+
+  for (const packName of allPacks) {
+    try {
+      const response = await fetch(`/pack/onitama_16_cards_${packName}.json`);
+      if (response.ok) {
+        const cardData = await response.json();
+        if (cardData.cards && Array.isArray(cardData.cards)) {
+          availablePacks.add(packName);
+        }
+      }
+    } catch (error) {
+      // Silently skip failed packs
+    }
+  }
+
+  return availablePacks;
 }
