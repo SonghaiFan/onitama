@@ -76,7 +76,7 @@ export function Card({
         boxShadow: isSelected
           ? "0 0 20px rgba(251, 191, 36, 0.6)"
           : "0 4px 12px rgba(147, 51, 234, 0.2)",
-        opacity: isShared ? 0.6 : 1,
+        opacity: isShared ? 0.3 : 1,
       }}
       whileHover={{
         scale: canInteract ? (isSelected ? 1.2 : 1.1) : 1,
@@ -99,9 +99,7 @@ export function Card({
       }}
     >
       <div
-        className={`zen-card relative overflow-hidden w-40 h-28 sm:w-48 sm:h-32 md:w-56 md:h-36 lg:w-64 lg:h-40 ${
-          isShared ? "bg-stone-50/80" : "bg-stone-100/90"
-        } border border-stone-300 shadow-lg`}
+        className={`zen-card relative overflow-hidden w-40 h-28 sm:w-48 sm:h-32 md:w-56 md:h-36 lg:w-64 lg:h-40 border border-stone-300 shadow-lg`}
       >
         {/* Decorative Corner Elements */}
         <div className="absolute top-0.5 left-0.5 w-1.5 h-1.5 border-l border-t border-stone-300/50 pointer-events-none"></div>
@@ -115,17 +113,11 @@ export function Card({
             {/* Left section - Character and name (50%) */}
             <div className="w-1/2 h-full flex flex-col items-center justify-center px-2 sm:px-3 space-y-2 sm:space-y-3">
               <div
-                className={`flex items-center justify-center mt-5 w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-18 lg:h-18 rounded-full shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] ring-1 ring-stone-300 ${
-                  isShared ? "bg-stone-200/70" : "bg-stone-100/90"
-                }`}
+                className={`flex items-center justify-center mt-5 w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-18 lg:h-18 rounded-full ring-1 ring-stone-300 `}
               >
                 {getArtName(card, "lg")}
               </div>
-              <div
-                className={`text-sm sm:text-base text-center ${
-                  isShared ? "text-stone-500" : "text-stone-600"
-                }`}
-              >
+              <div className="text-sm sm:text-base text-center">
                 {card.name}
               </div>
             </div>
@@ -192,7 +184,7 @@ export function Card({
                   : card.color === "red"
                   ? "bg-gradient-to-r from-red-500 to-red-600"
                   : "bg-gradient-to-r from-blue-500 to-blue-600"
-              } ${isShared ? "opacity-50" : ""}`}
+              } `}
             />
           </div>
         </div>
