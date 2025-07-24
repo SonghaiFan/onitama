@@ -108,7 +108,9 @@ export function DraggablePiece({
     >
       <div className="relative w-full h-full flex items-center justify-center">
         <span
-          className="text-lg sm:text-xl md:text-2xl lg:text-3xl opacity-30"
+          className={`text-lg sm:text-xl md:text-2xl lg:text-3xl opacity-30 ${
+            piece.player === "blue" ? "rotate-180" : ""
+          }`}
           style={{ fontFamily: "DuanNing" }}
         >
           {pieceIcon}
