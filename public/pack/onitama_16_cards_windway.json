@@ -8,7 +8,7 @@
   "cards": [
     {
       "id": "bat",
-      "name": { "en": "Bat", "zh": "蝙蝠", "ja": "蝙蝠" },
+      "name": { "en": "Bat", "zh": "蝠", "ja": "蝙蝠" },
       "color": "#6D4C41",
       "moves": [
         { "x": 0, "y": 1 },
@@ -88,7 +88,7 @@
     {
       "id": "rhinoceros",
       "type": "wind_spirit",
-      "name": { "en": "Rhinoceros", "zh": "犀牛", "ja": "犀" },
+      "name": { "en": "Rhinoceros", "zh": "犀", "ja": "犀" },
       "color": "#708090",
       "moves": [
         { "x": -1, "y": 1 },
@@ -122,7 +122,7 @@
     {
       "id": "spider",
       "type": "wind_spirit",
-      "name": { "en": "Spider", "zh": "蜘蛛", "ja": "蜘蛛" },
+      "name": { "en": "Spider", "zh": "蛛", "ja": "蜘蛛" },
       "color": "#222222",
       "moves": [
         { "x": 1, "y": 1 },
@@ -139,7 +139,7 @@
     {
       "id": "goat",
       "type": "normal_card",
-      "name": { "en": "Goat", "zh": "山羊", "ja": "山羊" },
+      "name": { "en": "Goat", "zh": "羚", "ja": "山羊" },
       "color": "#C0C0C0",
       "moves": [
         { "x": -1, "y": 0 },
@@ -151,7 +151,7 @@
     {
       "id": "sheep",
       "type": "normal_card",
-      "name": { "en": "Sheep", "zh": "綿羊", "ja": "羊" },
+      "name": { "en": "Sheep", "zh": "羔", "ja": "羊" },
       "color": "#F5F5DC",
       "moves": [
         { "x": -1, "y": 1 },
