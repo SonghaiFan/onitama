@@ -74,8 +74,8 @@ export function Card({
       animate={{
         rotate: isRotated ? 180 : 0,
         scale: isSelected ? 1.05 : 1,
-        boxShadow: isDualMoveInProgress
-          ? "0 0 25px rgba(59, 130, 246, 0.8)"
+        boxShadow: isDualMoveInProgress && playerOwner === currentPlayer
+          ? "0 0 25px rgba(251, 191, 36, 0.8)"
           : isSelected
           ? "0 0 20px rgba(251, 191, 36, 0.6)"
           : "0 4px 12px rgba(147, 51, 234, 0.2)",
