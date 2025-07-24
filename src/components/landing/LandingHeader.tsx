@@ -28,7 +28,7 @@ export function LandingHeader({
       </div>
 
       {/* Header */}
-      <header className="text-center py-12 sm:py-16 lg:py-24">
+      <header className="text-center py-8 sm:py-10 lg:py-16">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="flex justify-center mb-6 sm:mb-8">
             <div className="flex items-center justify-center w-full">
