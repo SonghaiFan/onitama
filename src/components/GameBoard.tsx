@@ -3,7 +3,6 @@
 import { GameState, Piece } from "@/types/game";
 import {
   isTempleArch,
-  getPossibleMoves,
   isValidMove,
   getAllPossibleMoves,
 } from "@/utils/gameManager";

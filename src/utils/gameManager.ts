@@ -498,7 +498,7 @@ export function executeMove(
       player: "neutral",
       isMaster: false,
       isWindSpirit: true,
-      position: newState.windSpiritPosition,
+      position: newState.windSpiritPosition as [number, number],
     };
 
     const windSpiritMoves = getPossibleMoves(

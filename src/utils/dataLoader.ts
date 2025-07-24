@@ -320,7 +320,7 @@ export async function checkCardAvailability(
     };
   }
 
-  const allCards: any[] = [];
+  const allCards: PackCard[] = [];
   const warnings: string[] = [];
   const failedPacks = new Set<CardPack>();
 
@@ -383,7 +383,7 @@ export async function checkAllPacks(): Promise<Set<CardPack>> {
           availablePacks.add(packName);
         }
       }
-    } catch (error) {
+    } catch {
       // Silently skip failed packs
     }
   }

@@ -22,7 +22,6 @@ export function HowToPlay({ language }: HowToPlayProps) {
           <SectionTitle
             number="一"
             title={content[language].setup}
-            lang={language}
           />
           <div className="grid grid-cols-1 mx-10 md:grid-cols-3 gap-8 sm:gap-12">
             <div className="zen-card p-6 sm:p-8 text-center">
@@ -82,7 +81,6 @@ export function HowToPlay({ language }: HowToPlayProps) {
           <SectionTitle
             number="二"
             title={content[language].gameplay}
-            lang={language}
           />
           <div className="grid grid-cols-1 mx-10 lg:grid-cols-2 gap-8 sm:gap-12">
             <div className="zen-card p-6 sm:p-8 lg:p-10">
@@ -177,7 +175,6 @@ export function HowToPlay({ language }: HowToPlayProps) {
           <SectionTitle
             number="三"
             title={content[language].strategy}
-            lang={language}
           />
           <div className="grid grid-cols-1 mx-10 md:grid-cols-3 gap-8 sm:gap-12">
             <div className="zen-card p-6 sm:p-8 text-center">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import OnitamaGame from "./OnitamaGame";
 import { GameHeader } from "./landing/GameHeader";
 import { LandingHeader } from "./landing/LandingHeader";

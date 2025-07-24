@@ -95,10 +95,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
           gameState.selectedPiece &&
           gameState.selectedCard !== null
         ) {
-          const selectedCard =
-            gameState.players[gameState.currentPlayer].cards[
-              gameState.selectedCard
-            ];
+          // Validate move using getAllPossibleMoves
 
           // Use getAllPossibleMoves for validation
           const possibleMoves = getAllPossibleMoves(
@@ -139,10 +136,6 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
             gameState.selectedCard !== null
           ) {
             // Capture opponent's piece
-            const selectedCard =
-              gameState.players[gameState.currentPlayer].cards[
-                gameState.selectedCard
-              ];
 
             // Use getAllPossibleMoves for validation
             const possibleMoves = getAllPossibleMoves(

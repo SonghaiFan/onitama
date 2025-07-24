@@ -74,11 +74,12 @@ export function Card({
       animate={{
         rotate: isRotated ? 180 : 0,
         scale: isSelected ? 1.05 : 1,
-        boxShadow: isDualMoveInProgress && playerOwner === currentPlayer
-          ? "0 0 25px rgba(251, 191, 36, 0.8)"
-          : isSelected
-          ? "0 0 20px rgba(251, 191, 36, 0.6)"
-          : "0 4px 12px rgba(147, 51, 234, 0.2)",
+        boxShadow:
+          isDualMoveInProgress && playerOwner === currentPlayer
+            ? "0 0 25px rgba(251, 191, 36, 0.8)"
+            : isSelected
+            ? "0 0 20px rgba(251, 191, 36, 0.6)"
+            : "0 4px 12px rgba(147, 51, 234, 0.2)",
         opacity: isShared ? 0.3 : 1,
       }}
       whileHover={{
@@ -148,23 +149,13 @@ export function Card({
               ) : card.isMockCard ? (
                 <div className="flex flex-col items-center justify-center w-full">
                   <div className="flex flex-col items-center space-y-1">
-                    <MoveGrid
-                      card={card}
-                      isDual={true}
-                      isMaster={true}
-                      isTrimmed={true}
-                    />
+                    <MoveGrid card={card} isMaster={true} isTrimmed={true} />
                     <div className="text-xs text-stone-500">
                       {cardContent[language].masterMoves}
                     </div>
                   </div>
                   <div className="flex flex-col items-center space-y-1">
-                    <MoveGrid
-                      card={card}
-                      isDual={true}
-                      isStudent={true}
-                      isTrimmed={true}
-                    />
+                    <MoveGrid card={card} isStudent={true} isTrimmed={true} />
                     <div className="text-xs text-stone-500">
                       {cardContent[language].studentMoves}
                     </div>

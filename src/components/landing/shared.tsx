@@ -1,5 +1,4 @@
 import React from "react";
-import { Language } from "./content";
 
 // Reusable components
 export function IconCircle({
@@ -28,11 +27,9 @@ export function IconCircle({
 export function SectionTitle({
   number,
   title,
-  lang,
 }: {
   number: string;
   title: string;
-  lang: Language;
 }) {
   return (
     <div className="flex items-center justify-center mb-12">

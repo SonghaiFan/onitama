@@ -6,14 +6,12 @@ import React from "react";
 export function MoveGrid({
   card,
   isWind = false,
-  isDual = false,
   isMaster = false,
   isStudent = false,
   isTrimmed = false,
 }: {
   card: MoveCard;
   isWind?: boolean;
-  isDual?: boolean;
   isMaster?: boolean;
   isStudent?: boolean;
   isTrimmed?: boolean;

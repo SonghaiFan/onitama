@@ -12,7 +12,6 @@ interface LandingHeaderProps {
 export function LandingHeader({
   language,
   onToggleLanguage,
-  onStartGame,
 }: LandingHeaderProps) {
   return (
     <>
