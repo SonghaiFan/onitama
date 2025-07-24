@@ -42,6 +42,7 @@ export interface GameState {
   windSpiritPosition: [number, number] | null; // Track wind spirit position
   winner: Player | null;
   gamePhase: "setup" | "playing" | "finished";
+  cardPacks?: ("normal" | "senseis" | "windway" | "promo" | "dual")[]; // Track which packs are active
 }
 
 // Type for the Sensei's Path card pack JSON structure
@@ -66,7 +67,7 @@ export interface PackCard {
   master_moves?: Move[];
   student_moves?: Move[];
   firstPlayerColor: Player;
-  type?: "wind_spirit" | "normal_card" | "dual_card";
+  type?: "wind_card" | "normal_card" | "dual_card";
 }
 
 export interface Pack {

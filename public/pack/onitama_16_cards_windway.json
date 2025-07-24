@@ -8,6 +8,7 @@
   "cards": [
     {
       "id": "bat",
+      "type": "wind_card",
       "name": { "en": "Bat", "zh": "蝠", "ja": "蝙蝠" },
       "color": "#6D4C41",
       "moves": [
@@ -24,6 +25,7 @@
     },
     {
       "id": "eagle",
+      "type": "wind_card",
       "name": { "en": "Eagle", "zh": "鷹", "ja": "鷲" },
       "color": "#BDB76B",
       "moves": [
@@ -38,6 +40,7 @@
     },
     {
       "id": "hawk",
+      "type": "wind_card",
       "name": { "en": "Hawk", "zh": "隼", "ja": "隼" },
       "color": "#A0522D",
       "moves": [
@@ -54,6 +57,7 @@
     },
     {
       "id": "lion",
+      "type": "wind_card",
       "name": { "en": "Lion", "zh": "獅", "ja": "獅子" },
       "color": "#FFD700",
       "moves": [
@@ -68,7 +72,7 @@
     },
     {
       "id": "octopus",
-      "type": "wind_spirit",
+      "type": "wind_card",
       "name": { "en": "Octopus", "zh": "章魚", "ja": "蛸" },
       "color": "#8A2BE2",
       "moves": [
@@ -87,7 +91,7 @@
     },
     {
       "id": "rhinoceros",
-      "type": "wind_spirit",
+      "type": "wind_card",
       "name": { "en": "Rhinoceros", "zh": "犀", "ja": "犀" },
       "color": "#708090",
       "moves": [
@@ -104,7 +108,7 @@
     },
     {
       "id": "scorpion",
-      "type": "wind_spirit",
+      "type": "wind_card",
       "name": { "en": "Scorpion", "zh": "蝎", "ja": "蠍" },
       "color": "#A0522D",
       "moves": [
@@ -121,7 +125,7 @@
     },
     {
       "id": "spider",
-      "type": "wind_spirit",
+      "type": "wind_card",
       "name": { "en": "Spider", "zh": "蛛", "ja": "蜘蛛" },
       "color": "#222222",
       "moves": [
