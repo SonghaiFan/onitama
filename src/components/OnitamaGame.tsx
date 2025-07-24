@@ -267,8 +267,8 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
 
     return (
       <div className="w-full h-full flex flex-col watercolor-wash z-10">
+        <GameStatusSimple />
         <div className="game-layout-grid flex-1">
-          <GameStatusSimple />
           <div
             style={{ gridArea: "board" }}
             className="h-full flex items-center justify-center"
@@ -336,11 +336,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
           {/* Shared Card - positioned based on next player */}
           <Card
             card={gameState.sharedCard}
-            gridArea={
-              gameState.currentPlayer === "blue"
-                ? "shared-left" // Blue's turn, shared card goes to red's area (left side)
-                : "shared-right" // Red's turn, shared card goes to blue's area (right side)
-            }
+            gridArea="shared-left"
             isSelected={false}
             playerOwner="shared"
             currentPlayer={gameState.currentPlayer}

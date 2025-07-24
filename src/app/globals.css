@@ -274,7 +274,6 @@
    LAYOUT & GRID SYSTEM
    ========================================================================== */
 
-/* Main game layout grid */
 .game-layout-grid {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -287,54 +286,42 @@
   justify-items: center;
   gap: 1rem;
   width: 100%;
-  max-width: 7xl;
+  max-width: 1280px; /* 7xl equivalent */
   margin: auto;
   padding: 1rem;
   height: 100%;
   min-height: 0;
+  justify-content: center;
+  align-content: center;
 }
 
 /* ==========================================================================
-   RESPONSIVE DESIGN
-   ========================================================================== */
+     RESPONSIVE GRID BEHAVIOR (Width-based)
+     ========================================================================== */
 
-/* Large screens (1024px and below) */
 @media (max-width: 1024px) {
   .game-layout-grid {
-    gap: 0.5rem;
-    padding: 0.5rem;
-    height: 100%;
-    min-height: 0;
-  }
-}
-
-/* Medium screens (960px and below) */
-@media (max-width: 960px) {
-  .game-layout-grid {
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr;
     grid-template-rows: auto auto auto;
     grid-template-areas:
-      "blue-left shared-left  blue-right"
+      "blue-left shared-left blue-right"
       "board board board"
       "red-left shared-right red-right";
-    gap: 0.125rem;
-    padding: 0.0625rem;
-    height: 100%;
-    min-height: 0;
+    gap: 0.1rem;
+    padding: 0.25rem;
+  }
+
+  .move-card {
+    scale: 0.6;
+    transform-origin: center;
+    margin: -1rem;
   }
 }
 
-/* Container queries for better responsive behavior */
-@container (max-width: 800px) {
-  .zen-card {
-    width: 6rem;
-    padding: 0.75rem;
-  }
-}
-
-@container (max-width: 600px) {
-  .zen-card {
-    width: 5rem;
-    padding: 0.5rem;
+@media (max-width: 480px) {
+  .move-card {
+    scale: 0.6;
+    transform-origin: center;
+    margin: -1rem;
   }
 }
