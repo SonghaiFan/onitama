@@ -103,21 +103,21 @@ export function Card({
       }}
     >
       <div
-        className={`zen-card relative overflow-hidden w-40 h-28 sm:w-48 sm:h-32 md:w-56 md:h-36 lg:w-64 lg:h-40 border border-stone-300 shadow-lg`}
+        className={`zen-card relative overflow-hidden w-full h-full border border-stone-300 shadow-lg aspect-3/2`}
       >
         {/* Decorative Corner Elements */}
-        <div className="absolute top-0.5 left-0.5 w-1.5 h-1.5 border-l border-t border-stone-300/50 pointer-events-none"></div>
-        <div className="absolute top-0.5 right-0.5 w-1.5 h-1.5 border-r border-t border-stone-300/50 pointer-events-none"></div>
-        <div className="absolute bottom-0.5 left-0.5 w-1.5 h-1.5 border-l border-b border-stone-300/50 pointer-events-none"></div>
-        <div className="absolute bottom-0.5 right-0.5 w-1.5 h-1.5 border-r border-b border-stone-300/50 pointer-events-none"></div>
+        <div className="absolute top-1 left-1 w-1.5 h-1.5 border-l border-t border-stone-300/50 pointer-events-none"></div>
+        <div className="absolute top-1 right-1 w-1.5 h-1.5 border-r border-t border-stone-300/50 pointer-events-none"></div>
+        <div className="absolute bottom-1 left-1 w-1.5 h-1.5 border-l border-b border-stone-300/50 pointer-events-none"></div>
+        <div className="absolute bottom-1 right-1 w-1.5 h-1.5 border-r border-b border-stone-300/50 pointer-events-none"></div>
 
         <div className="relative z-10 h-full flex flex-col">
           {/* Main content area - 50/50 split */}
           <div className="flex-1 flex items-center">
             {/* Left section - Character and name (50%) */}
-            <div className="w-1/2 h-full flex flex-col items-center justify-center px-2 sm:px-3 space-y-2 sm:space-y-3">
+            <div className="w-1/2 h-full flex flex-col items-center justify-center px-2 sm:px-3">
               <div
-                className={`flex items-center justify-center mt-5 w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-18 lg:h-18 rounded-full ring-1 ring-stone-300 `}
+                className={`flex items-center justify-center mt-2 sm:mt-5 rounded-full ring-1 ring-stone-300 `}
               >
                 {getArtName(card, "lg")}
               </div>
