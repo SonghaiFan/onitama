@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { content, Language } from "./content";
 import { ZenButton } from "./shared";
@@ -14,6 +14,27 @@ export function GameHeader({
   onBackToHome,
   onNewGame,
 }: GameHeaderProps) {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const toggleMusic = () => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio("/music/background-music.mp3"); // Adjust path as needed
+      audioRef.current.loop = true;
+      audioRef.current.volume = 0.3;
+    }
+
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play().catch((error) => {
+        console.error("Failed to play music:", error);
+      });
+      setIsPlaying(true);
+    }
+  };
+
   return (
     <div className="flex-shrink-0 p-2 sm:p-4 lg:p-6 border-b border-stone-200 bg-white/80 backdrop-blur-sm">
       <div className="container mx-auto max-w-7xl">
@@ -37,6 +58,17 @@ export function GameHeader({
             />
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
+            <ZenButton
+              onClick={toggleMusic}
+              variant="secondary"
+              className="px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm flex items-center gap-1"
+            >
+              <span className="hidden sm:inline">
+                {isPlaying
+                  ? content[language].musicOn
+                  : content[language].musicOff}
+              </span>
+            </ZenButton>
             <ZenButton
               onClick={onNewGame}
               variant="secondary"
