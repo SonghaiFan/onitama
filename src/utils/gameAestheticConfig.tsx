@@ -9,13 +9,17 @@ import React from "react";
 import Image from "next/image";
 
 // ==========================================================================
-// THEME CONFIGURATION
+// THEME CONFIGURATION - Uses CSS variables as single source of truth
 // ==========================================================================
 
 export const gameColors = {
   red: {
+    cssVar: {
+      primary: "var(--red-primary)",
+      dark: "var(--red-dark)",
+      light: "var(--red-light)",
+    },
     tailwind: {
-      primary: "bg-red-600",
       text: "text-red-600",
       shadow: "shadow-red-300",
       gradient: "from-red-400/50",
@@ -23,8 +27,12 @@ export const gameColors = {
     },
   },
   blue: {
+    cssVar: {
+      primary: "var(--blue-primary)",
+      dark: "var(--blue-dark)",
+      light: "var(--blue-light)",
+    },
     tailwind: {
-      primary: "bg-blue-600",
       text: "text-blue-600",
       shadow: "shadow-blue-300",
       gradient: "from-blue-400/50",
@@ -32,8 +40,12 @@ export const gameColors = {
     },
   },
   neutral: {
+    cssVar: {
+      primary: "var(--neutral-primary)",
+      dark: "var(--neutral-dark)",
+      light: "var(--neutral-light)",
+    },
     tailwind: {
-      primary: "bg-gray-100",
       text: "text-gray-700",
       shadow: "shadow-gray-200",
       gradient: "from-gray-100/50",

@@ -102,7 +102,7 @@ export function DraggablePiece({
           type={pieceType}
           size="lg"
           player={piece.player === "neutral" ? undefined : piece.player}
-          className="opacity-30"
+          className="opacity-30 invert"
         />
       </div>
     </motion.div>

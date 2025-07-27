@@ -6,19 +6,19 @@
 
 :root {
   /* Red player colors */
-  --red-primary: rgb(220, 38, 38);    /* bg-red-600 */
-  --red-dark: rgb(185, 28, 28);       /* border color */
-  --red-light: rgb(248, 113, 113);    /* bg-red-400 */
-  
+  --red-primary: rgb(220, 38, 38); /* bg-red-600 */
+  --red-dark: rgb(185, 28, 28); /* border color */
+  --red-light: rgb(248, 113, 113); /* bg-red-400 */
+
   /* Blue player colors */
-  --blue-primary: rgb(37, 99, 235);   /* bg-blue-600 */
-  --blue-dark: rgb(30, 64, 175);      /* border color */
-  --blue-light: rgb(96, 165, 250);    /* bg-blue-400 */
-  
-  /* Neutral/Wind Spirit colors (light gray) */
-  --neutral-primary: rgb(243, 244, 246); /* gray-100 */
-  --neutral-dark: rgb(229, 231, 235);    /* gray-200 */
-  --neutral-light: rgb(249, 250, 251);   /* gray-50 */
+  --blue-primary: rgb(37, 99, 235); /* bg-blue-600 */
+  --blue-dark: rgb(30, 64, 175); /* border color */
+  --blue-light: rgb(96, 165, 250); /* bg-blue-400 */
+
+  /* Neutral/Wind Spirit colors (normal gray) */
+  --neutral-primary: rgb(156, 163, 175); /* gray-400 */
+  --neutral-dark: rgb(107, 114, 128); /* gray-600 */
+  --neutral-light: rgb(209, 213, 219); /* gray-300 */
 }
 
 /* ==========================================================================

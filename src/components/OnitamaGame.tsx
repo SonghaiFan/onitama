@@ -267,9 +267,10 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
               {gameContent[language].currentTurn}
             </span>
             <div
-              className={`w-3 h-3 sm:w-4 sm:h-4 lg:w-6 lg:h-6 rounded-full animate-pulse shadow-lg ${`${
-                getPlayerColors(gameState.currentPlayer).tailwind.primary
-              } ${getPlayerColors(gameState.currentPlayer).tailwind.shadow}`}`}
+              className={`w-3 h-3 sm:w-4 sm:h-4 lg:w-6 lg:h-6 rounded-full animate-pulse shadow-lg ${getPlayerColors(gameState.currentPlayer).tailwind.shadow}`}
+              style={{
+                backgroundColor: getPlayerColors(gameState.currentPlayer).cssVar.primary
+              }}
             ></div>
             <span
               className={`font-bold text-sm sm:text-base zen-text ${
