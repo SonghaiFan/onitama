@@ -9,7 +9,7 @@ import { GameOverview } from "./landing/GameOverview";
 import { HowToPlay } from "./landing/HowToPlay";
 import { Footer } from "./landing/Footer";
 
-type CardPack = "normal" | "senseis" | "windway" | "promo" | "dual";
+type CardPack = "normal" | "senseis" | "windway" | "promo" | "dual" | "special";
 type Language = "zh" | "en";
 
 export default function OnitamaLanding() {
@@ -33,8 +33,20 @@ export default function OnitamaLanding() {
     setSelectedPacks(newPacks);
   };
 
-  const getSelectedPacksForGame = (): CardPack[] => {
-    return Array.from(selectedPacks);
+  const getSelectedPacksForGame = (): (
+    | "normal"
+    | "senseis"
+    | "windway"
+    | "promo"
+    | "dual"
+  )[] => {
+    return Array.from(selectedPacks).filter((pack) => pack !== "special") as (
+      | "normal"
+      | "senseis"
+      | "windway"
+      | "promo"
+      | "dual"
+    )[];
   };
 
   const toggleLanguage = () => {
@@ -43,19 +55,20 @@ export default function OnitamaLanding() {
 
   if (showGame) {
     return (
-      <div className="h-dvh flex flex-col scroll-paper ink-wash">
+      <div className="h-dvh flex flex-col section">
         <GameHeader
           language={language}
           onBackToHome={() => setShowGame(false)}
           onNewGame={() => gameRef.current?.resetGame()}
         />
         <div className="flex-1 p-2 sm:p-4 lg:p-6 overflow-hidden">
-          <div className="container mx-auto max-w-7xl h-full">
-            <div className="zen-card h-full flex flex-col">
+          <div className="container-zen h-full">
+            <div className="card-game h-full flex flex-col">
               <OnitamaGame
                 ref={gameRef}
                 cardPacks={getSelectedPacksForGame()}
                 language={language}
+                enableAI={true}
               />
             </div>
           </div>
@@ -65,7 +78,7 @@ export default function OnitamaLanding() {
   }
 
   return (
-    <div className="min-h-dvh scroll-texture">
+    <div className="min-h-dvh section-hero">
       <LandingHeader
         language={language}
         onToggleLanguage={toggleLanguage}

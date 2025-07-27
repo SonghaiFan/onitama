@@ -9,6 +9,8 @@ import React, {
 } from "react";
 import GameBoard from "./GameBoard";
 import Card from "./MoveCards";
+import AIGameController from "./AIGameController";
+import GameModeSelector, { GameModeConfig } from "./GameModeSelector";
 import { GameState, Player } from "@/types/game";
 import { INITIAL_GAME_STATE, createNewGameAsync } from "@/utils/dataLoader";
 import { getPlayerColors } from "@/utils/gameAestheticConfig";
@@ -48,12 +50,18 @@ const gameContent = {
 interface OnitamaGameProps {
   cardPacks?: ("normal" | "senseis" | "windway" | "promo" | "dual")[];
   language?: Language;
+  enableAI?: boolean;
 }
 
 const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
-  function OnitamaGame({ cardPacks = ["normal"], language = "zh" }, ref) {
+  function OnitamaGame(
+    { cardPacks = ["normal"], language = "zh", enableAI = false },
+    ref
+  ) {
     const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
     const [isLoading, setIsLoading] = useState(true);
+    const [gameMode, setGameMode] = useState<GameModeConfig | null>(null);
+    const [showModeSelector, setShowModeSelector] = useState(enableAI);
 
     // Sound effects - removed card selection sound
 
@@ -230,13 +238,42 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
       try {
         const result = await createNewGameAsync(cardPacks);
         setGameState(result.gameState);
+        // Reset AI mode when resetting game
+        if (enableAI) {
+          setShowModeSelector(true);
+          setGameMode(null);
+        }
       } catch (error) {
         console.error("Failed to reset game:", error);
         setGameState(INITIAL_GAME_STATE);
       } finally {
         setIsLoading(false);
       }
-    }, [cardPacks]);
+    }, [cardPacks, enableAI]);
+
+    // AI mode handlers
+    const handleModeSelect = useCallback((config: GameModeConfig) => {
+      setGameMode(config);
+      setShowModeSelector(false);
+    }, []);
+
+    const handleModeCancel = useCallback(() => {
+      setShowModeSelector(false);
+      setGameMode(null);
+    }, []);
+
+    // Determine which player is AI-controlled
+    const getAIPlayer = useCallback((): Player | null => {
+      if (!gameMode) return null;
+
+      if (gameMode.mode === "human_vs_ai") {
+        return gameMode.aiPlayer as Player;
+      } else if (gameMode.mode === "ai_vs_ai") {
+        return gameState.currentPlayer; // Both players are AI
+      }
+
+      return null;
+    }, [gameMode, gameState.currentPlayer]);
 
     useImperativeHandle(ref, () => ({
       resetGame,
@@ -311,7 +348,27 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
     }
 
     return (
-      <div className="w-full h-full flex flex-col watercolor-wash z-10 relative">
+      <div className="w-full h-full flex flex-col section-feature z-10 relative">
+        {/* AI Game Mode Selector */}
+        {showModeSelector && enableAI && (
+          <GameModeSelector
+            onModeSelect={handleModeSelect}
+            onCancel={handleModeCancel}
+            language={language}
+          />
+        )}
+
+        {/* AI Game Controller */}
+        {gameMode && gameMode.mode !== "human_vs_human" && (
+          <AIGameController
+            gameState={gameState}
+            onGameStateChange={setGameState}
+            aiPlayer={getAIPlayer()}
+            difficulty={gameMode.difficulty}
+            language={language}
+          />
+        )}
+
         <div
           className={`absolute inset-0 -z-10 pointer-events-none ${
             gameState.winner
