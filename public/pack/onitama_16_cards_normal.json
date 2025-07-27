@@ -3,7 +3,6 @@
     {
       "id": "ox",
       "name": { "en": "Ox", "hu": "Ökör", "zh": "牛", "ja": "牛" },
-      "color": "#8C5E3C",
       "moves": [
         { "x": 0, "y": 1 },
         { "x": 0, "y": -1 },
@@ -14,7 +13,6 @@
     {
       "id": "crab",
       "name": { "en": "Crab", "hu": "Rák", "zh": "蟹", "ja": "蟹" },
-      "color": "#406E8E",
       "moves": [
         { "x": -2, "y": 0 },
         { "x": 0, "y": 1 },
@@ -25,7 +23,6 @@
     {
       "id": "horse",
       "name": { "en": "Horse", "hu": "Ló", "zh": "马", "ja": "馬" },
-      "color": "#7D4F28",
       "moves": [
         { "x": 0, "y": 1 },
         { "x": -1, "y": 0 },
@@ -36,7 +33,6 @@
     {
       "id": "cobra",
       "name": { "en": "Cobra", "hu": "Kobra", "zh": "蛇", "ja": "蛇" },
-      "color": "#4B3832",
       "moves": [
         { "x": 1, "y": 1 },
         { "x": -1, "y": 0 },
@@ -47,7 +43,6 @@
     {
       "id": "rabbit",
       "name": { "en": "Rabbit", "hu": "Nyúl", "zh": "兔", "ja": "兎" },
-      "color": "#CC6633",
       "moves": [
         { "x": 2, "y": 0 },
         { "x": 1, "y": 1 },
@@ -58,7 +53,6 @@
     {
       "id": "dragon",
       "name": { "en": "Dragon", "hu": "Sárkány", "zh": "龍", "ja": "竜" },
-      "color": "#704F38",
       "moves": [
         { "x": -2, "y": 1 },
         { "x": 2, "y": 1 },
@@ -70,7 +64,6 @@
     {
       "id": "elephant",
       "name": { "en": "Elephant", "hu": "Elefánt", "zh": "象", "ja": "象" },
-      "color": "#9C6644",
       "moves": [
         { "x": -1, "y": 1 },
         { "x": 1, "y": 1 },
@@ -82,7 +75,6 @@
     {
       "id": "eel",
       "name": { "en": "Eel", "hu": "Angolna", "zh": "鳗", "ja": "鰻" },
-      "color": "#336B87",
       "moves": [
         { "x": -1, "y": 1 },
         { "x": 1, "y": 0 },
@@ -93,7 +85,6 @@
     {
       "id": "rooster",
       "name": { "en": "Rooster", "hu": "Kakas", "zh": "鸡", "ja": "鶏" },
-      "color": "#D95D39",
       "moves": [
         { "x": 1, "y": 1 },
         { "x": 1, "y": 0 },
@@ -105,7 +96,6 @@
     {
       "id": "goose",
       "name": { "en": "Goose", "hu": "Liba", "zh": "鹅", "ja": "鴨" },
-      "color": "#D1A054",
       "moves": [
         { "x": -1, "y": 1 },
         { "x": -1, "y": 0 },
@@ -117,7 +107,6 @@
     {
       "id": "crane",
       "name": { "en": "Crane", "hu": "Daru", "zh": "鹤", "ja": "鶴" },
-      "color": "#A97D56",
       "moves": [
         { "x": 0, "y": 1 },
         { "x": -1, "y": -1 },
@@ -128,7 +117,6 @@
     {
       "id": "boar",
       "name": { "en": "Boar", "hu": "Vaddisznó", "zh": "猪", "ja": "猪" },
-      "color": "#935E38",
       "moves": [
         { "x": 0, "y": 1 },
         { "x": -1, "y": 0 },
@@ -139,7 +127,6 @@
     {
       "id": "ant",
       "name": { "en": "Ant", "hu": "Hangya", "zh": "蚁", "ja": "蟻" },
-      "color": "#A0A000",
       "moves": [
         { "x": 1, "y": 1 },
         { "x": -1, "y": 1 },
@@ -150,7 +137,6 @@
     {
       "id": "monkey",
       "name": { "en": "Monkey", "hu": "Majom", "zh": "猴", "ja": "猿" },
-      "color": "#B77F50",
       "moves": [
         { "x": -1, "y": 1 },
         { "x": 1, "y": 1 },
@@ -162,7 +148,6 @@
     {
       "id": "frog",
       "name": { "en": "Frog", "hu": "Béka", "zh": "蛙", "ja": "蛙" },
-      "color": "#3A7F56",
       "moves": [
         { "x": -2, "y": 0 },
         { "x": -1, "y": 1 },
@@ -173,7 +158,6 @@
     {
       "id": "tiger",
       "name": { "en": "Tiger", "hu": "Tigris", "zh": "虎", "ja": "虎" },
-      "color": "#B44438",
       "moves": [
         { "x": 0, "y": 2 },
         { "x": 0, "y": -1 }

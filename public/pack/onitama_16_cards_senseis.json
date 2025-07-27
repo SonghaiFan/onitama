@@ -10,7 +10,6 @@
       "id": "bear",
       "type": "normal_card",
       "name": { "en": "Bear", "hu": "Medve", "zh": "熊", "ja": "熊" },
-      "color": "#8D5524",
       "moves": [
         { "x": 0, "y": 1 },
         { "x": -1, "y": 1 },
@@ -22,7 +21,6 @@
       "id": "dog",
       "type": "normal_card",
       "name": { "en": "Dog", "hu": "Kutya", "zh": "狗", "ja": "犬" },
-      "color": "#BCAAA4",
       "moves": [
         { "x": -1, "y": 1 },
         { "x": -1, "y": 0 },
@@ -34,7 +32,6 @@
       "id": "giraffe",
       "type": "normal_card",
       "name": { "en": "Giraffe", "hu": "Zsiráf", "zh": "麟麒", "ja": "麟麒" },
-      "color": "#E2C275",
       "moves": [
         { "x": -2, "y": 1 },
         { "x": 2, "y": 1 },
@@ -46,7 +43,6 @@
       "id": "fox",
       "type": "normal_card",
       "name": { "en": "Fox", "hu": "Róka", "zh": "狐", "ja": "狐" },
-      "color": "#E25822",
       "moves": [
         { "x": 1, "y": 1 },
         { "x": 1, "y": 0 },
@@ -58,7 +54,6 @@
       "id": "iguana",
       "type": "normal_card",
       "name": { "en": "Iguana", "hu": "Iguána", "zh": "蜥蜴", "ja": "鬣蜥" },
-      "color": "#6AB187",
       "moves": [
         { "x": -2, "y": 1 },
         { "x": 0, "y": 1 },
@@ -70,7 +65,6 @@
       "id": "kirin",
       "type": "normal_card",
       "name": { "en": "Kirin", "hu": "Kirin", "zh": "麒麟", "ja": "麒麟" },
-      "color": "#D9BF77",
       "moves": [
         { "x": -1, "y": 2 },
         { "x": 1, "y": 2 },
@@ -82,7 +76,6 @@
       "id": "mouse",
       "type": "normal_card",
       "name": { "en": "Mouse", "hu": "Egér", "zh": "鼠", "ja": "老鼠" },
-      "color": "#C0C0C0",
       "moves": [
         { "x": 1, "y": 0 },
         { "x": -1, "y": -1 },
@@ -94,7 +87,6 @@
       "id": "otter",
       "type": "normal_card",
       "name": { "en": "Otter", "hu": "Vidra", "zh": "獭", "ja": "獺" },
-      "color": "#A1887F",
       "moves": [
         { "x": -1, "y": 1 },
         { "x": 2, "y": 0 },
@@ -106,7 +98,6 @@
       "id": "panda",
       "type": "normal_card",
       "name": { "en": "Panda", "hu": "Panda", "zh": "熊猫", "ja": "熊猫" },
-      "color": "#FFD700",
       "moves": [
         { "x": 0, "y": 1 },
         { "x": 1, "y": 1 },
@@ -118,7 +109,6 @@
       "id": "phoenix",
       "type": "normal_card",
       "name": { "en": "Phoenix", "hu": "Főnix", "zh": "凤", "ja": "鳳" },
-      "color": "#FFB300",
       "moves": [
         { "x": 1, "y": 1 },
         { "x": 2, "y": 0 },
@@ -131,7 +121,6 @@
       "id": "rat",
       "type": "normal_card",
       "name": { "en": "Rat", "hu": "Patkány", "zh": "耗", "ja": "鼠" },
-      "color": "#A9A9A9",
       "moves": [
         { "x": 1, "y": -1 },
         { "x": 0, "y": 1 },
@@ -148,7 +137,6 @@
         "zh": "貂",
         "ja": "貂黑"
       },
-      "color": "#708090",
       "moves": [
         { "x": 1, "y": 1 },
         { "x": -2, "y": 0 },
@@ -165,7 +153,6 @@
         "zh": "海蛇",
         "ja": "海兎"
       },
-      "color": "#3B8686",
       "moves": [
         { "x": 0, "y": 1 },
         { "x": 2, "y": 0 },
@@ -177,7 +164,6 @@
       "id": "raccoon",
       "type": "normal_card",
       "name": { "en": " Raccoon", "hu": "Mosómedve ", "zh": "狸", "ja": "狸" },
-      "color": "#D2B48C",
       "moves": [
         { "x": 0, "y": 1 },
         { "x": 2, "y": 1 },
@@ -189,7 +175,6 @@
       "id": "turtle",
       "type": "normal_card",
       "name": { "en": "Turtle", "hu": "Teknős", "zh": "龟", "ja": "亀" },
-      "color": "#4ECDC4",
       "moves": [
         { "x": 1, "y": -1 },
         { "x": 2, "y": 0 },
@@ -202,7 +187,6 @@
       "id": "viper",
       "type": "normal_card",
       "name": { "en": "Viper", "hu": "Vipera", "zh": "毒蛇", "ja": "蝮" },
-      "color": "#6E2C00",
       "moves": [
         { "x": 0, "y": 1 },
         { "x": -2, "y": 0 },

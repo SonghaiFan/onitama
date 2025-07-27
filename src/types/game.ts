@@ -70,7 +70,6 @@ export interface PackCard {
     zh?: string;
     ja?: string;
   };
-  color: string;
   moves: Move[];
   wind_move?: Move[];
   master_moves?: Move[];
