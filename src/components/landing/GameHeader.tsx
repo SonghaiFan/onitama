@@ -64,12 +64,12 @@ export function GameHeader({
             <ZenButton
               onClick={toggleMusic}
               variant="secondary"
-              className="px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm flex items-center gap-1"
+              className={`px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm flex items-center gap-1 ${
+                isPlaying ? "" : "line-through"
+              }`}
             >
               <span className="hidden sm:inline">
-                {isPlaying
-                  ? content[language].musicOn
-                  : content[language].musicOff}
+                {content[language].music}
               </span>
             </ZenButton>
             <ZenButton
