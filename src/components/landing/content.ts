@@ -94,10 +94,10 @@ export const content = {
         title: "先手",
         description: "共用牌的顏色決定誰先手。",
       },
-      windSpirit: {
-        title: "風靈",
+      windCards: {
+        title: "風靈牌",
         description:
-          "風靈位於棋盤中央，任何玩家都可移動。風靈可與學徒交換位置。",
+          "風靈牌有雙階段移動：先移動你的棋子，再移動風靈。風靈可以阻擋路徑，任何棋子都不能停在風靈上，但風靈可以與學徒交換位置。",
       },
       dualCards: {
         title: "摹形卡牌",
@@ -125,14 +125,16 @@ export const content = {
           "三思而後行 - 對手將得到你的牌！",
         ],
       },
-      windSpirit: {
-        title: "風靈移動",
+      windCards: {
+        title: "風靈牌的使用",
         steps: [
-          "風靈卡牌：先移動你的棋子，再移動風靈",
-          "普通卡牌：可移動你的棋子或風靈",
+          "風靈牌有兩種移動模式：普通移動和風靈移動",
+          "雙階段移動：先移動你的棋子（師傅或學徒），再移動風靈",
+          "如果棋子無法移動，跳過棋子移動階段",
+          "如果風靈無法移動，跳過風靈移動階段",
           "風靈可移動到空位或與學徒交換位置",
-          "風靈不能與師傅或其他風靈交換",
-          "任何玩家都可移動風靈",
+          "風靈不能與師傅交換位置",
+          "任何棋子都不能停在風靈上，風靈可以阻擋路徑",
         ],
       },
       dualCards: {
@@ -259,10 +261,10 @@ export const content = {
         title: "First Move",
         description: "The shared card's color determines who goes first.",
       },
-      windSpirit: {
-        title: "Wind Spirit",
+      windCards: {
+        title: "Wind Spirit Cards",
         description:
-          "Wind spirit is placed in the center. Any player can move it. Wind spirit can swap with students.",
+          "Wind spirit cards have dual-phase movement: first move your piece, then move the wind spirit. The wind spirit can block paths - no piece can land on it. The wind spirit can swap with students, but not with masters.",
       },
       dualCards: {
         title: "Mimicry Cards",
@@ -291,14 +293,16 @@ export const content = {
           "Think twice - your opponent will get your card!",
         ],
       },
-      windSpirit: {
-        title: "Wind Spirit Movement",
+      windCards: {
+        title: "Using Wind Spirit Cards",
         steps: [
-          "Wind Spirit cards: First move your piece, then move the wind spirit",
-          "Regular cards: Can move your pieces or the wind spirit",
+          "Wind spirit cards have two movement patterns: regular moves and wind spirit moves",
+          "Dual-phase movement: First move your piece (master or student), then move the wind spirit",
+          "If your piece cannot move, skip the piece movement phase",
+          "If the wind spirit cannot move, skip the wind spirit movement phase",
           "Wind spirit can move to empty squares or swap with students",
-          "Wind spirit cannot swap with masters or other wind spirits",
-          "Any player can move the wind spirit",
+          "Wind spirit cannot swap with masters",
+          "No piece can land on the wind spirit - it can block paths",
         ],
       },
       dualCards: {
