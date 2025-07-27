@@ -51,7 +51,7 @@ export default function OnitamaLanding() {
         />
         <div className="flex-1 p-2 sm:p-4 lg:p-6 overflow-hidden">
           <div className="container mx-auto max-w-7xl h-full">
-            <div className="zen-card p-2 sm:p-4 lg:p-6 h-full flex flex-col">
+            <div className="zen-card h-full flex flex-col">
               <OnitamaGame
                 ref={gameRef}
                 cardPacks={getSelectedPacksForGame()}

@@ -312,9 +312,8 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
 
     return (
       <div className="w-full h-full flex flex-col watercolor-wash z-10 relative">
-        {/* Full game board gradient for current player */}
         <div
-          className={`absolute inset-0 -z-10 pointer-events-none rounded-xl ${
+          className={`absolute inset-0 -z-10 pointer-events-none ${
             gameState.winner
               ? gameState.winner === "red"
                 ? `bg-gradient-to-t ${
