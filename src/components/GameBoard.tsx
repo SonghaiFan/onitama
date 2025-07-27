@@ -11,7 +11,6 @@ import {
 import { useState, useCallback, useEffect, useRef } from "react";
 import { DraggablePiece, DragOverlay } from "./GamePiece";
 import { DroppableCell } from "./GameCell";
-import { AnimatePresence } from "framer-motion";
 import { useSound } from "react-sounds";
 
 interface GameBoardProps {

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Piece } from "@/types/game";
-import { getPieceStyleClass, GameSymbol } from "@/utils/gameSymbol";
+import { getPieceStyleClass, GameSymbol } from "@/utils/gameAestheticConfig";
 
 interface DraggablePieceProps {
   piece: Piece;

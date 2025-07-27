@@ -1,6 +1,27 @@
 @import "tailwindcss";
 
 /* ==========================================================================
+   COLOR VARIABLES
+   ========================================================================== */
+
+:root {
+  /* Red player colors */
+  --red-primary: rgb(220, 38, 38);    /* bg-red-600 */
+  --red-dark: rgb(185, 28, 28);       /* border color */
+  --red-light: rgb(248, 113, 113);    /* bg-red-400 */
+  
+  /* Blue player colors */
+  --blue-primary: rgb(37, 99, 235);   /* bg-blue-600 */
+  --blue-dark: rgb(30, 64, 175);      /* border color */
+  --blue-light: rgb(96, 165, 250);    /* bg-blue-400 */
+  
+  /* Neutral/Wind Spirit colors (light gray) */
+  --neutral-primary: rgb(243, 244, 246); /* gray-100 */
+  --neutral-dark: rgb(229, 231, 235);    /* gray-200 */
+  --neutral-light: rgb(249, 250, 251);   /* gray-50 */
+}
+
+/* ==========================================================================
    FONTS & TYPOGRAPHY
    ========================================================================== */
 
@@ -164,20 +185,20 @@
 
 /* Player-specific piece colors */
 .red-piece {
-  background-color: rgb(220, 38, 38);
-  border-color: rgb(185, 28, 28);
+  background-color: var(--red-primary);
+  border-color: var(--red-dark);
   color: white;
 }
 
 .blue-piece {
-  background-color: rgb(37, 99, 235);
-  border-color: rgb(30, 64, 175);
+  background-color: var(--blue-primary);
+  border-color: var(--blue-dark);
   color: white;
 }
 
 .neutral-piece {
-  background-color: rgb(207 250 254 / 0.8); /* Tailwind cyan-100/80 */
-  border-color: rgb(103 232 249); /* Tailwind cyan-300 */
+  background-color: var(--neutral-primary);
+  border-color: var(--neutral-dark);
   color: white;
 }
 

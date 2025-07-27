@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { MoveCard, Player } from "@/types/game";
 import { getArtName } from "../utils/getArtName";
 import { MoveGrid } from "./MoveGrid";
-import { GameSymbol } from "@/utils/gameSymbol";
 
 type Language = "zh" | "en";
 
@@ -32,11 +31,9 @@ export function Card({
   currentPlayer,
   cardIndex,
   onCardClick,
-  language = "en",
   isDualMoveInProgress = false,
 }: CardProps) {
   const isBlue = playerOwner === "blue";
-  const isRed = playerOwner === "red";
   const isShared = playerOwner === "shared";
   const isRotated = isBlue || (isShared && gridArea === "shared-left");
   const canInteract = !isShared && playerOwner === currentPlayer;
@@ -92,7 +89,7 @@ export function Card({
       }}
     >
       <div
-        className={`relative overflow-hidden w-32 h-26 sm:w-40 sm:h-30 lg:w-56 lg:h-38 border border-stone-300 shadow-lg bg-white`}
+        className={`relative w-32 h-26 sm:w-40 sm:h-30 lg:w-56 lg:h-38 border border-stone-300 shadow-lg bg-white `}
       >
         <div className="relative z-10 h-full flex flex-col">
           {/* Main content area - 50/50 split */}
@@ -113,15 +110,15 @@ export function Card({
             <div className="w-px h-full bg-stone-300/50"></div>
 
             {/* Right section - Move grid(s) (50%) */}
-            <div className="w-1/2 h-full flex items-center justify-center px-2 sm:px-3">
+            <div className="w-1/2 h-full flex items-center justify-center mx-1">
               {card.isWindCard ? (
-                <div className="flex flex-col items-center justify-center w-full">
+                <div className="flex flex-col items-center justify-center w-full ">
                   <div className="flex flex-col items-center space-y-1">
                     <MoveGrid
                       card={card}
                       isMaster={true}
                       isStudent={true}
-                      isTrimmed={true}
+                      isTrimmed={false}
                     />
                   </div>
                   <div className="flex flex-col items-center space-y-1">

@@ -570,7 +570,8 @@ function completeTurnAfterWindCard(
       usedCard.master_moves?.map((move) => ({ x: -move.x, y: -move.y })) ?? [],
     student_moves:
       usedCard.student_moves?.map((move) => ({ x: -move.x, y: -move.y })) ?? [],
-    wind_move: usedCard.wind_move,
+    wind_move:
+      usedCard.wind_move?.map((move) => ({ x: -move.x, y: -move.y })) ?? [],
     color: nextPlayer,
   };
   newState.sharedCard = rotatedCard;

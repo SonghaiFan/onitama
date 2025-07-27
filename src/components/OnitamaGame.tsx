@@ -7,11 +7,11 @@ import React, {
   forwardRef,
   useEffect,
 } from "react";
-import { useSound } from "react-sounds";
 import GameBoard from "./GameBoard";
 import Card from "./MoveCards";
 import { GameState, Player } from "@/types/game";
 import { INITIAL_GAME_STATE, createNewGameAsync } from "@/utils/dataLoader";
+import { getPlayerColors } from "@/utils/gameAestheticConfig";
 import {
   isValidMove,
   executeMove,
@@ -252,7 +252,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
           <div className="flex items-center space-x-0.5 sm:space-x-1.5">
             <span
               className={`text-base sm:text-lg font-medium zen-text ${
-                gameState.winner === "red" ? "text-red-600" : "text-blue-600"
+                getPlayerColors(gameState.winner).tailwind.text
               }`}
             >
               {gameState.winner === "red"
@@ -267,17 +267,13 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
               {gameContent[language].currentTurn}
             </span>
             <div
-              className={`w-3 h-3 sm:w-4 sm:h-4 lg:w-6 lg:h-6 rounded-full animate-pulse shadow-lg ${
-                gameState.currentPlayer === "red"
-                  ? "bg-red-600 shadow-red-300"
-                  : "bg-blue-600 shadow-blue-300"
-              }`}
+              className={`w-3 h-3 sm:w-4 sm:h-4 lg:w-6 lg:h-6 rounded-full animate-pulse shadow-lg ${`${
+                getPlayerColors(gameState.currentPlayer).tailwind.primary
+              } ${getPlayerColors(gameState.currentPlayer).tailwind.shadow}`}`}
             ></div>
             <span
               className={`font-bold text-sm sm:text-base zen-text ${
-                gameState.currentPlayer === "red"
-                  ? "text-red-600"
-                  : "text-blue-600"
+                getPlayerColors(gameState.currentPlayer).tailwind.text
               }`}
             >
               {gameState.currentPlayer === "red"
@@ -317,11 +313,19 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
           className={`absolute inset-0 -z-10 pointer-events-none ${
             gameState.winner
               ? gameState.winner === "red"
-                ? "bg-gradient-to-t from-red-400/50 via-transparent to-transparent"
-                : "bg-gradient-to-b from-blue-400/50 via-transparent to-transparent"
+                ? `bg-gradient-to-t ${
+                    getPlayerColors("red").tailwind.gradient
+                  } via-transparent to-transparent`
+                : `bg-gradient-to-b ${
+                    getPlayerColors("blue").tailwind.gradient
+                  } via-transparent to-transparent`
               : gameState.currentPlayer === "red"
-              ? "bg-gradient-to-t from-red-400/10 via-transparent to-transparent"
-              : "bg-gradient-to-b from-blue-400/10 via-transparent to-transparent"
+              ? `bg-gradient-to-t ${
+                  getPlayerColors("red").tailwind.gradientLight
+                } via-transparent to-transparent`
+              : `bg-gradient-to-b ${
+                  getPlayerColors("blue").tailwind.gradientLight
+                } via-transparent to-transparent`
           }`}
         />
 

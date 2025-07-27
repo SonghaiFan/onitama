@@ -1,7 +1,7 @@
 "use client";
 import { MoveCard, Move } from "@/types/game";
 import React from "react";
-import { GameSymbol } from "@/utils/gameSymbol";
+import { GameSymbol } from "@/utils/gameAestheticConfig";
 
 // Responsive move grid with optional trimming and no borders; each cell is a square via aspect-square
 export function MoveGrid({
@@ -17,12 +17,15 @@ export function MoveGrid({
   isStudent?: boolean;
   isTrimmed?: boolean;
 }) {
-  const color = card.color;
   // Determine which moves to show based on card type and parameters
   let movesToShow: Move[];
   switch (true) {
     case isWind && !!card.wind_move:
       movesToShow = card.wind_move!;
+      break;
+    case isMaster && isStudent:
+      // When both master and student are true, show the default moves (common moves)
+      movesToShow = card.moves;
       break;
     case isMaster && !!card.master_moves:
       movesToShow = card.master_moves!;
@@ -36,22 +39,26 @@ export function MoveGrid({
   const rows = [0, 1, 2, 3, 4];
   const cols = [0, 1, 2, 3, 4];
 
-  // Determine which rows have moves
-  const rowHasContent = rows.map((r) =>
-    r === 2
-      ? movesToShow.length > 0
-      : movesToShow.some((move) => 2 - move.y === r)
-  );
+  // Determine which rows have content (moves or center piece)
+  const rowHasContent = rows.map((r) => {
+    // Center row always has content (the piece)
+    if (r === 2) return true;
+    
+    // Check if this row has any moves
+    return movesToShow.some((move) => 2 - move.y === r);
+  });
 
-  // Trim empty top/bottom rows
+  // Trim empty top/bottom rows, but ensure we keep at least the center row
   let visibleRows = rows;
   if (isTrimmed) {
     const start = rowHasContent.findIndex(Boolean);
-    const end =
-      rowHasContent.length -
-      1 -
-      [...rowHasContent].reverse().findIndex(Boolean);
-    visibleRows = rows.slice(start, end + 1);
+    const end = rowHasContent.length - 1 - [...rowHasContent].reverse().findIndex(Boolean);
+    
+    // Safety check: ensure we have valid bounds and include center row
+    const safeStart = Math.max(0, Math.min(start, 2)); // Don't start after center
+    const safeEnd = Math.min(4, Math.max(end, 2)); // Don't end before center
+    
+    visibleRows = rows.slice(safeStart, safeEnd + 1);
   }
 
   return (
@@ -132,13 +139,7 @@ export function MoveGrid({
             <div
               key={`${r}-${c}`}
               className={`aspect-square transition-colors flex items-center justify-center ${
-                hasMove
-                  ? isWind
-                    ? "bg-cyan-100/80 shadow-sm"
-                    : color === "red"
-                    ? "bg-red-400/80 shadow-sm"
-                    : "bg-blue-400/80 shadow-sm"
-                  : "bg-stone-50"
+                hasMove ? "bg-stone-400/80 shadow-sm" : "bg-stone-50"
               }`}
             />
           );

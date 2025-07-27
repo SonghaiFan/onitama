@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { content, Language } from "./content";
 import { ZenButton } from "./shared";
 import { checkAllPacks, checkCardAvailability } from "@/utils/dataLoader";
+import { getPlayerColors } from "@/utils/gameAestheticConfig";
 
 export type CardPack = "normal" | "senseis" | "windway" | "promo" | "dual";
 
@@ -118,7 +119,7 @@ export function CardPackSelection({
                 : `${content[language].cardValidation.availableCards}: ${cardValidation.totalCards}/5`}
             </span>
             {cardValidation.totalCards < 5 && !cardValidation.isLoading && (
-              <span className="text-red-600 text-sm font-medium zen-text">
+              <span className={`${getPlayerColors("red").tailwind.text} text-sm font-medium zen-text`}>
                 {content[language].cardValidation.needMoreCards}
               </span>
             )}
