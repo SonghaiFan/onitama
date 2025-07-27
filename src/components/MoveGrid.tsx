@@ -1,6 +1,7 @@
 "use client";
 import { MoveCard, Move } from "@/types/game";
 import React from "react";
+import { GameSymbol } from "@/utils/gameSymbol";
 
 // Responsive move grid with optional trimming and no borders; each cell is a square via aspect-square
 export function MoveGrid({

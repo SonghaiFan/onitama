@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Piece } from "@/types/game";
+import { getPieceStyleClass, GameSymbol } from "@/utils/gameSymbol";
 
 interface DraggablePieceProps {
   piece: Piece;
@@ -28,30 +29,15 @@ export function DraggablePiece({
   selectedCardIndex,
   onDragStart,
 }: DraggablePieceProps) {
-  // Simple piece styling based on type and player
-  let pieceStyle = "";
-  let pieceIcon = "";
+  // Get piece style from centralized definitions
+  const pieceStyle = getPieceStyleClass(piece);
 
-  // Determine piece type and icon
-  if (piece.isWindSpirit) {
-    pieceStyle = "wind-spirit-piece";
-    pieceIcon = "風";
-  } else if (piece.isMaster) {
-    pieceStyle = "master-piece";
-    pieceIcon = "师";
-  } else {
-    pieceStyle = "student-piece";
-    pieceIcon = "徒";
-  }
-
-  // Add player color
-  if (piece.player === "red") {
-    pieceStyle += " red-piece";
-  } else if (piece.player === "blue") {
-    pieceStyle += " blue-piece";
-  } else {
-    pieceStyle += " neutral-piece";
-  }
+  // Determine piece type for symbol
+  const pieceType = piece.isWindSpirit
+    ? "wind-spirit"
+    : piece.isMaster
+    ? "master"
+    : "student";
 
   // Simple shadow logic
   let shadow = "0 2px 4px rgba(0, 0, 0, 0.1)";
@@ -112,14 +98,12 @@ export function DraggablePiece({
       }}
     >
       <div className="relative w-full h-full flex items-center justify-center">
-        <span
-          className={`text-lg sm:text-xl md:text-2xl lg:text-3xl opacity-30 ${
-            piece.player === "blue" ? "rotate-180" : ""
-          }`}
-          style={{ fontFamily: "DuanNing" }}
-        >
-          {pieceIcon}
-        </span>
+        <GameSymbol
+          type={pieceType}
+          size="lg"
+          player={piece.player === "neutral" ? undefined : piece.player}
+          className="opacity-30"
+        />
       </div>
     </motion.div>
   );
@@ -131,28 +115,15 @@ interface DragOverlayProps {
 }
 
 export function DragOverlay({ piece }: DragOverlayProps) {
-  // Simple piece styling for drag overlay
-  let pieceStyle = "";
-  let pieceIcon = "";
+  // Get piece style from centralized definitions
+  const pieceStyle = getPieceStyleClass(piece);
 
-  if (piece.isWindSpirit) {
-    pieceStyle = "wind-spirit-piece";
-    pieceIcon = "風";
-  } else if (piece.isMaster) {
-    pieceStyle = "master-piece";
-    pieceIcon = "师";
-  } else {
-    pieceStyle = "student-piece";
-    pieceIcon = "徒";
-  }
-
-  if (piece.player === "red") {
-    pieceStyle += " red-piece";
-  } else if (piece.player === "blue") {
-    pieceStyle += " blue-piece";
-  } else {
-    pieceStyle += " neutral-piece";
-  }
+  // Determine piece type for symbol
+  const pieceType = piece.isWindSpirit
+    ? "wind-spirit"
+    : piece.isMaster
+    ? "master"
+    : "student";
 
   return (
     <motion.div
@@ -165,12 +136,12 @@ export function DragOverlay({ piece }: DragOverlayProps) {
       `}
     >
       <div className="relative w-full h-full flex items-center justify-center">
-        <span
-          className="text-lg sm:text-xl md:text-2xl lg:text-3xl opacity-30"
-          style={{ fontFamily: "DuanNing" }}
-        >
-          {pieceIcon}
-        </span>
+        <GameSymbol
+          type={pieceType}
+          size="lg"
+          player={piece.player === "neutral" ? undefined : piece.player}
+          className="opacity-30"
+        />
       </div>
     </motion.div>
   );

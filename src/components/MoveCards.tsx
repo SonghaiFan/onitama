@@ -5,24 +5,11 @@ import { motion } from "framer-motion";
 import { MoveCard, Player } from "@/types/game";
 import { getArtName } from "../utils/getArtName";
 import { MoveGrid } from "./MoveGrid";
+import { GameSymbol } from "@/utils/gameSymbol";
 
 type Language = "zh" | "en";
 
-// Bilingual content for card components
-const cardContent = {
-  zh: {
-    regularMoves: "师/徒",
-    windMoves: "風",
-    masterMoves: "师",
-    studentMoves: "徒",
-  },
-  en: {
-    regularMoves: "Master/Student",
-    windMoves: "Wind",
-    masterMoves: "Master",
-    studentMoves: "Student",
-  },
-};
+// Card content is now handled by SVG symbols
 
 interface CardProps {
   card: MoveCard;
@@ -137,14 +124,16 @@ export function Card({
                 <div className="flex flex-col items-center justify-center w-full">
                   <div className="flex flex-col items-center space-y-1">
                     <MoveGrid card={card} isWind={false} isTrimmed={true} />
-                    <div className="text-xs text-stone-500">
-                      {cardContent[language].regularMoves}
+                    <div className="flex items-center justify-center space-x-1 text-xs text-stone-500">
+                      <GameSymbol type="master" size="sm" />
+                      <span>/</span>
+                      <GameSymbol type="student" size="sm" />
                     </div>
                   </div>
                   <div className="flex flex-col items-center space-y-1">
                     <MoveGrid card={card} isWind={true} isTrimmed={true} />
-                    <div className="text-xs text-stone-500">
-                      {cardContent[language].windMoves}
+                    <div className="flex items-center justify-center text-xs text-stone-500">
+                      <GameSymbol type="wind-spirit" size="sm" />
                     </div>
                   </div>
                 </div>
@@ -152,14 +141,14 @@ export function Card({
                 <div className="flex flex-col items-center justify-center w-full">
                   <div className="flex flex-col items-center space-y-1">
                     <MoveGrid card={card} isMaster={true} isTrimmed={true} />
-                    <div className="text-xs text-stone-500">
-                      {cardContent[language].masterMoves}
+                    <div className="flex items-center justify-center text-xs text-stone-500">
+                      <GameSymbol type="master" size="sm" />
                     </div>
                   </div>
                   <div className="flex flex-col items-center space-y-1">
                     <MoveGrid card={card} isStudent={true} isTrimmed={true} />
-                    <div className="text-xs text-stone-500">
-                      {cardContent[language].studentMoves}
+                    <div className="flex items-center justify-center text-xs text-stone-500">
+                      <GameSymbol type="student" size="sm" />
                     </div>
                   </div>
                 </div>
