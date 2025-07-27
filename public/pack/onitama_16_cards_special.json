@@ -1,0 +1,37 @@
+{
+  "cards": [
+    {
+      "id": "nessie",
+      "name": {
+        "en": "Nessie",
+        "zh": "尼斯",
+        "ja": "ネッシー"
+      },
+      "moves": [
+        { "x": -2, "y": 1 },
+        { "x": -1, "y": -1 },
+        { "x": 1, "y": -1 },
+        { "x": 1, "y": 0 }
+      ],
+      "firstPlayerColor": "red",
+      "type": "normal_card"
+    },
+    {
+      "id": "yi",
+      "name": {
+        "en": "One ",
+        "zh": "一",
+        "ja": "一"
+      },
+      "moves": [
+        { "x": -2, "y": 0 },
+        { "x": -1, "y": 0 },
+        { "x": 0, "y": 0 },
+        { "x": 1, "y": 0 },
+        { "x": 2, "y": 0 }
+      ],
+      "firstPlayerColor": "blue",
+      "type": "normal_card"
+    }
+  ]
+}

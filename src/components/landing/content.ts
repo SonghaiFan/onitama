@@ -38,6 +38,12 @@ export const content = {
         selected: "✓ 已選擇",
         unselected: "點擊選擇",
       },
+      special: {
+        name: "特殊包",
+        description: "x張特殊卡牌",
+        selected: "✓ 已選擇",
+        unselected: "點擊選擇",
+      },
     },
     // Card validation messages
     cardValidation: {
@@ -199,6 +205,12 @@ export const content = {
       dual: {
         name: "Way of the Mimicry",
         description: "Mimicry Expansion Pack (4 mimicry cards)",
+        selected: "✓ Selected",
+        unselected: "Click to select",
+      },
+      special: {
+        name: "Special Pack",
+        description: "x Special Cards",
         selected: "✓ Selected",
         unselected: "Click to select",
       },

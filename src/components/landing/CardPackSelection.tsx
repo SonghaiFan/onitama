@@ -4,7 +4,13 @@ import { ZenButton } from "./shared";
 import { checkAllPacks, checkCardAvailability } from "@/utils/dataLoader";
 import { getPlayerColors } from "@/utils/gameAestheticConfig";
 
-export type CardPack = "normal" | "senseis" | "windway" | "promo" | "dual";
+export type CardPack =
+  | "normal"
+  | "senseis"
+  | "windway"
+  | "promo"
+  | "dual"
+  | "special";
 
 interface CardPackSelectionProps {
   language: Language;
@@ -119,7 +125,11 @@ export function CardPackSelection({
                 : `${content[language].cardValidation.availableCards}: ${cardValidation.totalCards}/5`}
             </span>
             {cardValidation.totalCards < 5 && !cardValidation.isLoading && (
-              <span className={`${getPlayerColors("red").tailwind.text} text-sm font-medium zen-text`}>
+              <span
+                className={`${
+                  getPlayerColors("red").tailwind.text
+                } text-sm font-medium zen-text`}
+              >
                 {content[language].cardValidation.needMoreCards}
               </span>
             )}
@@ -127,7 +137,7 @@ export function CardPackSelection({
         </div>
 
         <div className="flex flex-wrap justify-center gap-4 sm:gap-6 lg:gap-8">
-          {["normal", "senseis", "promo"].map((pack) =>
+          {["normal", "senseis", "promo", "special"].map((pack) =>
             availablePacks.has(pack as CardPack) ? (
               <CardPackButton
                 key={pack}

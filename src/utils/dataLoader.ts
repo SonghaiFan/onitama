@@ -20,7 +20,7 @@ function convertCardToGameFormat(card: PackCard): MoveCard {
 
 // Function to load card pack data
 async function loadCardPack(
-  packName: "normal" | "senseis" | "windway" | "promo" | "dual"
+  packName: "normal" | "senseis" | "windway" | "promo" | "dual" | "special"
 ): Promise<{ cards: MoveCard[]; warning?: string }> {
   try {
     const response = await fetch(`/pack/onitama_16_cards_${packName}.json`);
@@ -58,7 +58,7 @@ const cardPackCache: Record<string, { cards: MoveCard[]; warning?: string }> =
 
 // Function to get cards for multiple packs
 async function getCardsForPacks(
-  packNames: ("normal" | "senseis" | "windway" | "promo" | "dual")[]
+  packNames: ("normal" | "senseis" | "windway" | "promo" | "dual" | "special")[]
 ): Promise<{ cards: MoveCard[]; warnings: string[] }> {
   const allCards: MoveCard[] = [];
   const warnings: string[] = [];
@@ -85,9 +85,14 @@ async function getCardsForPacks(
 
 // Function to randomly select 5 cards from multiple packs
 async function selectRandomCardsAsync(
-  cardPacks: ("normal" | "senseis" | "windway" | "promo" | "dual")[] = [
-    "normal",
-  ]
+  cardPacks: (
+    | "normal"
+    | "senseis"
+    | "windway"
+    | "promo"
+    | "dual"
+    | "special"
+  )[] = ["normal"]
 ): Promise<{
   playerCards: MoveCard[];
   sharedCard: MoveCard;
@@ -271,9 +276,14 @@ export const INITIAL_GAME_STATE: GameState = createInitialGameState(
 
 // Async version for loading card packs
 export async function createNewGameAsync(
-  cardPacks: ("normal" | "senseis" | "windway" | "promo" | "dual")[] = [
-    "normal",
-  ]
+  cardPacks: (
+    | "normal"
+    | "senseis"
+    | "windway"
+    | "promo"
+    | "dual"
+    | "special"
+  )[] = ["normal"]
 ): Promise<{ gameState: GameState; warnings: string[] }> {
   const { playerCards, sharedCard, warnings } = await selectRandomCardsAsync(
     cardPacks
@@ -371,6 +381,7 @@ export async function checkAllPacks(): Promise<Set<CardPack>> {
     "windway",
     "promo",
     "dual",
+    "special",
   ];
   const availablePacks = new Set<CardPack>();
 
