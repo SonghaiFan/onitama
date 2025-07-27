@@ -88,9 +88,7 @@ export function Card({
         },
       }}
     >
-      <div
-        className={`relative w-32 h-26 sm:w-40 sm:h-30 lg:w-56 lg:h-38 border border-stone-300 shadow-lg bg-white `}
-      >
+      <div className="relative aspect-[1.3] border border-stone-300 shadow-lg bg-white overflow-hidden">
         <div className="relative z-10 h-full flex flex-col">
           {/* Main content area - 50/50 split */}
           <div className="flex-1 flex items-center">
@@ -106,11 +104,8 @@ export function Card({
               </div>
             </div>
 
-            {/* Vertical divider line */}
-            <div className="w-px h-full bg-stone-300/50"></div>
-
             {/* Right section - Move grid(s) (50%) */}
-            <div className="w-1/2 h-full flex items-center justify-center mx-1">
+            <div className="w-1/2 h-full flex items-center justify-center mx-2">
               {card.isWindCard ? (
                 <div className="flex flex-col items-center justify-center w-full ">
                   <div className="flex flex-col items-center space-y-1">
