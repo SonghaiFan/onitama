@@ -118,7 +118,7 @@ export function Card({
                       card={card}
                       isMaster={true}
                       isStudent={true}
-                      isTrimmed={false}
+                      isTrimmed={true}
                     />
                   </div>
                   <div className="flex flex-col items-center space-y-1">
