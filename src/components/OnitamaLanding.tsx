@@ -49,7 +49,7 @@ export default function OnitamaLanding() {
           onBackToHome={() => setShowGame(false)}
           onNewGame={() => gameRef.current?.resetGame()}
         />
-        <div className="flex-1 overflow-auto p-2 sm:p-4 lg:p-6 overflow-hidden">
+        <div className="flex-1 p-2 sm:p-4 lg:p-6 overflow-hidden">
           <div className="container mx-auto max-w-7xl h-full">
             <div className="zen-card p-2 sm:p-4 lg:p-6 h-full flex flex-col">
               <OnitamaGame

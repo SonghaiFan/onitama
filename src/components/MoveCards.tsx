@@ -51,7 +51,7 @@ export function Card({
     <motion.div
       key={`${card.name}-${playerOwner}-${gridArea}`}
       style={{ gridArea }}
-      className={`move-card relative select-none cursor-pointer z-20 ${
+      className={`zen-card relative aspect-[1.6] overflow-hidden select-none cursor-pointer z-20 flex items-center justify-center bg-white border rounded-lg p-1 sm:p-3 lg:p-6 ${
         isShared ? "opacity-60" : ""
       }`}
       layout
@@ -88,52 +88,46 @@ export function Card({
         },
       }}
     >
-      <div className="relative aspect-[1.3] border border-stone-300 shadow-lg bg-white overflow-hidden">
-        <div className="relative z-10 h-full flex flex-col">
-          {/* Main content area - 50/50 split */}
-          <div className="flex-1 flex items-center">
-            {/* Left section - Character and name (50%) */}
-            <div className="w-1/2 h-full flex flex-col items-center justify-center px-2 sm:px-3 space-y-2 sm:space-y-3">
-              <div
-                className={`flex items-center justify-center mt-5 w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-18 lg:h-18 rounded-full ring-1 ring-stone-300 `}
-              >
-                {getArtName(card, "lg")}
-              </div>
-              <div className="text-sm sm:text-base text-center">
-                {card.name}
-              </div>
-            </div>
-
-            {/* Right section - Move grid(s) (50%) */}
-            <div className="w-1/2 h-full flex items-center justify-center mx-2">
-              {card.isWindCard ? (
-                <div className="flex flex-col items-center justify-center w-full ">
-                  <div className="flex flex-col items-center space-y-1">
-                    <MoveGrid
-                      card={card}
-                      isMaster={true}
-                      isStudent={true}
-                      isTrimmed={true}
-                    />
-                  </div>
-                  <div className="flex flex-col items-center space-y-1">
-                    <MoveGrid card={card} isWind={true} isTrimmed={true} />
-                  </div>
-                </div>
-              ) : card.isMockCard ? (
-                <div className="flex flex-col items-center justify-center w-full">
-                  <div className="flex flex-col items-center space-y-1">
-                    <MoveGrid card={card} isMaster={true} isTrimmed={true} />
-                  </div>
-                  <div className="flex flex-col items-center space-y-1">
-                    <MoveGrid card={card} isStudent={true} isTrimmed={true} />
-                  </div>
-                </div>
-              ) : (
-                <MoveGrid card={card} />
-              )}
-            </div>
+      {/* Main content area - 50/50 split */}
+      <div className="flex-1 flex items-center ">
+        {/* Left section - Character and name (50%) */}
+        <div className="w-1/2 h-full flex flex-col items-center justify-center px-2 sm:px-3 space-y-2 sm:space-y-3">
+          <div
+            className={`flex items-center justify-center mt-5 w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-18 lg:h-18 rounded-full ring-1 ring-stone-300 `}
+          >
+            {getArtName(card, "lg")}
           </div>
+          <div className="text-sm sm:text-base text-center">{card.name}</div>
+        </div>
+
+        {/* Right section - Move grid(s) (50%) */}
+        <div className="w-1/2 h-full flex items-center justify-center mx-2">
+          {card.isWindCard ? (
+            <div className="flex flex-col items-center justify-center w-full ">
+              <div className="flex flex-col items-center space-y-1">
+                <MoveGrid
+                  card={card}
+                  isMaster={true}
+                  isStudent={true}
+                  isTrimmed={true}
+                />
+              </div>
+              <div className="flex flex-col items-center space-y-1">
+                <MoveGrid card={card} isWind={true} isTrimmed={true} />
+              </div>
+            </div>
+          ) : card.isMockCard ? (
+            <div className="flex flex-col items-center justify-center w-full">
+              <div className="flex flex-col items-center space-y-1">
+                <MoveGrid card={card} isMaster={true} isTrimmed={true} />
+              </div>
+              <div className="flex flex-col items-center space-y-1">
+                <MoveGrid card={card} isStudent={true} isTrimmed={true} />
+              </div>
+            </div>
+          ) : (
+            <MoveGrid card={card} />
+          )}
         </div>
       </div>
     </motion.div>
