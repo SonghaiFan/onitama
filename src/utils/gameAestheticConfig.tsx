@@ -134,9 +134,10 @@ export const GameSymbol = ({
       alt={type}
       width={32}
       height={32}
+      draggable={false}
       className={`inline-block ${SIZE_CLASSES[size]} ${className} ${
         player === "blue" ? "rotate-180" : ""
-      } object-contain max-w-full max-h-full`}
+      } object-contain max-w-full max-h-full select-none pointer-events-none`}
     />
   );
 };
