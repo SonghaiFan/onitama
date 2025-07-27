@@ -67,7 +67,9 @@ export function Card({
     <motion.div
       key={`${card.name}-${playerOwner}-${gridArea}`}
       style={{ gridArea }}
-      className={`move-card relative z-20 ${isShared ? "opacity-60" : ""}`}
+      className={`move-card relative select-none cursor-pointer z-20 ${
+        isShared ? "opacity-60" : ""
+      }`}
       layout
       layoutId={layoutId}
       initial={false}

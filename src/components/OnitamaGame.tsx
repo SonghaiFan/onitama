@@ -234,7 +234,11 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
     }));
 
     const GameStatusSimple = () => (
-      <div className="relative flex items-center justify-center space-x-0.5 sm:space-x-2 lg:space-x-4 mb-0.5 sm:mb-2 lg:mb-4 z-25">
+      <div
+        className={`relative flex items-center justify-center space-x-0.5 sm:space-x-2 lg:space-x-4 mb-0.5 sm:mb-2 lg:mb-4 z-25 ${
+          gameState.currentPlayer === "blue" ? "rotate-180" : ""
+        }`}
+      >
         {gameState.winner ? (
           <div className="flex items-center space-x-0.5 sm:space-x-1.5">
             <span
