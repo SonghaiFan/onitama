@@ -105,7 +105,7 @@ export function Card({
       }}
     >
       <div
-        className={`relative overflow-hidden w-32 h-32 sm:w-40 sm:h-36 md:w-48 md:h-40 lg:w-56 lg:h-44 border border-stone-300 shadow-lg bg-white`}
+        className={`relative overflow-hidden w-32 h-26 sm:w-40 sm:h-30 lg:w-56 lg:h-38 border border-stone-300 shadow-lg bg-white`}
       >
         {/* Decorative Corner Elements */}
         <div className="absolute top-0.5 left-0.5 w-1.5 h-1.5 border-l border-t border-stone-300/50 pointer-events-none"></div>

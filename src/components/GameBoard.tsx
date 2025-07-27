@@ -5,11 +5,14 @@ import {
   isTempleArch,
   isValidMove,
   getAllPossibleMoves,
+  isWindSpiritSwap,
+  isMasterCapture,
 } from "@/utils/gameManager";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { DraggablePiece, DragOverlay } from "./GamePiece";
 import { DroppableCell } from "./GameCell";
 import { AnimatePresence } from "framer-motion";
+import { useSound } from "react-sounds";
 
 interface GameBoardProps {
   gameState: GameState;
@@ -44,6 +47,12 @@ export default function GameBoard({
   // Use ref to access current gameState in callbacks to avoid stale closures
   const gameStateRef = useRef(gameState);
   gameStateRef.current = gameState;
+
+  // Sound effects
+  const { play: playMoveSound } = useSound("ui/radio_select");
+  const { play: playCaptureSound } = useSound("ui/tab_close");
+  const { play: playSwapSound } = useSound("ui/window_open");
+  const { play: playMasterCaptureSound } = useSound("game/hit");
 
   // Unified drag state
   const [dragState, setDragState] = useState<DragState>({
@@ -88,6 +97,9 @@ export default function GameBoard({
         !gameStateRef.current.winner;
 
       if (canDrag) {
+        // Play select sound when starting to drag a piece
+        // Removed playSelectSound()
+
         // Update game state to select the card for consistent highlighting
         if (onCardSelect) {
           onCardSelect(cardIndex);
@@ -155,6 +167,38 @@ export default function GameBoard({
               );
 
               if (moveIsValid && onPieceMove) {
+                // Play appropriate sound based on the target
+                const targetPiece = currentBoard[targetRow][targetCol];
+                const draggedPiece =
+                  currentBoard[dragState.draggedPiece.position[0]][
+                    dragState.draggedPiece.position[1]
+                  ];
+
+                if (targetPiece) {
+                  // Check if this is a wind spirit swap
+                  const isWindSwap = isWindSpiritSwap(
+                    draggedPiece,
+                    targetPiece
+                  );
+                  const isMasterCap = isMasterCapture(
+                    draggedPiece,
+                    targetPiece
+                  );
+
+                  if (isWindSwap) {
+                    // Play swap sound for wind spirit swaps
+                    playSwapSound();
+                  } else if (isMasterCap) {
+                    // Play master capture sound for capturing masters
+                    playMasterCaptureSound();
+                  } else {
+                    // Play capture sound for regular captures
+                    playCaptureSound();
+                  }
+                } else {
+                  playMoveSound();
+                }
+
                 onPieceMove(
                   dragState.draggedPiece.position,
                   [targetRow, targetCol],
@@ -206,13 +250,13 @@ export default function GameBoard({
     // Don't trigger click if we're dragging
     if (dragState.isDragging) return;
 
-    // If there are possible moves and we click on a cell with a piece,
-    // we should make the move instead of selecting the piece
+    // If there are possible moves and we click on an empty cell,
+    // we should make the move
     const hasPossibleMoves = possibleMoves.length > 0;
     const clickedPiece = gameState.board[row][col];
 
-    if (hasPossibleMoves && clickedPiece) {
-      // Check if this is a valid move target
+    if (hasPossibleMoves && !clickedPiece) {
+      // Check if this is a valid move target (empty cell)
       const isValidMoveTarget = possibleMoves.some(
         ([moveRow, moveCol]) => moveRow === row && moveCol === col
       );
@@ -223,6 +267,52 @@ export default function GameBoard({
         gameState.selectedPiece &&
         gameState.selectedCard !== null
       ) {
+        // Play move sound for moving to empty space
+        playMoveSound();
+
+        // Execute the move
+        onPieceMove(
+          gameState.selectedPiece,
+          [row, col],
+          gameState.selectedCard
+        );
+        return;
+      }
+    }
+
+    // If there are possible moves and we click on a piece,
+    // check if it's a valid capture move
+    if (hasPossibleMoves && clickedPiece) {
+      // Check if this is a valid move target (capture)
+      const isValidMoveTarget = possibleMoves.some(
+        ([moveRow, moveCol]) => moveRow === row && moveCol === col
+      );
+
+      if (
+        isValidMoveTarget &&
+        onPieceMove &&
+        gameState.selectedPiece &&
+        gameState.selectedCard !== null
+      ) {
+        // Check if this is a wind spirit swap
+        const selectedPiece =
+          gameState.board[gameState.selectedPiece[0]][
+            gameState.selectedPiece[1]
+          ];
+        const isWindSwap = isWindSpiritSwap(selectedPiece, clickedPiece);
+        const isMasterCap = isMasterCapture(selectedPiece, clickedPiece);
+
+        if (isWindSwap) {
+          // Play swap sound for wind spirit swaps
+          playSwapSound();
+        } else if (isMasterCap) {
+          // Play master capture sound for capturing masters
+          playMasterCaptureSound();
+        } else {
+          // Play capture sound for regular captures
+          playCaptureSound();
+        }
+
         // Execute the move
         onPieceMove(
           gameState.selectedPiece,

@@ -47,6 +47,33 @@ function getMovesForPiece(piece: Piece, card: MoveCard): Move[] {
 }
 
 /**
+ * Check if a move is a wind spirit swap
+ */
+export function isWindSpiritSwap(
+  fromPiece: Piece | null,
+  toPiece: Piece | null
+): boolean {
+  if (!fromPiece || !toPiece) return false;
+
+  return !!(
+    (fromPiece.isWindSpirit && !toPiece.isMaster && !toPiece.isWindSpirit) ||
+    (toPiece.isWindSpirit && !fromPiece.isMaster && !fromPiece.isWindSpirit)
+  );
+}
+
+/**
+ * Check if a move is a master capture
+ */
+export function isMasterCapture(
+  fromPiece: Piece | null,
+  toPiece: Piece | null
+): boolean {
+  if (!fromPiece || !toPiece) return false;
+
+  return toPiece.isMaster;
+}
+
+/**
  * Check if a target position is valid for a piece to move to
  */
 function isValidTargetPosition(
@@ -58,7 +85,7 @@ function isValidTargetPosition(
     return !targetPiece || !targetPiece.isMaster;
   } else {
     // Regular pieces can't land on own pieces or wind spirits
-    return (
+    return !!(
       !targetPiece ||
       (targetPiece.player !== piece.player && !targetPiece.isWindSpirit)
     );

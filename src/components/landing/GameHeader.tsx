@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { content, Language } from "./content";
 import { ZenButton } from "./shared";
+import { useSound } from "react-sounds";
 
 interface GameHeaderProps {
   language: Language;
@@ -16,12 +17,15 @@ export function GameHeader({
 }: GameHeaderProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  // Removed music toggle sound effect
 
   const toggleMusic = () => {
+    // Removed toggle sound effect
+
     if (!audioRef.current) {
       audioRef.current = new Audio("/music/background-music.mp3"); // Adjust path as needed
       audioRef.current.loop = true;
-      audioRef.current.volume = 0.3;
+      audioRef.current.volume = 0.1;
     }
 
     if (isPlaying) {

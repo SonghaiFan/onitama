@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Inter } from "next/font/google";
+import { SoundProvider } from "@/components/SoundProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -105,7 +106,9 @@ export default function RootLayout({
         <meta name="msapplication-TileColor" content="#78716c" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
       </head>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <SoundProvider>{children}</SoundProvider>
+      </body>
     </html>
   );
 }

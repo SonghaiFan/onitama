@@ -7,6 +7,7 @@ import React, {
   forwardRef,
   useEffect,
 } from "react";
+import { useSound } from "react-sounds";
 import GameBoard from "./GameBoard";
 import Card from "./MoveCards";
 import { GameState, Player } from "@/types/game";
@@ -53,6 +54,8 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
   function OnitamaGame({ cardPacks = ["normal"], language = "zh" }, ref) {
     const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
     const [isLoading, setIsLoading] = useState(true);
+
+    // Sound effects - removed card selection sound
 
     // Load the appropriate card pack when component mounts or cardPacks changes
     useEffect(() => {
@@ -175,6 +178,9 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
         // Prevent card changes during dual move sequence
         if (gameState.isDualMoveInProgress) return;
 
+        // Play card select sound
+        // Removed playCardSelectSound();
+
         const newGameState = { ...gameState, selectedCard: cardIndex };
         setGameState(newGameState);
       },
@@ -186,6 +192,9 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
         if (gameState.winner) return;
         // Prevent card changes during dual move sequence
         if (gameState.isDualMoveInProgress) return;
+
+        // Play card select sound
+        // Removed playCardSelectSound();
 
         const newGameState = { ...gameState, selectedCard: cardIndex };
         setGameState(newGameState);
@@ -305,14 +314,14 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
       <div className="w-full h-full flex flex-col watercolor-wash z-10 relative">
         {/* Full game board gradient for current player */}
         <div
-          className={`absolute inset-0 -z-10 transition-all duration-300 pointer-events-none ${
+          className={`absolute inset-0 -z-10 pointer-events-none ${
             gameState.winner
               ? gameState.winner === "red"
-                ? "bg-gradient-to-b from-red-500/40 to-red-400/20"
-                : "bg-gradient-to-t from-blue-500/40 to-blue-400/20"
+                ? "bg-gradient-to-t from-red-400/50 via-transparent to-transparent"
+                : "bg-gradient-to-b from-blue-400/50 via-transparent to-transparent"
               : gameState.currentPlayer === "red"
-              ? "bg-gradient-to-t from-red-400/20 to-transparent"
-              : "bg-gradient-to-b from-blue-400/20 to-transparent"
+              ? "bg-gradient-to-t from-red-400/10 via-transparent to-transparent"
+              : "bg-gradient-to-b from-blue-400/10 via-transparent to-transparent"
           }`}
         />
 
