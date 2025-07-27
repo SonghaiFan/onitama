@@ -55,7 +55,7 @@ export function getPieceStyleClass(piece: {
 interface GameSymbolProps {
   type: "wind-spirit" | "master" | "student";
   className?: string;
-  size?: "sm" | "md" | "lg" | "xl";
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
   player?: "red" | "blue";
 }
 
@@ -66,6 +66,7 @@ export function GameSymbol({
   player,
 }: GameSymbolProps) {
   const sizeClasses = {
+    xs: "w-3 h-3",
     sm: "w-4 h-4",
     md: "w-6 h-6",
     lg: "w-8 h-8",
@@ -85,7 +86,9 @@ export function GameSymbol({
     <img
       src={svgPath}
       alt={type}
-      className={`${baseClasses} ${player === "blue" ? "rotate-180" : ""}`}
+      className={`${baseClasses} ${
+        player === "blue" ? "rotate-180" : ""
+      } object-contain max-w-full max-h-full`}
     />
   );
 }

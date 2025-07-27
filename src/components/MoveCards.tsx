@@ -94,12 +94,6 @@ export function Card({
       <div
         className={`relative overflow-hidden w-32 h-26 sm:w-40 sm:h-30 lg:w-56 lg:h-38 border border-stone-300 shadow-lg bg-white`}
       >
-        {/* Decorative Corner Elements */}
-        <div className="absolute top-0.5 left-0.5 w-1.5 h-1.5 border-l border-t border-stone-300/50 pointer-events-none"></div>
-        <div className="absolute top-0.5 right-0.5 w-1.5 h-1.5 border-r border-t border-stone-300/50 pointer-events-none"></div>
-        <div className="absolute bottom-0.5 left-0.5 w-1.5 h-1.5 border-l border-b border-stone-300/50 pointer-events-none"></div>
-        <div className="absolute bottom-0.5 right-0.5 w-1.5 h-1.5 border-r border-b border-stone-300/50 pointer-events-none"></div>
-
         <div className="relative z-10 h-full flex flex-col">
           {/* Main content area - 50/50 split */}
           <div className="flex-1 flex items-center">
@@ -123,33 +117,24 @@ export function Card({
               {card.isWindCard ? (
                 <div className="flex flex-col items-center justify-center w-full">
                   <div className="flex flex-col items-center space-y-1">
-                    <MoveGrid card={card} isWind={false} isTrimmed={true} />
-                    <div className="flex items-center justify-center space-x-1 text-xs text-stone-500">
-                      <GameSymbol type="master" size="sm" />
-                      <span>/</span>
-                      <GameSymbol type="student" size="sm" />
-                    </div>
+                    <MoveGrid
+                      card={card}
+                      isMaster={true}
+                      isStudent={true}
+                      isTrimmed={true}
+                    />
                   </div>
                   <div className="flex flex-col items-center space-y-1">
                     <MoveGrid card={card} isWind={true} isTrimmed={true} />
-                    <div className="flex items-center justify-center text-xs text-stone-500">
-                      <GameSymbol type="wind-spirit" size="sm" />
-                    </div>
                   </div>
                 </div>
               ) : card.isMockCard ? (
                 <div className="flex flex-col items-center justify-center w-full">
                   <div className="flex flex-col items-center space-y-1">
                     <MoveGrid card={card} isMaster={true} isTrimmed={true} />
-                    <div className="flex items-center justify-center text-xs text-stone-500">
-                      <GameSymbol type="master" size="sm" />
-                    </div>
                   </div>
                   <div className="flex flex-col items-center space-y-1">
                     <MoveGrid card={card} isStudent={true} isTrimmed={true} />
-                    <div className="flex items-center justify-center text-xs text-stone-500">
-                      <GameSymbol type="student" size="sm" />
-                    </div>
                   </div>
                 </div>
               ) : (

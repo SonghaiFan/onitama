@@ -55,7 +55,7 @@ export function MoveGrid({
 
   return (
     <div
-      className="w-12 sm:w-14 md:w-16 lg:w-18 h-fit neoprene-mat scroll-texture border border-stone-300 grid grid-cols-5 gap-0.5 p-1 backdrop-blur-sm shadow-inner"
+      className="w-16 sm:w-20 md:w-24 lg:w-28 h-fit neoprene-mat scroll-texture border border-stone-300 grid grid-cols-5 gap-0.5 p-1 backdrop-blur-sm shadow-inner"
       style={{
         gridTemplateRows: `repeat(${visibleRows.length}, minmax(0, 1fr))`,
       }}
@@ -64,12 +64,85 @@ export function MoveGrid({
         cols.map((c) => {
           const isCenter = r === 2 && c === 2;
           if (isCenter) {
-            return (
-              <div
-                key={`${r}-${c}`}
-                className="aspect-square flex items-center justify-center shadow-sm bg-black"
-              />
-            );
+            // Show symbol only for explicit move types, black square for normal moves
+            if (isWind || isMaster || isStudent) {
+              if (isWind) {
+                // For wind cards, show wind spirit symbol
+                return (
+                  <div
+                    key={`${r}-${c}`}
+                    className="aspect-square flex items-center justify-center shadow-sm bg-stone-200 overflow-hidden"
+                  >
+                    <GameSymbol
+                      type="wind-spirit"
+                      size="sm"
+                      className="opacity-60"
+                    />
+                  </div>
+                );
+              } else if (isMaster && isStudent) {
+                // For wind card regular moves (both master and student), show split symbol
+                return (
+                  <div
+                    key={`${r}-${c}`}
+                    className="aspect-square flex items-center justify-center shadow-sm bg-stone-200 overflow-hidden"
+                  >
+                    <div className="flex items-center justify-center w-full h-full">
+                      <div className="w-1/2 h-full flex items-center justify-center">
+                        <GameSymbol
+                          type="master"
+                          size="xs"
+                          className="opacity-60"
+                        />
+                      </div>
+                      <div className="w-1/2 h-full flex items-center justify-center">
+                        <GameSymbol
+                          type="student"
+                          size="xs"
+                          className="opacity-60"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              } else if (isMaster) {
+                // For master moves, show master symbol
+                return (
+                  <div
+                    key={`${r}-${c}`}
+                    className="aspect-square flex items-center justify-center shadow-sm bg-stone-200 overflow-hidden"
+                  >
+                    <GameSymbol
+                      type="master"
+                      size="sm"
+                      className="opacity-60"
+                    />
+                  </div>
+                );
+              } else if (isStudent) {
+                // For student moves, show student symbol
+                return (
+                  <div
+                    key={`${r}-${c}`}
+                    className="aspect-square flex items-center justify-center shadow-sm bg-stone-200 overflow-hidden"
+                  >
+                    <GameSymbol
+                      type="student"
+                      size="sm"
+                      className="opacity-60"
+                    />
+                  </div>
+                );
+              }
+            } else {
+              // For normal moves (not explicitly typed), use black square
+              return (
+                <div
+                  key={`${r}-${c}`}
+                  className="aspect-square flex items-center justify-center shadow-sm bg-black"
+                />
+              );
+            }
           }
           const hasMove = movesToShow.some(
             ({ x, y }) => 2 - y === r && 2 + x === c
