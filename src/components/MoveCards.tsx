@@ -67,7 +67,7 @@ export function Card({
     <motion.div
       key={`${card.name}-${playerOwner}-${gridArea}`}
       style={{ gridArea }}
-      className={`relative z-20 ${isShared ? "opacity-60" : ""}`}
+      className={`move-card relative z-20 ${isShared ? "opacity-60" : ""}`}
       layout
       layoutId={layoutId}
       initial={false}
@@ -103,7 +103,7 @@ export function Card({
       }}
     >
       <div
-        className={`zen-card relative overflow-hidden w-40 h-28 sm:w-48 sm:h-32 md:w-56 md:h-36 lg:w-64 lg:h-40 border border-stone-300 shadow-lg`}
+        className={`relative overflow-hidden w-32 h-32 sm:w-40 sm:h-36 md:w-48 md:h-40 lg:w-56 lg:h-44 border border-stone-300 shadow-lg bg-white`}
       >
         {/* Decorative Corner Elements */}
         <div className="absolute top-0.5 left-0.5 w-1.5 h-1.5 border-l border-t border-stone-300/50 pointer-events-none"></div>

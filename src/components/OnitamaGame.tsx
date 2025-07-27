@@ -15,6 +15,7 @@ import {
   isValidMove,
   executeMove,
   getAllPossibleMoves,
+  validateWindSpiritMove,
 } from "@/utils/gameManager";
 
 type Language = "zh" | "en";
@@ -50,8 +51,6 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
   function OnitamaGame({ cardPacks = ["normal"], language = "zh" }, ref) {
     const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
     const [isLoading, setIsLoading] = useState(true);
-    const [warnings, setWarnings] = useState<string[]>([]);
-    const [showWarnings, setShowWarnings] = useState(false);
 
     // Load the appropriate card pack when component mounts or cardPacks changes
     useEffect(() => {
@@ -60,20 +59,10 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
         try {
           const result = await createNewGameAsync(cardPacks);
           setGameState(result.gameState);
-          setWarnings(result.warnings);
-          if (result.warnings.length > 0) {
-            setShowWarnings(true);
-          }
         } catch (error) {
           console.error("Failed to load card packs:", error);
           // Fallback to normal game state
           setGameState(INITIAL_GAME_STATE);
-          setWarnings([
-            `Failed to load card packs: ${
-              error instanceof Error ? error.message : "Unknown error"
-            }`,
-          ]);
-          setShowWarnings(true);
         } finally {
           setIsLoading(false);
         }
@@ -129,6 +118,17 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
 
           // Select own piece or wind spirit (any player can select wind spirits)
           if (piece.player === gameState.currentPlayer || piece.isWindSpirit) {
+            // Additional validation for wind spirit moves
+            if (piece.isWindSpirit && gameState.selectedCard !== null) {
+              const card =
+                gameState.players[gameState.currentPlayer].cards[
+                  gameState.selectedCard
+                ];
+              if (!validateWindSpiritMove(gameState, piece, card)) {
+                return; // Don't allow invalid wind spirit moves
+              }
+            }
+
             const newGameState = { ...gameState, selectedPiece: position };
             setGameState(newGameState);
           } else if (
@@ -219,19 +219,9 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
       try {
         const result = await createNewGameAsync(cardPacks);
         setGameState(result.gameState);
-        setWarnings(result.warnings);
-        if (result.warnings.length > 0) {
-          setShowWarnings(true);
-        }
       } catch (error) {
         console.error("Failed to reset game:", error);
         setGameState(INITIAL_GAME_STATE);
-        setWarnings([
-          `Failed to reset game: ${
-            error instanceof Error ? error.message : "Unknown error"
-          }`,
-        ]);
-        setShowWarnings(true);
       } finally {
         setIsLoading(false);
       }
@@ -306,41 +296,32 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
     }
 
     return (
-      <div className="w-full h-full flex flex-col watercolor-wash z-10">
-        {/* Warning Modal */}
-        {showWarnings && warnings.length > 0 && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-96 overflow-y-auto">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-red-600">
-                  {gameContent[language].warnings}
-                </h3>
-                <button
-                  onClick={() => setShowWarnings(false)}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  ✕
-                </button>
-              </div>
-              <div className="space-y-2">
-                {warnings.map((warning, index) => (
-                  <p key={index} className="text-sm text-gray-700">
-                    {warning}
-                  </p>
-                ))}
-              </div>
-              <button
-                onClick={() => setShowWarnings(false)}
-                className="mt-4 w-full bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition-colors"
-              >
-                {gameContent[language].close}
-              </button>
-            </div>
-          </div>
-        )}
+      <div className="w-full h-full flex flex-col watercolor-wash z-10 relative">
+        {/* Full game board gradient for current player */}
+        <div
+          className={`absolute inset-0 -z-10 transition-all duration-300 pointer-events-none ${
+            gameState.winner
+              ? gameState.winner === "red"
+                ? "bg-gradient-to-b from-red-500/40 to-red-400/20"
+                : "bg-gradient-to-t from-blue-500/40 to-blue-400/20"
+              : gameState.currentPlayer === "red"
+              ? "bg-gradient-to-t from-red-400/20 to-transparent"
+              : "bg-gradient-to-b from-blue-400/20 to-transparent"
+          }`}
+        />
 
         <div className="game-layout-grid flex-1">
-          <GameStatusSimple />
+          <div
+            style={{
+              gridArea:
+                gameState.currentPlayer === "blue"
+                  ? "shared-right"
+                  : "shared-left",
+            }}
+            className="flex items-center justify-center"
+          >
+            <GameStatusSimple />
+          </div>
           <div
             style={{ gridArea: "board" }}
             className="h-full flex items-center justify-center"

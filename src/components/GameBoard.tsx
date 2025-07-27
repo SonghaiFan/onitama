@@ -66,6 +66,16 @@ export default function GameBoard({
     (e: React.MouseEvent, piece: Piece, position: [number, number]) => {
       e.preventDefault();
 
+      // Only allow mouse-based dragging, not touch-based
+      // Check if this is a touch event by looking at the event type or properties
+      if (
+        e.type === "touchstart" ||
+        e.type === "touchmove" ||
+        e.type === "touchend"
+      ) {
+        return;
+      }
+
       const isRightDrag = e.button === 2;
       const cardIndex = isRightDrag ? 1 : 0; // Right = card 1, Left = card 0
 
@@ -195,6 +205,49 @@ export default function GameBoard({
   const handleCellClick = (row: number, col: number) => {
     // Don't trigger click if we're dragging
     if (dragState.isDragging) return;
+
+    // If there are possible moves and we click on a cell with a piece,
+    // we should make the move instead of selecting the piece
+    const hasPossibleMoves = possibleMoves.length > 0;
+    const clickedPiece = gameState.board[row][col];
+
+    if (hasPossibleMoves && clickedPiece) {
+      // Check if this is a valid move target
+      const isValidMoveTarget = possibleMoves.some(
+        ([moveRow, moveCol]) => moveRow === row && moveCol === col
+      );
+
+      if (
+        isValidMoveTarget &&
+        onPieceMove &&
+        gameState.selectedPiece &&
+        gameState.selectedCard !== null
+      ) {
+        // Execute the move
+        onPieceMove(
+          gameState.selectedPiece,
+          [row, col],
+          gameState.selectedCard
+        );
+        return;
+      }
+    }
+
+    // Check if the clicked piece can be selected
+    if (clickedPiece) {
+      const canSelectPiece =
+        clickedPiece.player === gameState.currentPlayer ||
+        clickedPiece.isWindSpirit;
+
+      if (canSelectPiece) {
+        // Handle as piece selection
+        onPieceClick([row, col]);
+        return;
+      }
+    }
+
+    // If no piece or piece can't be selected, still try to select the cell
+    // (this allows selecting empty cells for moves)
     onPieceClick([row, col]);
   };
 
@@ -252,10 +305,10 @@ export default function GameBoard({
 
   return (
     <div
-      className="neoprene-mat scroll-texture p-0.5 sm:p-1 md:p-2 lg:p-4 border border-stone-300 shadow-2xl"
+      className="game-board neoprene-mat scroll-texture p-0.5 sm:p-1 md:p-2 lg:p-4 border border-stone-300 shadow-2xl"
       onContextMenu={handleContextMenu}
     >
-      <div className="grid grid-cols-5 gap-0.25 sm:gap-0.5 md:gap-1 lg:gap-1.5 bg-stone-100 p-0.5 sm:p-1 md:p-2 lg:p-3 border border-stone-200 shadow-inner ink-wash">
+      <div className="grid grid-cols-5 gap-0.25 sm:gap-0.5 md:gap-1 lg:gap-1.5 bg-stone-100 p-0.5 sm:p-1 md:p-2 lg:p-3 border border-stone-200 shadow-inner ink-wash aspect-square">
         {Array.from({ length: 5 }, (_, row) =>
           Array.from({ length: 5 }, (_, col) => {
             const piece = gameState.board[row][col];

@@ -101,7 +101,12 @@ export function DraggablePiece({
         e.preventDefault();
       }}
       onMouseDown={(e) => {
-        if (canDrag && (e.button === 0 || e.button === 2)) {
+        // Only allow mouse events, not touch events
+        if (
+          canDrag &&
+          (e.button === 0 || e.button === 2) &&
+          e.type === "mousedown"
+        ) {
           onDragStart(e, piece, [row, col]);
         }
       }}

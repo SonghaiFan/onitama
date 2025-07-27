@@ -7,7 +7,7 @@ import {
   PlayerState,
 } from "@/types/game";
 
-export function isValidPosition(row: number, col: number): boolean {
+export function isWithinBoard(row: number, col: number): boolean {
   return row >= 0 && row < 5 && col >= 0 && col < 5;
 }
 
@@ -23,7 +23,51 @@ export function isTempleArch(
   }
 }
 
-// Get possible moves for a piece using a specific card
+// ============================================================================
+// WIND MOVE LOGIC - REORGANIZED
+// ============================================================================
+
+/**
+ * Determines which moves to use based on piece type and card type
+ */
+function getMovesForPiece(piece: Piece, card: MoveCard): Move[] {
+  if (piece.isWindSpirit && card.isWindCard) {
+    // Wind spirits with wind cards use wind_move
+    return card.wind_move ?? [];
+  } else if (card.isMockCard && piece.isMaster) {
+    // Dual cards: masters use master_moves
+    return card.master_moves ?? [];
+  } else if (card.isMockCard && !piece.isMaster) {
+    // Dual cards: students use student_moves
+    return card.student_moves ?? [];
+  } else {
+    // Regular cards: all pieces use the same moves
+    return card.moves;
+  }
+}
+
+/**
+ * Check if a target position is valid for a piece to move to
+ */
+function isValidTargetPosition(
+  piece: Piece,
+  targetPiece: Piece | null
+): boolean {
+  if (piece.isWindSpirit) {
+    // Wind spirit can move to empty squares or swap with students (not masters)
+    return !targetPiece || !targetPiece.isMaster;
+  } else {
+    // Regular pieces can't land on own pieces or wind spirits
+    return (
+      !targetPiece ||
+      (targetPiece.player !== piece.player && !targetPiece.isWindSpirit)
+    );
+  }
+}
+
+/**
+ * Get possible moves for a piece using a specific card
+ */
 export function getPossibleMoves(
   piece: Piece,
   card: MoveCard,
@@ -32,31 +76,7 @@ export function getPossibleMoves(
 ): [number, number][] {
   const moves: [number, number][] = [];
   const [pieceRow, pieceCol] = piece.position;
-
-  // Determine which moves to use based on piece type and card type
-  let movesToCheck: Move[];
-  switch (true) {
-    case piece.isWindSpirit && card.isWindCard:
-      // Wind spirits with wind cards use wind_move
-      movesToCheck = card.wind_move ?? [];
-      break;
-    case piece.isWindSpirit && !card.isWindCard:
-      // Wind spirits with regular cards use regular moves
-      movesToCheck = card.moves;
-      break;
-    case card.isMockCard && piece.isMaster:
-      // Dual cards: masters use master_moves
-      movesToCheck = card.master_moves ?? [];
-      break;
-    case card.isMockCard && !piece.isMaster:
-      // Dual cards: students use student_moves
-      movesToCheck = card.student_moves ?? [];
-      break;
-    default:
-      // Regular cards: all pieces use the same moves
-      movesToCheck = card.moves;
-      break;
-  }
+  const movesToCheck = getMovesForPiece(piece, card);
 
   // Check each move in the card
   for (const move of movesToCheck) {
@@ -75,73 +95,9 @@ export function getPossibleMoves(
     }
 
     // Check if move is valid
-    if (isValidPosition(targetRow, targetCol)) {
+    if (isWithinBoard(targetRow, targetCol)) {
       const targetPiece = board[targetRow][targetCol];
-
-      if (piece.isWindSpirit) {
-        // Wind spirit can move to empty squares or swap with students (not masters or other wind spirits)
-        if (
-          !targetPiece ||
-          (!targetPiece.isMaster && !targetPiece.isWindSpirit)
-        ) {
-          moves.push([targetRow, targetCol]);
-        }
-      } else {
-        // Regular pieces can't land on own pieces, but can swap with wind spirits
-        if (
-          !targetPiece ||
-          (targetPiece.player !== piece.player && !targetPiece.isWindSpirit) ||
-          (targetPiece.isWindSpirit && !piece.isMaster)
-        ) {
-          moves.push([targetRow, targetCol]);
-        }
-      }
-    }
-  }
-
-  return moves;
-}
-
-// Get possible moves for wind spirit using a regular card
-export function getWindSpiritMovesForRegularCard(
-  card: MoveCard,
-  board: (Piece | null)[][],
-  currentPlayer: Player,
-  windSpiritPosition: [number, number] | null
-): [number, number][] {
-  if (!windSpiritPosition) return [];
-
-  const moves: [number, number][] = [];
-  const [pieceRow, pieceCol] = windSpiritPosition;
-
-  // Use the regular moves from the card for wind spirit
-  const movesToCheck = card.moves;
-
-  // Check each move in the card
-  for (const move of movesToCheck) {
-    let targetRow: number;
-    let targetCol: number;
-
-    // Apply move with direction based on current player's turn
-    if (currentPlayer === "red") {
-      // Red player: y=1 means forward (up, negative row)
-      targetRow = pieceRow - move.y;
-      targetCol = pieceCol + move.x;
-    } else {
-      // Blue player: flip the moves (y=1 means forward, which is down for blue)
-      targetRow = pieceRow + move.y;
-      targetCol = pieceCol - move.x;
-    }
-
-    // Check if move is valid
-    if (isValidPosition(targetRow, targetCol)) {
-      const targetPiece = board[targetRow][targetCol];
-
-      // Wind spirit can move to empty squares or swap with students (not masters or other wind spirits)
-      if (
-        !targetPiece ||
-        (!targetPiece.isMaster && !targetPiece.isWindSpirit)
-      ) {
+      if (isValidTargetPosition(piece, targetPiece)) {
         moves.push([targetRow, targetCol]);
       }
     }
@@ -149,7 +105,215 @@ export function getWindSpiritMovesForRegularCard(
 
   return moves;
 }
-// Get all possible moves for the current game state
+
+/**
+ * Check if any student/master pieces have legal moves with a wind card
+ */
+export function hasStudentMasterMovesWithWindCard(
+  gameState: GameState,
+  card: MoveCard
+): boolean {
+  if (!card.isWindCard) return false;
+
+  // Check all pieces belonging to current player
+  for (let row = 0; row < 5; row++) {
+    for (let col = 0; col < 5; col++) {
+      const piece = gameState.board[row][col];
+      if (
+        piece &&
+        piece.player === gameState.currentPlayer &&
+        !piece.isWindSpirit
+      ) {
+        // Check if this piece has any legal moves with the card
+        const possibleMoves = getPossibleMoves(
+          piece,
+          card,
+          gameState.board,
+          gameState.currentPlayer
+        );
+        if (possibleMoves.length > 0) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Validate if a wind spirit move is allowed (must move student/master first if possible)
+ */
+export function validateWindSpiritMove(
+  gameState: GameState,
+  piece: Piece,
+  card: MoveCard
+): boolean {
+  if (!card.isWindCard || !piece.isWindSpirit) return true;
+
+  // Wind spirits can only move directly if no student/master moves are available
+  return !hasStudentMasterMovesWithWindCard(gameState, card);
+}
+
+// ============================================================================
+// WIND DUAL MOVE LOGIC
+// ============================================================================
+
+/**
+ * Handle the first move of a wind spirit dual move sequence
+ */
+function handleWindDualMoveFirst(
+  gameState: GameState,
+  from: [number, number],
+  to: [number, number],
+  cardIndex: number
+): GameState {
+  const newState = { ...gameState };
+  const [fromRow, fromCol] = from;
+  const [toRow, toCol] = to;
+  const piece = gameState.board[fromRow][fromCol]!;
+
+  // Apply the first move (regular piece using top moves)
+  newState.board = applyMove(
+    gameState.board,
+    from,
+    to,
+    gameState.currentPlayer
+  );
+
+  // Update wind spirit position if it was involved in the first move
+  const targetPiece = gameState.board[toRow][toCol];
+  if (targetPiece?.isWindSpirit && !piece.isMaster && !piece.isWindSpirit) {
+    newState.windSpiritPosition = [fromRow, fromCol];
+  }
+
+  // Check win conditions after first move
+  newState.winner = checkWinConditions(newState);
+  if (newState.winner) {
+    newState.gamePhase = "finished";
+    return newState;
+  }
+
+  // Check if wind spirit has any legal moves for the second part
+  if (!gameState.windSpiritPosition) {
+    // No wind spirit on board - complete the turn without second move
+    return completeTurnAfterWindCard(
+      newState,
+      gameState.players[gameState.currentPlayer].cards[cardIndex],
+      cardIndex,
+      gameState
+    );
+  }
+
+  const windSpiritPiece: Piece = {
+    id: "wind_spirit",
+    player: "neutral",
+    isMaster: false,
+    isWindSpirit: true,
+    position: newState.windSpiritPosition as [number, number],
+  };
+
+  const windSpiritMoves = getPossibleMoves(
+    windSpiritPiece,
+    gameState.players[gameState.currentPlayer].cards[cardIndex],
+    newState.board,
+    gameState.currentPlayer
+  );
+
+  if (windSpiritMoves.length === 0) {
+    // No wind spirit moves available - complete the turn without second move
+    return completeTurnAfterWindCard(
+      newState,
+      gameState.players[gameState.currentPlayer].cards[cardIndex],
+      cardIndex,
+      gameState
+    );
+  }
+
+  // Set up for the second move (wind spirit move using bottom moves)
+  newState.isDualMoveInProgress = true;
+  newState.firstMove = { from, to, cardIndex };
+  newState.selectedPiece = newState.windSpiritPosition!;
+  newState.selectedCard = cardIndex;
+
+  return newState;
+}
+
+/**
+ * Handle the second move of a wind spirit dual move sequence
+ */
+function handleWindDualMoveSecond(
+  gameState: GameState,
+  from: [number, number],
+  to: [number, number],
+  cardIndex: number
+): GameState {
+  const newState = { ...gameState };
+  const [toRow, toCol] = to;
+
+  // Apply the wind spirit move
+  newState.board = applyMove(
+    gameState.board,
+    from,
+    to,
+    gameState.currentPlayer
+  );
+
+  // Update wind spirit position
+  newState.windSpiritPosition = [toRow, toCol];
+
+  // Complete the dual move sequence
+  newState.isDualMoveInProgress = false;
+  newState.firstMove = undefined;
+
+  // Handle card exchange and turn switch
+  return completeTurnAfterWindCard(
+    newState,
+    gameState.players[gameState.currentPlayer].cards[cardIndex],
+    cardIndex,
+    gameState
+  );
+}
+
+/**
+ * Handle wind spirit direct move (when no student/master moves are available)
+ */
+function handleWindSpiritDirectMove(
+  gameState: GameState,
+  from: [number, number],
+  to: [number, number],
+  cardIndex: number
+): GameState {
+  const newState = { ...gameState };
+  const [toRow, toCol] = to;
+
+  // Apply the wind spirit move
+  newState.board = applyMove(
+    gameState.board,
+    from,
+    to,
+    gameState.currentPlayer
+  );
+
+  // Update wind spirit position
+  newState.windSpiritPosition = [toRow, toCol];
+
+  // Complete turn
+  return completeTurnAfterWindCard(
+    newState,
+    gameState.players[gameState.currentPlayer].cards[cardIndex],
+    cardIndex,
+    gameState
+  );
+}
+
+// ============================================================================
+// CORE GAME LOGIC
+// ============================================================================
+
+/**
+ * Get all possible moves for the current game state
+ */
 export function getAllPossibleMoves(
   gameState: GameState,
   selectedPiece: [number, number] | null,
@@ -186,13 +350,9 @@ export function getAllPossibleMoves(
       }
 
       // Check if move is valid
-      if (isValidPosition(targetRow, targetCol)) {
+      if (isWithinBoard(targetRow, targetCol)) {
         const targetPiece = gameState.board[targetRow][targetCol];
-        // Wind spirit can move to empty squares or swap with students
-        if (
-          !targetPiece ||
-          (!targetPiece.isMaster && !targetPiece.isWindSpirit)
-        ) {
+        if (isValidTargetPosition(piece, targetPiece)) {
           moves.push([targetRow, targetCol]);
         }
       }
@@ -215,7 +375,6 @@ export function getAllPossibleMoves(
       // Can't move wind spirit directly if student/master moves are available
       return [];
     }
-    // If no student/master moves, allow direct wind spirit move (skipping first phase)
   }
 
   // Regular move calculation
@@ -227,40 +386,9 @@ export function getAllPossibleMoves(
   );
 }
 
-// Check if any student/master pieces have legal moves with a wind card
-export function hasStudentMasterMovesWithWindCard(
-  gameState: GameState,
-  card: MoveCard
-): boolean {
-  if (!card.isWindCard) return false;
-
-  // Check all pieces belonging to current player
-  for (let row = 0; row < 5; row++) {
-    for (let col = 0; col < 5; col++) {
-      const piece = gameState.board[row][col];
-      if (
-        piece &&
-        piece.player === gameState.currentPlayer &&
-        !piece.isWindSpirit
-      ) {
-        // Check if this piece has any legal moves with the card
-        const possibleMoves = getPossibleMoves(
-          piece,
-          card,
-          gameState.board,
-          gameState.currentPlayer
-        );
-        if (possibleMoves.length > 0) {
-          return true;
-        }
-      }
-    }
-  }
-
-  return false;
-}
-
-// Validate dual move sequence for wind spirit cards (simplified - moves can be skipped if no legal options)
+/**
+ * Validate dual move sequence for wind spirit cards
+ */
 export function validateDualMoveSequence(
   gameState: GameState,
   from: [number, number],
@@ -283,14 +411,14 @@ export function validateDualMoveSequence(
         return false; // Must move student/master first, not wind spirit
       }
     }
-    // For student/master moves, always allow - second move will be automatically attempted
   }
 
   return true;
 }
 
-// Check if a move is valid (works for both regular pieces and wind spirits)
-
+/**
+ * Check if a move is valid
+ */
 export function isValidMove(
   from: [number, number],
   to: [number, number],
@@ -303,14 +431,12 @@ export function isValidMove(
   if (!piece) return false;
 
   const possibleMoves = getPossibleMoves(piece, card, board, currentPlayer);
-  const isValidMove = possibleMoves.some(
-    ([row, col]) => row === to[0] && col === to[1]
-  );
-  return isValidMove;
+  return possibleMoves.some(([row, col]) => row === to[0] && col === to[1]);
 }
 
-// Apply move to board (works for both regular pieces and wind spirits)
-
+/**
+ * Apply move to board
+ */
 export function applyMove(
   board: (Piece | null)[][],
   from: [number, number],
@@ -321,7 +447,7 @@ export function applyMove(
   const [toRow, toCol] = to;
 
   // Check if move is valid
-  if (!isValidPosition(toRow, toCol)) {
+  if (!isWithinBoard(toRow, toCol)) {
     return board;
   }
 
@@ -383,7 +509,9 @@ export function applyMove(
   return newBoard;
 }
 
-// Helper function to complete turn after wind card usage (when second move is skipped)
+/**
+ * Helper function to complete turn after wind card usage
+ */
 function completeTurnAfterWindCard(
   gameState: GameState,
   usedCard: MoveCard,
@@ -431,218 +559,69 @@ function completeTurnAfterWindCard(
   return newState;
 }
 
-// Execute a move (full game state update, works for both regular pieces and wind spirits)
+/**
+ * Execute a move (full game state update)
+ */
 export function executeMove(
   gameState: GameState,
   from: [number, number],
   to: [number, number],
   cardIndex: number
 ): GameState {
-  const newState = { ...gameState };
-  const [fromRow, fromCol] = from;
-  const [toRow, toCol] = to;
-  const piece = gameState.board[fromRow][fromCol];
-
+  const piece = gameState.board[from[0]][from[1]];
   if (!piece) return gameState;
 
   const selectedCard =
     gameState.players[gameState.currentPlayer].cards[cardIndex];
   const isWindSpiritCard = selectedCard.isWindCard;
 
-  // Handle dual move for wind spirit cards
+  // ============================================================================
+  // WIND SPIRIT DUAL MOVE LOGIC
+  // ============================================================================
+
+  // Handle first move of wind spirit dual move sequence
   if (
     isWindSpiritCard &&
     !piece.isWindSpirit &&
     !gameState.isDualMoveInProgress
   ) {
-    // First move of a dual move sequence (Student/Master move)
-    // Apply the first move (regular piece using top moves)
-    newState.board = applyMove(
-      gameState.board,
-      from,
-      to,
-      gameState.currentPlayer
-    );
-
-    // Update wind spirit position if it was involved in the first move
-    const targetPiece = gameState.board[toRow][toCol];
-    if (targetPiece?.isWindSpirit && !piece.isMaster && !piece.isWindSpirit) {
-      newState.windSpiritPosition = [fromRow, fromCol];
-    }
-
-    // Check win conditions after first move
-    newState.winner = checkWinConditions(newState);
-    if (newState.winner) {
-      newState.gamePhase = "finished";
-      // Clear dual move state if game ends
-      newState.isDualMoveInProgress = false;
-      newState.firstMove = undefined;
-      newState.selectedPiece = null;
-      newState.selectedCard = null;
-      return newState;
-    }
-
-    // Check if wind spirit has any legal moves for the second part
-    if (!gameState.windSpiritPosition) {
-      // No wind spirit on board - complete the turn without second move
-      return completeTurnAfterWindCard(
-        newState,
-        selectedCard,
-        cardIndex,
-        gameState
-      );
-    }
-
-    const windSpiritPiece: Piece = {
-      id: "wind_spirit",
-      player: "neutral",
-      isMaster: false,
-      isWindSpirit: true,
-      position: newState.windSpiritPosition as [number, number],
-    };
-
-    const windSpiritMoves = getPossibleMoves(
-      windSpiritPiece,
-      selectedCard,
-      newState.board,
-      gameState.currentPlayer
-    );
-
-    if (windSpiritMoves.length === 0) {
-      // No wind spirit moves available - complete the turn without second move
-      return completeTurnAfterWindCard(
-        newState,
-        selectedCard,
-        cardIndex,
-        gameState
-      );
-    }
-
-    // Set up for the second move (wind spirit move using bottom moves)
-    newState.isDualMoveInProgress = true;
-    newState.firstMove = {
-      from,
-      to,
-      cardIndex,
-    };
-    newState.selectedPiece = newState.windSpiritPosition!; // Auto-select wind spirit (we already checked it exists)
-    newState.selectedCard = cardIndex; // Keep the same card selected
-
-    return newState;
+    return handleWindDualMoveFirst(gameState, from, to, cardIndex);
   }
 
-  // Handle second move of dual move sequence (wind spirit move)
+  // Handle second move of wind spirit dual move sequence
   if (
     isWindSpiritCard &&
     gameState.isDualMoveInProgress &&
     piece.isWindSpirit
   ) {
-    // Apply the wind spirit move
-    newState.board = applyMove(
-      gameState.board,
-      from,
-      to,
-      gameState.currentPlayer
-    );
-
-    // Update wind spirit position
-    newState.windSpiritPosition = [toRow, toCol];
-
-    // Complete the dual move sequence
-    newState.isDualMoveInProgress = false;
-    newState.firstMove = undefined;
-
-    // Handle card exchange
-    const currentPlayerCards = [
-      ...gameState.players[gameState.currentPlayer].cards,
-    ];
-    const usedCard = currentPlayerCards[cardIndex];
-
-    // Remove used card and add shared card
-    currentPlayerCards[cardIndex] = gameState.sharedCard;
-
-    // Update player cards
-    newState.players = {
-      ...gameState.players,
-      [gameState.currentPlayer]: {
-        ...gameState.players[gameState.currentPlayer],
-        cards: currentPlayerCards,
-      },
-    };
-
-    // Rotate used card and make it shared (flip moves for opposite player)
-    const nextPlayer = gameState.currentPlayer === "red" ? "blue" : "red";
-    const rotatedCard: MoveCard = {
-      ...usedCard,
-      // Rotate moves based on card type
-      moves: usedCard.moves?.map((move) => ({ x: -move.x, y: -move.y })) ?? [],
-      // Rotate dual card moves
-      master_moves:
-        usedCard.master_moves?.map((move) => ({ x: -move.x, y: -move.y })) ??
-        [],
-      student_moves:
-        usedCard.student_moves?.map((move) => ({ x: -move.x, y: -move.y })) ??
-        [],
-      // Keep wind_move unchanged as they use absolute coordinates
-      wind_move: usedCard.wind_move,
-      color: nextPlayer,
-    };
-    newState.sharedCard = rotatedCard;
-
-    // Switch turns
-    newState.currentPlayer = nextPlayer;
-
-    // Clear selections
-    newState.selectedPiece = null;
-    newState.selectedCard = null;
-
-    // Check win conditions
-    newState.winner = checkWinConditions(newState);
-    if (newState.winner) {
-      newState.gamePhase = "finished";
-    }
-
-    return newState;
+    return handleWindDualMoveSecond(gameState, from, to, cardIndex);
   }
 
-  // Handle wind spirit move with wind card (only if no student/master moves available)
+  // Handle wind spirit direct move (when no student/master moves available)
   if (
     isWindSpiritCard &&
     piece.isWindSpirit &&
     !gameState.isDualMoveInProgress
   ) {
-    // Check if student/master moves are available - if so, this move is invalid
+    // Validate that no student/master moves are available
     const hasStudentMasterMoves = hasStudentMasterMovesWithWindCard(
       gameState,
       selectedCard
     );
     if (hasStudentMasterMoves) {
-      // Invalid move - must move student/master first
-      return gameState;
+      return gameState; // Invalid move - must move student/master first
     }
-
-    // Valid wind spirit only move (no student/master moves available - skip first phase)
-    newState.board = applyMove(
-      gameState.board,
-      from,
-      to,
-      gameState.currentPlayer
-    );
-
-    // Update wind spirit position
-    newState.windSpiritPosition = [toRow, toCol];
-
-    // Complete turn using helper function
-    return completeTurnAfterWindCard(
-      newState,
-      selectedCard,
-      cardIndex,
-      gameState
-    );
+    return handleWindSpiritDirectMove(gameState, from, to, cardIndex);
   }
 
-  // Handle regular moves (non-wind spirit cards or regular pieces with wind spirit cards)
-  // Apply the move using the unified applyMove function
+  // ============================================================================
+  // REGULAR MOVE LOGIC
+  // ============================================================================
+
+  const newState = { ...gameState };
+  const [toRow, toCol] = to;
+
+  // Apply the move
   newState.board = applyMove(
     gameState.board,
     from,
@@ -663,61 +642,25 @@ export function executeMove(
   ) {
     // Student is moving into wind spirit position, causing a swap
     // Wind spirit gets moved to the "from" position
-    newState.windSpiritPosition = [fromRow, fromCol];
+    newState.windSpiritPosition = [from[0], from[1]];
   }
 
-  // Handle card exchange (same as before)
-  const currentPlayerCards = [
-    ...gameState.players[gameState.currentPlayer].cards,
-  ];
-  const usedCard = currentPlayerCards[cardIndex];
-
-  // Remove used card and add shared card
-  currentPlayerCards[cardIndex] = gameState.sharedCard;
-
-  // Update player cards
-  newState.players = {
-    ...gameState.players,
-    [gameState.currentPlayer]: {
-      ...gameState.players[gameState.currentPlayer],
-      cards: currentPlayerCards,
-    },
-  };
-
-  // Rotate used card and make it shared (flip moves for opposite player)
-  const nextPlayer = gameState.currentPlayer === "red" ? "blue" : "red";
-  const rotatedCard: MoveCard = {
-    ...usedCard,
-    // Rotate moves based on card type
-    moves: usedCard.moves?.map((move) => ({ x: -move.x, y: -move.y })) ?? [],
-    // Rotate dual card moves
-    master_moves:
-      usedCard.master_moves?.map((move) => ({ x: -move.x, y: -move.y })) ?? [],
-    student_moves:
-      usedCard.student_moves?.map((move) => ({ x: -move.x, y: -move.y })) ?? [],
-    // Keep wind_move unchanged as they use absolute coordinates
-    wind_move: usedCard.wind_move,
-    color: nextPlayer,
-  };
-  newState.sharedCard = rotatedCard;
-
-  // Switch turns
-  newState.currentPlayer = nextPlayer;
-
-  // Clear selections
-  newState.selectedPiece = null;
-  newState.selectedCard = null;
-
-  // Check win conditions
-  newState.winner = checkWinConditions(newState);
-  if (newState.winner) {
-    newState.gamePhase = "finished";
-  }
-
-  return newState;
+  // Handle card exchange and turn switch
+  return completeTurnAfterWindCard(
+    newState,
+    selectedCard,
+    cardIndex,
+    gameState
+  );
 }
-// Check win conditions
 
+// ============================================================================
+// WIN CONDITIONS AND UTILITIES
+// ============================================================================
+
+/**
+ * Check win conditions
+ */
 export function checkWinConditions(gameState: GameState): Player | null {
   // Way of the Stone: Check if a Master has been captured
   let redHasMaster = false;
@@ -753,8 +696,10 @@ export function checkWinConditions(gameState: GameState): Player | null {
 
   return null;
 }
-// Convert move card to display pattern (for UI display)
 
+/**
+ * Convert move card to display pattern (for UI display)
+ */
 export function getCardDisplayPattern(card: MoveCard): string[][] {
   // Create 5x5 pattern grid for display
   const pattern = Array(5)
@@ -782,7 +727,9 @@ export function getCardDisplayPattern(card: MoveCard): string[][] {
   return pattern;
 }
 
-// Create initial game state with wind spirit support
+/**
+ * Create initial game state with wind spirit support
+ */
 export function createInitialGameState(
   board: (Piece | null)[][],
   players: { red: PlayerState; blue: PlayerState },
