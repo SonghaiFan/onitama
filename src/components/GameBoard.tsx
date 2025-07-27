@@ -217,6 +217,7 @@ export default function GameBoard({
         });
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [dragState.isDragging, dragState.draggedPiece, onPieceMove]
   );
 

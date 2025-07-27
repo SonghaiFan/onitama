@@ -267,9 +267,12 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
               {gameContent[language].currentTurn}
             </span>
             <div
-              className={`w-3 h-3 sm:w-4 sm:h-4 lg:w-6 lg:h-6 rounded-full animate-pulse shadow-lg ${getPlayerColors(gameState.currentPlayer).tailwind.shadow}`}
+              className={`w-3 h-3 sm:w-4 sm:h-4 lg:w-6 lg:h-6 rounded-full animate-pulse shadow-lg ${
+                getPlayerColors(gameState.currentPlayer).tailwind.shadow
+              }`}
               style={{
-                backgroundColor: getPlayerColors(gameState.currentPlayer).cssVar.primary
+                backgroundColor: getPlayerColors(gameState.currentPlayer).cssVar
+                  .primary,
               }}
             ></div>
             <span
@@ -311,7 +314,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
       <div className="w-full h-full flex flex-col watercolor-wash z-10 relative">
         {/* Full game board gradient for current player */}
         <div
-          className={`absolute inset-0 -z-10 pointer-events-none ${
+          className={`absolute inset-0 -z-10 pointer-events-none rounded-xl ${
             gameState.winner
               ? gameState.winner === "red"
                 ? `bg-gradient-to-t ${
