@@ -96,8 +96,7 @@ export const content = {
       },
       windCards: {
         title: "風靈牌",
-        description:
-          "風靈牌有雙階段移動：先移動你的棋子，再移動風靈。風靈可以阻擋路徑，任何棋子都不能停在風靈上，但風靈可以與學徒交換位置。",
+        description: "風靈牌有兩種移動模式：普通移動和風靈移動。",
       },
       dualCards: {
         title: "摹形卡牌",
@@ -264,7 +263,7 @@ export const content = {
       windCards: {
         title: "Wind Spirit Cards",
         description:
-          "Wind spirit cards have dual-phase movement: first move your piece, then move the wind spirit. The wind spirit can block paths - no piece can land on it. The wind spirit can swap with students, but not with masters.",
+          "Wind spirit cards have two movement patterns: regular moves and wind spirit moves. Use regular moves for your pieces, wind moves for the spirit.",
       },
       dualCards: {
         title: "Mimicry Cards",

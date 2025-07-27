@@ -50,7 +50,7 @@ export function HowToPlay({ language }: HowToPlayProps) {
   };
 
   return (
-    <section className="py-16 sm:py-24 lg:py-32 scroll-paper">
+    <section className="py-16 sm:py-24 lg:py-32 scroll-paper zen-text text-stone-600">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
         <div className="text-center mb-16 sm:mb-20 lg:mb-24">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-light text-stone-800 mb-4 tracking-wide zen-text">
@@ -67,10 +67,10 @@ export function HowToPlay({ language }: HowToPlayProps) {
           <div className="grid grid-cols-1 mx-10 gap-8 sm:gap-12 mb-8 sm:mb-12">
             <div className="zen-card p-6 sm:p-8 text-center">
               <IconCircle size="w-12 h-12 sm:w-16 sm:h-16">棋</IconCircle>
-              <h4 className="font-medium text-stone-800 mb-3 sm:mb-4 zen-text text-sm sm:text-base">
+              <h4 className="font-medium text-stone-800 mb-3 sm:mb-4 text-sm sm:text-base">
                 {content[language].setupDetails.board.title}
               </h4>
-              <p className="text-stone-600 font-light leading-relaxed zen-text text-xs sm:text-sm">
+              <p className="text-stone-600 font-light leading-relaxed text-xs sm:text-sm">
                 {content[language].setupDetails.board.description}
               </p>
               {/* Piece Symbols */}
@@ -86,41 +86,6 @@ export function HowToPlay({ language }: HowToPlayProps) {
                 <div className="flex flex-col items-center">
                   <GameSymbol type="wind-spirit" size="lg" />
                   <span className="text-sm text-stone-600 mt-2">風靈</span>
-                </div>
-              </div>
-              {/* Game Board Example */}
-              <div className="mt-6 flex justify-center">
-                <div className="grid grid-cols-5 gap-1 p-3 bg-stone-100 rounded-lg border-2 border-stone-300">
-                  {Array.from({ length: 25 }, (_, i) => {
-                    const row = Math.floor(i / 5);
-                    const col = i % 5;
-                    const isCenter = i === 12;
-                    const isRedSide = row === 0 || row === 1;
-                    const isBlueSide = row === 3 || row === 4;
-
-                    return (
-                      <div
-                        key={i}
-                        className="w-8 h-8 sm:w-10 sm:h-10 bg-white border border-stone-200 rounded-sm flex items-center justify-center"
-                      >
-                        {isCenter && (
-                          <GameSymbol type="wind-spirit" size="xs" />
-                        )}
-                        {isRedSide && row === 0 && col === 2 && (
-                          <GameSymbol type="master" size="xs" player="red" />
-                        )}
-                        {isRedSide && row === 0 && col != 2 && (
-                          <GameSymbol type="student" size="xs" player="red" />
-                        )}
-                        {isBlueSide && row === 4 && col === 2 && (
-                          <GameSymbol type="master" size="xs" player="blue" />
-                        )}
-                        {isBlueSide && row === 4 && col != 2 && (
-                          <GameSymbol type="student" size="xs" player="blue" />
-                        )}
-                      </div>
-                    );
-                  })}
                 </div>
               </div>
             </div>
