@@ -30,6 +30,7 @@ const gameContent = {
     loading: "載入卡牌包...",
     warnings: "警告",
     close: "關閉",
+    dualWindPhase: "风起云涌",
   },
   en: {
     victory: "Victory!",
@@ -39,6 +40,7 @@ const gameContent = {
     loading: "Loading card pack...",
     warnings: "Warnings",
     close: "Close",
+    dualWindPhase: "Wind Move",
   },
 };
 
@@ -271,9 +273,9 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
             </span>
             {gameState.isDualMoveInProgress && (
               <div className="flex items-center space-x-1 ml-2">
-                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-500 rounded-full animate-pulse"></div>
-                <span className="text-blue-600 font-medium text-xs sm:text-sm">
-                  {language === "zh" ? "雙重移動" : "Dual Move"}
+                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-gray-500 rounded-full animate-pulse"></div>
+                <span className="text-gray-600 font-medium text-xs sm:text-sm">
+                  {gameContent[language].dualWindPhase}
                 </span>
               </div>
             )}

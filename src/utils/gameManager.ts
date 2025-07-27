@@ -489,6 +489,7 @@ export function applyMove(
           [toRow, toCol],
         ];
 
+    // Preserve the original wind spirit object to maintain layout animation
     newBoard[windPos[0]][windPos[1]] = {
       ...windSpirit,
       position: windPos as [number, number],

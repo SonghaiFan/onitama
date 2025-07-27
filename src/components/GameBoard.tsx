@@ -343,9 +343,7 @@ export default function GameBoard({
                 onTouchStart={() => handleCellTouchStart(cellId)}
                 onTouchEnd={handleCellTouchEnd}
               >
-                <AnimatePresence mode="popLayout">
-                  {piece && renderPiece(piece, isSelected, row, col)}
-                </AnimatePresence>
+                {piece && renderPiece(piece, isSelected, row, col)}
               </DroppableCell>
             );
           })
