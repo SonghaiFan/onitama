@@ -17,6 +17,7 @@ export function MoveGrid({
   isStudent?: boolean;
   isTrimmed?: boolean;
 }) {
+  const color = card.color;
   // Determine which moves to show based on card type and parameters
   let movesToShow: Move[];
   switch (true) {
@@ -73,11 +74,7 @@ export function MoveGrid({
                     key={`${r}-${c}`}
                     className="aspect-square flex items-center justify-center shadow-sm bg-stone-200 overflow-hidden"
                   >
-                    <GameSymbol
-                      type="wind-spirit"
-                      size="sm"
-                      className="opacity-60"
-                    />
+                    <GameSymbol type="wind-spirit" size="sm" />
                   </div>
                 );
               } else if (isMaster && isStudent) {
@@ -89,18 +86,10 @@ export function MoveGrid({
                   >
                     <div className="flex items-center justify-center w-full h-full">
                       <div className="w-1/2 h-full flex items-center justify-center">
-                        <GameSymbol
-                          type="master"
-                          size="xs"
-                          className="opacity-60"
-                        />
+                        <GameSymbol type="master" size="xs" />
                       </div>
                       <div className="w-1/2 h-full flex items-center justify-center">
-                        <GameSymbol
-                          type="student"
-                          size="xs"
-                          className="opacity-60"
-                        />
+                        <GameSymbol type="student" size="xs" />
                       </div>
                     </div>
                   </div>
@@ -112,11 +101,7 @@ export function MoveGrid({
                     key={`${r}-${c}`}
                     className="aspect-square flex items-center justify-center shadow-sm bg-stone-200 overflow-hidden"
                   >
-                    <GameSymbol
-                      type="master"
-                      size="sm"
-                      className="opacity-60"
-                    />
+                    <GameSymbol type="master" size="sm" />
                   </div>
                 );
               } else if (isStudent) {
@@ -126,11 +111,7 @@ export function MoveGrid({
                     key={`${r}-${c}`}
                     className="aspect-square flex items-center justify-center shadow-sm bg-stone-200 overflow-hidden"
                   >
-                    <GameSymbol
-                      type="student"
-                      size="sm"
-                      className="opacity-60"
-                    />
+                    <GameSymbol type="student" size="sm" />
                   </div>
                 );
               }
@@ -152,8 +133,12 @@ export function MoveGrid({
               key={`${r}-${c}`}
               className={`aspect-square transition-colors flex items-center justify-center ${
                 hasMove
-                  ? "bg-stone-400/80 shadow-sm"
-                  : "bg-stone-50 hover:bg-stone-100"
+                  ? isWind
+                    ? "bg-cyan-100/80 shadow-sm"
+                    : color === "red"
+                    ? "bg-red-400/80 shadow-sm"
+                    : "bg-blue-400/80 shadow-sm"
+                  : "bg-stone-50"
               }`}
             />
           );

@@ -142,21 +142,6 @@ export function Card({
               )}
             </div>
           </div>
-
-          {/* Bottom bar */}
-          <div className="flex justify-center ">
-            <div
-              className={`w-6 h-1 sm:w-8 sm:h-1.5 shadow-sm ${
-                isRed
-                  ? "bg-gradient-to-r from-red-500 to-red-600"
-                  : isBlue
-                  ? "bg-gradient-to-r from-blue-500 to-blue-600"
-                  : card.color === "red"
-                  ? "bg-gradient-to-r from-red-500 to-red-600"
-                  : "bg-gradient-to-r from-blue-500 to-blue-600"
-              } `}
-            />
-          </div>
         </div>
       </div>
     </motion.div>

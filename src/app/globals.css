@@ -176,8 +176,8 @@
 }
 
 .neutral-piece {
-  background-color: rgb(156, 163, 175);
-  border-color: rgb(107, 114, 128);
+  background-color: rgb(207 250 254 / 0.8); /* Tailwind cyan-100/80 */
+  border-color: rgb(103 232 249); /* Tailwind cyan-300 */
   color: white;
 }
 
