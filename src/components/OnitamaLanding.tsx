@@ -19,11 +19,13 @@ function GamePage({
   onBackToHome,
   gameRef,
   cardPacks,
+  selectedPacks,
 }: {
   language: Language;
   onBackToHome: () => void;
   gameRef: React.RefObject<{ resetGame: () => void } | null>;
   cardPacks: CardPack[];
+  selectedPacks: Set<CardPack>;
 }) {
   const { aiPlayer, setAIPlayer, config, updateAIConfig } = useGame();
 
@@ -40,6 +42,7 @@ function GamePage({
         onDifficultyChange={(difficulty) =>
           updateAIConfig({ aiDifficulty: difficulty })
         }
+        selectedPacks={selectedPacks}
       />
       <div className="flex-1 p-2 sm:p-4 lg:p-6 overflow-hidden">
         <div className="container mx-auto max-w-7xl h-full">
@@ -93,6 +96,7 @@ export default function OnitamaLanding() {
           onBackToHome={() => setShowGame(false)}
           gameRef={gameRef}
           cardPacks={getSelectedPacksForGame()}
+          selectedPacks={selectedPacks}
         />
       </GameProvider>
     );

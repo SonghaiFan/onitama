@@ -5,7 +5,7 @@ import { ZenButton } from "@/components/ui/ZenButton";
 import { AIDropdown } from "@/components/ui/AIDropdown";
 import { motion } from "motion/react";
 import { AIDifficulty } from "@/utils/aiService";
-import { Player } from "@/types/game";
+import { Player, CardPack } from "@/types/game";
 interface UnifiedHeaderProps {
   language: Language;
   mode: "landing" | "game";
@@ -18,6 +18,7 @@ interface UnifiedHeaderProps {
   onSetAIPlayer?: (player: Player | null) => void;
   aiDifficulty?: AIDifficulty;
   onDifficultyChange?: (difficulty: AIDifficulty) => void;
+  selectedPacks?: Set<CardPack>;
 }
 
 export function UnifiedHeader({
@@ -31,6 +32,7 @@ export function UnifiedHeader({
   onSetAIPlayer,
   aiDifficulty,
   onDifficultyChange,
+  selectedPacks,
 }: UnifiedHeaderProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -129,6 +131,7 @@ export function UnifiedHeader({
                   onSetAIPlayer={onSetAIPlayer}
                   aiDifficulty={aiDifficulty}
                   onDifficultyChange={onDifficultyChange}
+                  selectedPacks={selectedPacks}
                 />
               )}
 

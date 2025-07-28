@@ -8,7 +8,8 @@ import {
   SelectionState,
 } from "@/types/ui";
 import { AIDifficulty } from "@/utils/aiService";
-import { Player } from "@/types/game";
+import { Player, CardPack } from "@/types/game";
+import { isAICompatible, getAIDisabledReason } from "@/utils/aiRestrictions";
 
 interface AIDropdownProps {
   language: "zh" | "en";
@@ -16,6 +17,7 @@ interface AIDropdownProps {
   onSetAIPlayer: (player: Player | null) => void;
   aiDifficulty?: AIDifficulty;
   onDifficultyChange?: (difficulty: AIDifficulty) => void;
+  selectedPacks?: Set<CardPack>;
   className?: string;
 }
 
@@ -25,6 +27,7 @@ export function AIDropdown({
   onSetAIPlayer,
   aiDifficulty,
   onDifficultyChange,
+  selectedPacks = new Set(),
   className = "",
 }: AIDropdownProps) {
   // Content translations
@@ -61,6 +64,17 @@ export function AIDropdown({
 
   const t = content[language];
 
+  // Check AI compatibility
+  const aiCompatible = isAICompatible(selectedPacks);
+  const disabledReason = !aiCompatible ? getAIDisabledReason(selectedPacks, language) : "";
+
+  // Auto-disable AI if not compatible
+  React.useEffect(() => {
+    if (!aiCompatible && aiPlayer !== null) {
+      onSetAIPlayer(null);
+    }
+  }, [aiCompatible, aiPlayer, onSetAIPlayer]);
+
   // Player selection items
   const playerItems: SelectableItem<string>[] = [
     {
@@ -70,10 +84,12 @@ export function AIDropdown({
     {
       id: "red",
       label: t.redAI,
+      disabled: !aiCompatible,
     },
     {
-      id: "blue",
+      id: "blue", 
       label: t.blueAI,
+      disabled: !aiCompatible,
     },
   ];
 
@@ -137,6 +153,7 @@ export function AIDropdown({
           onClick={() => {}}
           variant="secondary"
           selected={!!aiPlayer}
+          disabled={!aiCompatible}
           className="px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm"
         >
           <span className="hidden sm:inline">{t.aiSettings}</span>
@@ -150,13 +167,19 @@ export function AIDropdown({
       }
     >
       <div className="space-y-4">
+        {!aiCompatible && (
+          <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded text-xs text-amber-700">
+            {disabledReason}
+          </div>
+        )}
+        
         <SelectionGroup
           items={playerItems}
           config={playerConfig}
           selection={playerSelection}
         />
 
-        {aiPlayer && aiDifficulty && onDifficultyChange && (
+        {aiPlayer && aiDifficulty && onDifficultyChange && aiCompatible && (
           <SelectionGroup
             items={difficultyItems}
             config={difficultyConfig}

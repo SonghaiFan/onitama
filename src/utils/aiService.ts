@@ -1,9 +1,6 @@
 import { GameState, Player } from "@/types/game";
-import {
-  getBestMove,
-  getAllPlayerMoves,
-  evaluateGameState,
-} from "./gameManager";
+import { AIFactory } from "./ai/aiFactory";
+import { AIMoveResult } from "./ai/algorithms/baseAI";
 
 export type AIDifficulty = "easy" | "medium" | "hard" | "expert";
 
@@ -23,6 +20,7 @@ export interface AIMove {
 
 /**
  * AI Service for Onitama game
+ * Now uses the new AI factory and algorithms
  */
 export class AIService {
   private config: AIConfig;
@@ -50,133 +48,34 @@ export class AIService {
   async getAIMove(gameState: GameState, player: Player): Promise<AIMove> {
     const startTime = Date.now();
 
-    // Simulate thinking time
-    await this.simulateThinking();
+    // Use the new AI factory to get the best move
+    const aiResult = await AIFactory.findBestMove(
+      gameState,
+      player,
+      this.config.difficulty
+    );
 
-    const allMoves = getAllPlayerMoves(gameState, player);
-    if (allMoves.length === 0) {
-      throw new Error("No valid moves available for AI");
+    // Simulate additional thinking time if needed
+    const elapsedTime = Date.now() - startTime;
+    if (elapsedTime < this.config.thinkingTime) {
+      await this.simulateThinking(this.config.thinkingTime - elapsedTime);
     }
-
-    let selectedMove: (typeof allMoves)[0];
-
-    // Apply difficulty-based selection
-    switch (this.config.difficulty) {
-      case "easy":
-        selectedMove = this.selectEasyMove(allMoves);
-        break;
-      case "medium":
-        selectedMove = this.selectMediumMove(allMoves, gameState, player);
-        break;
-      case "hard":
-        selectedMove = this.selectHardMove(allMoves, gameState, player);
-        break;
-      case "expert":
-        selectedMove = this.selectExpertMove(allMoves, gameState, player);
-        break;
-      default:
-        selectedMove = this.selectMediumMove(allMoves, gameState, player);
-    }
-
-    const thinkingTime = Date.now() - startTime;
-    const score = evaluateGameState(gameState, player);
 
     return {
-      from: selectedMove.from,
-      to: selectedMove.to,
-      cardIndex: selectedMove.cardIndex,
-      score,
-      thinkingTime,
+      from: aiResult.move.from,
+      to: aiResult.move.to,
+      cardIndex: aiResult.move.cardIndex,
+      score: aiResult.score,
+      thinkingTime: Date.now() - startTime,
     };
-  }
-
-  /**
-   * Easy AI: Mostly random moves with basic capture preference
-   */
-  private selectEasyMove(
-    moves: ReturnType<typeof getAllPlayerMoves>
-  ): (typeof moves)[0] {
-    // Prefer captures if available
-    const captures = moves.filter((move) => move.isCapture);
-    if (captures.length > 0 && Math.random() > this.config.randomness) {
-      return captures[Math.floor(Math.random() * captures.length)];
-    }
-
-    // Otherwise random
-    return moves[Math.floor(Math.random() * moves.length)];
-  }
-
-  /**
-   * Medium AI: Basic evaluation with some randomness
-   */
-  private selectMediumMove(
-    moves: ReturnType<typeof getAllPlayerMoves>,
-    gameState: GameState,
-    player: Player
-  ): (typeof moves)[0] {
-    // Add some randomness
-    if (Math.random() < this.config.randomness) {
-      return this.selectEasyMove(moves);
-    }
-
-    // Basic evaluation
-    let bestMove = moves[0];
-    let bestScore = -Infinity;
-
-    for (const move of moves) {
-      // Simple scoring based on move properties
-      let score = 0;
-
-      if (move.isCapture) score += 10;
-      if (move.isMasterMove) score += 5;
-      if (move.distanceToGoal && move.distanceToGoal < 3) score += 8;
-
-      // Add some randomness to avoid being too predictable
-      score += (Math.random() - 0.5) * 5;
-
-      if (score > bestScore) {
-        bestScore = score;
-        bestMove = move;
-      }
-    }
-
-    return bestMove;
-  }
-
-  /**
-   * Hard AI: Uses proper evaluation with minimal randomness
-   */
-  private selectHardMove(
-    moves: ReturnType<typeof getAllPlayerMoves>,
-    gameState: GameState,
-    player: Player
-  ): (typeof moves)[0] {
-    // Add minimal randomness
-    if (Math.random() < this.config.randomness * 0.5) {
-      return this.selectMediumMove(moves, gameState, player);
-    }
-
-    return getBestMove(gameState, player) || moves[0];
-  }
-
-  /**
-   * Expert AI: Uses best move with no randomness
-   */
-  private selectExpertMove(
-    moves: ReturnType<typeof getAllPlayerMoves>,
-    gameState: GameState,
-    player: Player
-  ): (typeof moves)[0] {
-    return getBestMove(gameState, player) || moves[0];
   }
 
   /**
    * Simulate AI thinking time
    */
-  private async simulateThinking(): Promise<void> {
-    const baseTime = this.config.thinkingTime;
-    const variance = baseTime * 0.3; // 30% variance
-    const actualTime = baseTime + (Math.random() - 0.5) * variance;
+  private async simulateThinking(time: number): Promise<void> {
+    const variance = time * 0.3; // 30% variance
+    const actualTime = time + (Math.random() - 0.5) * variance;
 
     await new Promise((resolve) => setTimeout(resolve, actualTime));
   }
@@ -188,22 +87,28 @@ export class AIService {
     difficulty: AIDifficulty,
     language: "zh" | "en" = "en"
   ): string {
-    const descriptions = {
-      zh: {
-        easy: "簡單 - 隨機移動，偶爾捕捉",
-        medium: "中等 - 基本策略，適度隨機",
-        hard: "困難 - 較強策略，很少隨機",
-        expert: "專家 - 最佳策略，無隨機",
-      },
-      en: {
-        easy: "Easy - Random moves, occasional captures",
-        medium: "Medium - Basic strategy, moderate randomness",
-        hard: "Hard - Strong strategy, minimal randomness",
-        expert: "Expert - Best strategy, no randomness",
-      },
-    };
+    return AIFactory.getDifficultyDescription(difficulty, language);
+  }
 
-    return descriptions[language][difficulty];
+  /**
+   * Get AI algorithm details
+   */
+  static getAlgorithmDetails(difficulty: AIDifficulty) {
+    return AIFactory.getAlgorithmDetails(difficulty);
+  }
+
+  /**
+   * Get detailed AI move analysis (for debugging or advanced features)
+   */
+  async getDetailedAIMove(
+    gameState: GameState,
+    player: Player
+  ): Promise<AIMoveResult> {
+    return await AIFactory.findBestMove(
+      gameState,
+      player,
+      this.config.difficulty
+    );
   }
 }
 
