@@ -1,11 +1,6 @@
 import React from "react";
-<<<<<<< Updated upstream:src/components/landing/GameOverview.tsx
-import { content, Language } from "./content";
-import { IconCircle } from "./shared";
-=======
 import { content, Language } from "@/utils/content";
-import { IconCircle } from "@/components/ui/IconCircle";
->>>>>>> Stashed changes:src/components/GameOverview.tsx
+import { IconCircle } from "./ui/IconCircle";
 
 interface GameOverviewProps {
   language: Language;

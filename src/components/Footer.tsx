@@ -1,9 +1,5 @@
 import React from "react";
-<<<<<<< Updated upstream:src/components/landing/Footer.tsx
-import { content, Language } from "./content";
-=======
 import { content, Language } from "@/utils/content";
->>>>>>> Stashed changes:src/components/Footer.tsx
 
 interface FooterProps {
   language: Language;

@@ -1,10 +1,10 @@
 "use client";
 
-import React, { forwardRef, useImperativeHandle } from "react";
+import React, { forwardRef, useImperativeHandle, useState } from "react";
 import { useGame } from "@/contexts/GameContext";
 import GameBoard from "./GameBoard";
 import Card from "./MoveCards";
-import AIGameMode from "./AIGameMode";
+import AIConfigPanel from "./ui/AIConfigPanel";
 import AIThinkingIndicator from "./ui/AIThinkingIndicator";
 import { getPlayerColors } from "@/utils/gameAestheticConfig";
 import { gameEventBus, GameEvents } from "@/utils/eventBus";
@@ -67,6 +67,9 @@ const OnitamaGameRefactored = forwardRef<
     getPossibleMoves,
   } = useGame();
 
+  // AI Settings state
+  const [showAISettings, setShowAISettings] = useState(false);
+
   // Expose reset function to parent
   useImperativeHandle(ref, () => ({
     resetGame: () => resetGame(cardPacks),
@@ -94,15 +97,6 @@ const OnitamaGameRefactored = forwardRef<
     gameEventBus.publish(GameEvents.MOVE_EXECUTED, { from, to, cardIndex });
   };
 
-  // Handle AI player change
-  const handleAIPlayerChange = (player: "red" | "blue" | null) => {
-    setAIPlayer(player);
-  };
-
-  // Handle AI config change
-  const handleAIConfigChange = (newConfig: any) => {
-    updateAIConfig(newConfig);
-  };
 
   // Game status component
   const GameStatusSimple = () => (
@@ -178,12 +172,27 @@ const OnitamaGameRefactored = forwardRef<
       {/* AI Settings Button */}
       <div className="absolute top-2 right-2 z-20">
         <button
-          onClick={() => gameEventBus.publish("toggle_ai_settings")}
+          onClick={() => setShowAISettings(!showAISettings)}
           className="px-3 py-1.5 text-xs font-medium text-stone-600 bg-white/80 backdrop-blur-sm rounded-lg border border-stone-300 hover:bg-white hover:border-stone-400 transition-all duration-200 shadow-sm"
         >
           {gameContent[language].aiMode}
         </button>
       </div>
+
+      {/* AI Settings Panel */}
+      {showAISettings && (
+        <div className="absolute top-12 right-2 z-20 bg-white/95 backdrop-blur-sm rounded-lg border border-stone-300 shadow-lg p-4 min-w-64">
+          <AIConfigPanel
+            aiPlayer={aiPlayer}
+            onSetAIPlayer={setAIPlayer}
+            aiDifficulty={config.aiDifficulty}
+            onDifficultyChange={(difficulty) => 
+              updateAIConfig({ aiDifficulty: difficulty })
+            }
+            language={language}
+          />
+        </div>
+      )}
 
       {/* AI Thinking Indicator */}
       {isAITurn && aiPlayer && (

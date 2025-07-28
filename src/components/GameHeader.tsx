@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import Image from "next/image";
-import { content, Language } from "./content";
-import { ZenButton } from "./shared";
+import { content, Language } from "@/utils/content";
+import { ZenButton } from "./ui/ZenButton";
 
 interface GameHeaderProps {
   language: Language;

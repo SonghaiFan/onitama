@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import OnitamaGame from "@/components/OnitamaGame";
+import OnitamaGameRefactored from "@/components/OnitamaGameRefactored";
 import { UnifiedHeader } from "@/components/Header";
 import { CardPackSelection, CardPack } from "@/components/CardPackSelection";
 import { GameOverview } from "@/components/GameOverview";
@@ -12,7 +12,7 @@ import { defaultGameController } from "@/utils/gameController";
 
 type Language = "zh" | "en";
 
-export default function OnitamaLanding() {
+export default function OnitamaLandingRefactored() {
   const [showGame, setShowGame] = useState(false);
   const [selectedPacks, setSelectedPacks] = useState<Set<CardPack>>(
     new Set(["normal"])
@@ -54,7 +54,7 @@ export default function OnitamaLanding() {
           <div className="flex-1 p-2 sm:p-4 lg:p-6 overflow-hidden">
             <div className="container mx-auto max-w-7xl h-full">
               <div className="zen-card h-full flex flex-col">
-                <OnitamaGame
+                <OnitamaGameRefactored
                   ref={gameRef}
                   cardPacks={getSelectedPacksForGame()}
                   language={language}

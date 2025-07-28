@@ -68,7 +68,7 @@ export function useGameController(
 
   // Initialize game on mount
   useEffect(() => {
-    controllerRef.current.init();
+    controllerRef.current.init(["normal"]);
   }, []);
 
   return {

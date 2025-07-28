@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from "react";
-<<<<<<< Updated upstream:src/components/landing/CardPackSelection.tsx
-import { content, Language } from "./content";
-import { ZenButton } from "./shared";
-=======
 import { content, Language } from "@/utils/content";
-import { SelectionGrid, SelectionOption } from "@/components/ui/SelectionGrid";
->>>>>>> Stashed changes:src/components/CardPackSelection.tsx
 import { checkAllPacks, checkCardAvailability } from "@/utils/dataLoader";
 import { getPlayerColors } from "@/utils/gameAestheticConfig";
+import { ZenButton } from "@/components/ui/ZenButton";
 
 export type CardPack =
   | "normal"

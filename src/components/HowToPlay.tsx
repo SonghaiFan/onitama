@@ -1,14 +1,8 @@
 import React from "react";
-<<<<<<< Updated upstream:src/components/landing/HowToPlay.tsx
-import { content, Language } from "./content";
-import { IconCircle, SectionTitle } from "./shared";
-import Card from "../MoveCards";
-=======
-import { content, Language } from "../utils/content";
+import { content, Language } from "@/utils/content";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { IconCircle } from "@/components/ui/IconCircle";
 import Card from "@/components/MoveCards";
->>>>>>> Stashed changes:src/components/HowToPlay.tsx
 import { MoveCard, Player } from "@/types/game";
 import { GameSymbol } from "@/utils/gameAestheticConfig";
 

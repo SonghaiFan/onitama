@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { GameState, Player } from "@/types/game";
-import { AIDifficulty, AIService, defaultAIService } from "@/utils/aiService";
+import { AIDifficulty, defaultAIService } from "@/utils/aiService";
 import { executeMove } from "@/utils/gameManager";
 import AISettings from "./ui/AISettings";
 import AIThinkingIndicator from "./ui/AIThinkingIndicator";

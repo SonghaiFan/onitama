@@ -1,4 +1,4 @@
-import { CardPack } from "@/components/landing/CardPackSelection";
+import { CardPack } from "@/components/CardPackSelection";
 import { GameState, MoveCard, Piece, PackCard } from "@/types/game";
 import { createInitialGameState } from "./gameManager";
 

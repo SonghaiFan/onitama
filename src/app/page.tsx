@@ -1,5 +1,5 @@
-import OnitamaLanding from "@/components/OnitamaLanding";
+import OnitamaLandingRefactored from "@/components/OnitamaLandingRefactored";
 
 export default function Home() {
-  return <OnitamaLanding />;
+  return <OnitamaLandingRefactored />;
 }
