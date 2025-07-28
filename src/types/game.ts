@@ -51,7 +51,7 @@ export interface GameState {
   windSpiritPosition: [number, number] | null; // Track wind spirit position
   winner: Player | null;
   gamePhase: "setup" | "playing" | "finished";
-  cardPacks?: ("normal" | "senseis" | "windway" | "promo" | "dual")[]; // Track which packs are active
+  cardPacks?: CardPack[]; // Track which packs are active
   // New properties for wind spirit dual move execution
   isDualMoveInProgress?: boolean; // Whether we're in the middle of a dual move
   firstMove?: {
@@ -62,7 +62,7 @@ export interface GameState {
   // AI-related properties
   aiPlayer?: Player | null; // Which player is controlled by AI
   isAITurn?: boolean; // Whether AI is currently thinking
-  aiDifficulty?: "easy" | "medium" | "hard" | "expert"; // AI difficulty level
+  aiDifficulty?: "easy" | "medium" | "mcts" | "enhanced"; // AI difficulty level
 }
 
 // Type for the Sensei's Path card pack JSON structure

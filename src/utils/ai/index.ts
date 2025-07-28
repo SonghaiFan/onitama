@@ -1,8 +1,9 @@
 // Export AI algorithms
-export { BaseAI, AIMoveResult } from "./algorithms/baseAI";
+export { BaseAI } from "./algorithms/baseAI";
 export { EasyAI } from "./algorithms/easyAI";
-export { NormalAI } from "./algorithms/normalAI";
-export { HardAI } from "./algorithms/hardAI";
+export { MediumAI } from "./algorithms/mediumAI";
+export { MCTSAI } from "./algorithms/mctsAI";
+export { EnhancedAI } from "./algorithms/enhancedAI";
 
 // Export AI factory
 export { AIFactory } from "./aiFactory";

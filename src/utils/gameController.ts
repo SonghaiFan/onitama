@@ -4,7 +4,7 @@ import {
   getAllPossibleMoves,
   validateWindSpiritMove,
 } from "./gameManager";
-import { AIService, AIDifficulty, AIMove } from "./aiService";
+import { AIService, AIDifficulty } from "./aiService";
 import { createNewGameAsync } from "./dataLoader";
 
 export interface GameControllerConfig {
@@ -76,6 +76,16 @@ export class GameController {
         gameState: result.gameState,
         isLoading: false,
       });
+
+      // Check if AI should make the first move
+      setTimeout(() => {
+        if (
+          this.state.aiPlayer &&
+          this.state.gameState.currentPlayer === this.state.aiPlayer
+        ) {
+          this.checkAITurn();
+        }
+      }, 200);
     } catch (error) {
       console.error("Failed to initialize game:", error);
       this.setState({ isLoading: false });
@@ -225,7 +235,8 @@ export class GameController {
    */
   setAIPlayer(player: Player | null): void {
     this.setState({ aiPlayer: player });
-    this.checkAITurn();
+    // Delay AI check to ensure state is fully updated
+    setTimeout(() => this.checkAITurn(), 100);
   }
 
   /**
@@ -248,6 +259,12 @@ export class GameController {
    */
   async resetGame(cardPacks: string[] = ["normal"]): Promise<void> {
     await this.init(cardPacks);
+    // Delay AI check to ensure React state updates are complete
+    setTimeout(() => {
+      if (this.state.aiPlayer) {
+        this.checkAITurn();
+      }
+    }, 200);
   }
 
   /**
