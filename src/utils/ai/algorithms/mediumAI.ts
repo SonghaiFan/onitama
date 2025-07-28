@@ -1,6 +1,5 @@
 import { GameState, Player } from "@/types/game";
 import { BaseAI, AIMoveResult } from "./baseAI";
-import { MoveWithMetadata } from "@/utils/gameManager";
 
 export class MediumAI extends BaseAI {
   constructor() {
