@@ -38,12 +38,12 @@ This is a **Next.js 15 Onitama board game** implementation using React 19, TypeS
 - **GameManager** (`src/utils/gameManager.ts`): Core game logic including move validation and execution
 - **DataLoader** (`src/utils/dataLoader.ts`): Handles card pack loading and game initialization
 - **Multiple Card Packs**: Supports six card packs with 16 cards each:
-  - `onitama_16_cards_normal.json` - Standard Onitama cards
-  - `onitama_16_cards_senseis.json` - Sensei's Path expansion
-  - `onitama_16_cards_windway.json` - Wind Spirit expansion with wind mechanics
-  - `onitama_16_cards_dual.json` - Dual movement cards
-  - `onitama_16_cards_promo.json` - Promotional cards
-  - `onitama_16_cards_special.json` - Special variant cards
+  - `onitama_cards_normal.json` - Standard Onitama cards
+  - `onitama_cards_senseis.json` - Sensei's Path expansion
+  - `onitama_cards_windway.json` - Wind Spirit expansion with wind mechanics
+  - `onitama_cards_dual.json` - Dual movement cards
+  - `onitama_cards_promo.json` - Promotional cards
+  - `onitama_cards_special.json` - Special variant cards
 - **Card Selection**: Randomly selects 5 cards per game (2 per player + 1 shared)
 - **Movement System**: Red player moves "forward" (negative y), Blue moves "backward" (positive y)
 - **Wind Spirit Mechanics**: Special cards with `wind_move` properties for enhanced gameplay

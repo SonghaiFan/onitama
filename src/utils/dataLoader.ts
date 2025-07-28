@@ -254,7 +254,7 @@ async function loadCardPack(
   try {
     const result = await withRetry(async () => {
       const response = await fetchWithTimeout(
-        `/pack/onitama_16_cards_${packName}.json`
+        `/pack/onitama_cards_${packName}.json`
       );
 
       if (!response.ok) {
@@ -664,7 +664,7 @@ export async function checkAllPacks(): Promise<Set<CardPack>> {
     allPacks.map(async (packName) => {
       try {
         const response = await fetchWithTimeout(
-          `/pack/onitama_16_cards_${packName}.json`,
+          `/pack/onitama_cards_${packName}.json`,
           5000
         );
         if (response.ok) {
