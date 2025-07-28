@@ -170,7 +170,7 @@ export class GamePersistence {
   /**
    * Get game history
    */
-  static getGameHistory(): any[] {
+  static getGameHistory(): unknown[] {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.GAME_HISTORY);
       return saved ? JSON.parse(saved) : [];

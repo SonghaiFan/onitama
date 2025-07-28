@@ -33,47 +33,39 @@ export function ZenDropdown({
   };
 
   // Default config
-  const {
-    positioning = {},
-    behavior = {},
-    animation = {},
-  } = config;
+  const { positioning = {}, behavior = {}, animation = {} } = config;
 
-  const {
-    align = 'right',
-    offset = 8,
-    maxHeight = 400,
-    width = 'content',
-  } = positioning;
+  const { align = "right", maxHeight = 400, width = "content" } = positioning;
 
-  const {
-    closeOnSelect = false,
-  } = behavior;
+  const { closeOnSelect = false } = behavior;
 
-  const {
-    duration = 200,
-    type = 'slide',
-  } = animation;
+  const { duration = 200, type = "slide" } = animation;
 
   // Click outside handler
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
     }
-  }, [isOpen]);
+  }, [isOpen, setIsOpen]);
 
   // Auto-close on selection if configured
   const handleContentClick = (event: React.MouseEvent) => {
     if (closeOnSelect) {
       const target = event.target as HTMLElement;
-      const isInteractive = target.closest('button, [role="button"], [onclick]');
+      const isInteractive = target.closest(
+        'button, [role="button"], [onclick]'
+      );
       if (isInteractive) {
         setIsOpen(false);
       }
@@ -82,49 +74,49 @@ export function ZenDropdown({
 
   const getAlignmentClasses = () => {
     switch (align) {
-      case 'left':
-        return 'left-0';
-      case 'center':
-        return 'left-1/2 transform -translate-x-1/2';
-      case 'right':
+      case "left":
+        return "left-0";
+      case "center":
+        return "left-1/2 transform -translate-x-1/2";
+      case "right":
       default:
-        return 'right-0';
+        return "right-0";
     }
   };
 
   const getWidthStyle = () => {
-    if (typeof width === 'number') {
+    if (typeof width === "number") {
       return { width: `${width}px` };
     }
     return {};
   };
 
   const getWidthClasses = () => {
-    if (typeof width === 'number') return '';
+    if (typeof width === "number") return "";
     switch (width) {
-      case 'trigger':
-        return 'w-full';
-      case 'content':
+      case "trigger":
+        return "w-full";
+      case "content":
       default:
-        return 'w-64';
+        return "w-64";
     }
   };
 
   const getAnimationProps = () => {
     switch (type) {
-      case 'fade':
+      case "fade":
         return {
           initial: { opacity: 0 },
           animate: { opacity: 1 },
           exit: { opacity: 0 },
         };
-      case 'scale':
+      case "scale":
         return {
           initial: { opacity: 0, scale: 0.95 },
           animate: { opacity: 1, scale: 1 },
           exit: { opacity: 0, scale: 0.95 },
         };
-      case 'slide':
+      case "slide":
       default:
         return {
           initial: { opacity: 0, y: -10 },
@@ -137,9 +129,7 @@ export function ZenDropdown({
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
       {/* Trigger */}
-      <div onClick={() => setIsOpen(!isOpen)}>
-        {trigger}
-      </div>
+      <div onClick={() => setIsOpen(!isOpen)}>{trigger}</div>
 
       {/* Dropdown Content */}
       <AnimatePresence>
@@ -150,7 +140,7 @@ export function ZenDropdown({
             className={`absolute mt-2 ${getAlignmentClasses()} ${getWidthClasses()} bg-white border border-stone-200 shadow-lg zen-card p-4 z-[9999]`}
             style={{
               maxHeight: `${maxHeight}px`,
-              overflowY: 'auto',
+              overflowY: "auto",
               ...getWidthStyle(),
             }}
             onClick={handleContentClick}

@@ -5,6 +5,7 @@ import {
   Move,
   GameState,
   PlayerState,
+  CardPack,
 } from "@/types/game";
 
 export function isWithinBoard(row: number, col: number): boolean {
@@ -764,7 +765,7 @@ export function createInitialGameState(
   players: { red: PlayerState; blue: PlayerState },
   sharedCard: MoveCard,
   startingPlayer: Player,
-  cardPacks?: ("normal" | "senseis" | "windway" | "promo" | "dual")[]
+  cardPacks?: CardPack[]
 ): GameState {
   const includeWindSpirit = cardPacks?.includes("windway") ?? false;
 

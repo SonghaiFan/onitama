@@ -40,8 +40,6 @@ export function AIDropdown({
       difficulties: {
         easy: "簡單",
         medium: "中等",
-        mcts: "MCTS",
-        enhanced: "增強",
       },
     },
     en: {
@@ -52,8 +50,6 @@ export function AIDropdown({
       difficulties: {
         easy: "Easy",
         medium: "Medium",
-        mcts: "MCTS",
-        enhanced: "Enhanced",
       },
     },
   };
@@ -77,8 +73,6 @@ export function AIDropdown({
   const difficultyItems: SelectableItem<AIDifficulty>[] = [
     { id: "easy", label: t.difficulties.easy },
     { id: "medium", label: t.difficulties.medium },
-    { id: "mcts", label: t.difficulties.mcts },
-    { id: "enhanced", label: t.difficulties.enhanced },
   ];
 
   // Difficulty selection config

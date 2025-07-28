@@ -1,4 +1,4 @@
-import { GameState, Player, MoveCard, Piece } from "@/types/game";
+import { GameState, Player, CardPack } from "@/types/game";
 import {
   executeMove,
   getAllPossibleMoves,
@@ -22,7 +22,7 @@ export interface GameAction {
     | "GAME_RESET"
     | "AI_CONFIG_CHANGE"
     | "AI_PLAYER_SET";
-  payload: any;
+  payload: unknown;
 }
 
 export interface GameControllerState {
@@ -67,11 +67,11 @@ export class GameController {
   /**
    * Initialize the game controller
    */
-  async init(cardPacks: string[] = ["normal"]): Promise<void> {
+  async init(cardPacks: CardPack[] = ["normal"]): Promise<void> {
     this.setState({ isLoading: true });
 
     try {
-      const result = await createNewGameAsync(cardPacks as any);
+      const result = await createNewGameAsync(cardPacks);
       this.setState({
         gameState: result.gameState,
         isLoading: false,
@@ -257,7 +257,7 @@ export class GameController {
   /**
    * Reset the game
    */
-  async resetGame(cardPacks: string[] = ["normal"]): Promise<void> {
+  async resetGame(cardPacks: CardPack[] = ["normal"]): Promise<void> {
     await this.init(cardPacks);
     // Delay AI check to ensure React state updates are complete
     setTimeout(() => {
@@ -327,7 +327,6 @@ export class GameController {
     cardIndex: number
   ): boolean {
     const { gameState } = this.state;
-    const card = gameState.players[gameState.currentPlayer].cards[cardIndex];
     const possibleMoves = getAllPossibleMoves(gameState, from, cardIndex);
     return possibleMoves.some(([row, col]) => row === to[0] && col === to[1]);
   }

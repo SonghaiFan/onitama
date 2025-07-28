@@ -46,7 +46,7 @@ const exampleCards: MoveCard[] = [
 ];
 
 export function HowToPlay({ language }: HowToPlayProps) {
-  const handleCardClick = (cardIndex: number, player: Player) => {
+  const handleCardClick = () => {
     // Demo function - no action needed for tutorial
   };
 

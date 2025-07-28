@@ -1,8 +1,36 @@
-type EventHandler<T = any> = (data: T) => void;
+type EventHandler<T = unknown> = (data: T) => void;
 
 interface EventSubscription {
   id: string;
-  handler: EventHandler;
+  handler: EventHandler<unknown>;
+}
+
+// AI Thinking Event Types
+export interface AIThinkingUpdateEvent {
+  score: number;
+  nodesEvaluated: number;
+  depth: number;
+  elapsedTime: number;
+  bestMoveFound?: {
+    from: [number, number];
+    to: [number, number];
+    cardIndex: number;
+  };
+}
+
+export interface AIThinkingStartEvent {
+  player: string;
+  difficulty: string;
+}
+
+export interface AIThinkingEndEvent {
+  player: string;
+  finalResult: {
+    score: number;
+    nodesEvaluated: number;
+    depth: number;
+    thinkingTime: number;
+  };
 }
 
 /**
@@ -15,9 +43,9 @@ export class EventBus {
   /**
    * Subscribe to an event
    */
-  subscribe<T = any>(event: string, handler: EventHandler<T>): () => void {
+  subscribe<T = unknown>(event: string, handler: EventHandler<T>): () => void {
     const id = `sub_${++this.subscriptionId}`;
-    const subscription: EventSubscription = { id, handler };
+    const subscription: EventSubscription = { id, handler: handler as EventHandler<unknown> };
 
     if (!this.events.has(event)) {
       this.events.set(event, []);
@@ -43,7 +71,7 @@ export class EventBus {
   /**
    * Publish an event
    */
-  publish<T = any>(event: string, data?: T): void {
+  publish<T = unknown>(event: string, data?: T): void {
     const subscriptions = this.events.get(event);
     if (subscriptions) {
       subscriptions.forEach((subscription) => {
@@ -85,6 +113,9 @@ export const GameEvents = {
   MOVE_EXECUTED: "move_executed",
   AI_MOVE_STARTED: "ai_move_started",
   AI_MOVE_COMPLETED: "ai_move_completed",
+  AI_THINKING_UPDATE: "ai_thinking_update",
+  AI_THINKING_START: "ai_thinking_start",
+  AI_THINKING_END: "ai_thinking_end",
   GAME_STATE_CHANGED: "game_state_changed",
   GAME_RESET: "game_reset",
   WIN_CONDITION_MET: "win_condition_met",
@@ -95,3 +126,4 @@ export const GameEvents = {
 
 // Default event bus instance
 export const gameEventBus = new EventBus();
+export { gameEventBus as eventBus };

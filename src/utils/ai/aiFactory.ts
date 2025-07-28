@@ -3,8 +3,6 @@ import { AIDifficulty } from "@/utils/aiService";
 import { BaseAI, AIMoveResult } from "./algorithms/baseAI";
 import { EasyAI } from "./algorithms/easyAI";
 import { MediumAI } from "./algorithms/mediumAI";
-import { MCTSAI } from "./algorithms/mctsAI";
-import { EnhancedAI } from "./algorithms/enhancedAI";
 
 export class AIFactory {
   private static instances: Map<AIDifficulty, BaseAI> = new Map();
@@ -22,12 +20,6 @@ export class AIFactory {
           break;
         case "medium":
           ai = new MediumAI();
-          break;
-        case "mcts":
-          ai = new MCTSAI(4, 5000);
-          break;
-        case "enhanced":
-          ai = new EnhancedAI(4, 5000, true);
           break;
         default:
           ai = new EasyAI();
@@ -56,5 +48,50 @@ export class AIFactory {
    */
   static clearInstances(): void {
     this.instances.clear();
+  }
+
+  /**
+   * Get AI difficulty description
+   */
+  static getDifficultyDescription(
+    difficulty: AIDifficulty,
+    language: "zh" | "en" = "en"
+  ): string {
+    const descriptions = {
+      en: {
+        easy: "Simple random moves with basic strategy",
+        medium: "Balanced strategy with tactical evaluation",
+      },
+      zh: {
+        easy: "簡單隨機移動和基礎策略",
+        medium: "平衡策略與戰術評估",
+      },
+    };
+
+    return descriptions[language][difficulty];
+  }
+
+  /**
+   * Get AI algorithm details
+   */
+  static getAlgorithmDetails(difficulty: AIDifficulty) {
+    const details = {
+      easy: {
+        name: "Easy AI",
+        description: "Basic random strategy",
+        features: ["Random move selection", "Basic piece safety"],
+        complexity: "Low",
+        thinkingTime: "Fast",
+      },
+      medium: {
+        name: "Medium AI",
+        description: "Tactical evaluation",
+        features: ["Position evaluation", "Tactical planning", "Threat detection"],
+        complexity: "Medium",
+        thinkingTime: "Moderate",
+      },
+    };
+
+    return details[difficulty];
   }
 }

@@ -1,5 +1,6 @@
 import { GameState, Player, Piece } from "@/types/game";
 import { MoveWithMetadata, getAllPlayerMoves } from "@/utils/gameManager";
+import { eventBus, AIThinkingUpdateEvent } from "@/utils/eventBus";
 
 export interface AIMoveResult {
   move: MoveWithMetadata;
@@ -12,6 +13,7 @@ export interface AIMoveResult {
 export abstract class BaseAI {
   protected maxDepth: number;
   protected maxTime: number; // milliseconds
+  protected startTime: number = 0;
 
   constructor(maxDepth: number = 4, maxTime: number = 5000) {
     this.maxDepth = maxDepth;
@@ -25,6 +27,21 @@ export abstract class BaseAI {
     gameState: GameState,
     player: Player
   ): Promise<AIMoveResult>;
+
+  /**
+   * Emit thinking update to event bus
+   */
+  protected emitThinkingUpdate(data: Partial<AIThinkingUpdateEvent>): void {
+    const update: AIThinkingUpdateEvent = {
+      score: data.score || 0,
+      nodesEvaluated: data.nodesEvaluated || 0,
+      depth: data.depth || 0,
+      elapsedTime: Date.now() - this.startTime,
+      bestMoveFound: data.bestMoveFound,
+    };
+    
+    eventBus.publish("ai_thinking_update", update);
+  }
 
   /**
    * Generate all legal moves for a player
@@ -145,6 +162,82 @@ export abstract class BaseAI {
   }
 
   /**
+   * Core Minimax algorithm with Alpha-Beta pruning and node tracking
+   */
+  protected minimaxWithTracking(
+    gameState: GameState,
+    depth: number,
+    alpha: number,
+    beta: number,
+    maximizingPlayer: boolean,
+    originalPlayer: Player
+  ): { score: number; nodesEvaluated: number } {
+    let nodesEvaluated = 1;
+
+    // Terminal conditions
+    if (depth === 0 || this.isGameOver(gameState)) {
+      return {
+        score: this.evaluateState(gameState, originalPlayer),
+        nodesEvaluated
+      };
+    }
+
+    const moves = this.generateLegalMoves(gameState, gameState.currentPlayer);
+
+    if (maximizingPlayer) {
+      let maxScore = -Infinity;
+
+      for (const move of moves) {
+        const newState = this.simulateMove(gameState, move);
+        const result = this.minimaxWithTracking(
+          newState,
+          depth - 1,
+          alpha,
+          beta,
+          false,
+          originalPlayer
+        );
+
+        nodesEvaluated += result.nodesEvaluated;
+        maxScore = Math.max(maxScore, result.score);
+        alpha = Math.max(alpha, result.score);
+
+        // Alpha-Beta pruning
+        if (beta <= alpha) {
+          break;
+        }
+      }
+
+      return { score: maxScore, nodesEvaluated };
+    } else {
+      let minScore = Infinity;
+
+      for (const move of moves) {
+        const newState = this.simulateMove(gameState, move);
+        const result = this.minimaxWithTracking(
+          newState,
+          depth - 1,
+          alpha,
+          beta,
+          true,
+          originalPlayer
+        );
+
+        nodesEvaluated += result.nodesEvaluated;
+        minScore = Math.min(minScore, result.score);
+        beta = Math.min(beta, result.score);
+
+        // Alpha-Beta pruning
+        if (beta <= alpha) {
+          break;
+        }
+      }
+
+      return { score: minScore, nodesEvaluated };
+    }
+  }
+
+  /**
    * Core Minimax algorithm with Alpha-Beta pruning
    */
   protected minimax(
@@ -220,7 +313,7 @@ export abstract class BaseAI {
     gameState: GameState,
     player: Player,
     depth: number
-  ): { move: MoveWithMetadata; score: number } {
+  ): { move: MoveWithMetadata; score: number; nodesEvaluated: number } {
     const moves = this.generateLegalMoves(gameState, player);
 
     if (moves.length === 0) {
@@ -229,10 +322,12 @@ export abstract class BaseAI {
 
     let bestScore = -Infinity;
     let bestMove = moves[0];
+    let totalNodesEvaluated = 0;
 
-    for (const move of moves) {
+    for (let i = 0; i < moves.length; i++) {
+      const move = moves[i];
       const newState = this.simulateMove(gameState, move);
-      const score = this.minimax(
+      const result = this.minimaxWithTracking(
         newState,
         depth - 1,
         -Infinity,
@@ -241,13 +336,27 @@ export abstract class BaseAI {
         player
       );
 
-      if (score > bestScore) {
-        bestScore = score;
+      totalNodesEvaluated += result.nodesEvaluated;
+
+      if (result.score > bestScore) {
+        bestScore = result.score;
         bestMove = move;
       }
+
+      // Emit progress update
+      this.emitThinkingUpdate({
+        score: bestScore,
+        depth,
+        nodesEvaluated: totalNodesEvaluated,
+        bestMoveFound: {
+          from: bestMove.from,
+          to: bestMove.to,
+          cardIndex: bestMove.cardIndex,
+        },
+      });
     }
 
-    return { move: bestMove, score: bestScore };
+    return { move: bestMove, score: bestScore, nodesEvaluated: totalNodesEvaluated };
   }
 
   /**

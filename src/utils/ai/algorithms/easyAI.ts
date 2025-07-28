@@ -11,12 +11,18 @@ export class EasyAI extends BaseAI {
     gameState: GameState,
     player: Player
   ): Promise<AIMoveResult> {
-    const startTime = Date.now();
+    this.startTime = Date.now();
     const moves = this.generateLegalMoves(gameState, player);
 
     if (moves.length === 0) {
       throw new Error("No valid moves available for AI");
     }
+
+    // Emit initial thinking update
+    this.emitThinkingUpdate({
+      depth: 1,
+      nodesEvaluated: 0,
+    });
 
     let selectedMove: MoveWithMetadata;
     let score: number;
@@ -33,6 +39,18 @@ export class EasyAI extends BaseAI {
       }
 
       score = this.evaluateState(gameState, player);
+      
+      // Emit mid-thinking update
+      this.emitThinkingUpdate({
+        score,
+        depth: 1,
+        nodesEvaluated: Math.floor(moves.length / 2),
+        bestMoveFound: {
+          from: selectedMove.from,
+          to: selectedMove.to,
+          cardIndex: selectedMove.cardIndex,
+        },
+      });
     } else {
       // Use minimax with depth 1
       const result = this.findBestMoveWithMinimax(gameState, player, 1);
@@ -40,7 +58,19 @@ export class EasyAI extends BaseAI {
       score = result.score;
     }
 
-    const thinkingTime = Date.now() - startTime;
+    const thinkingTime = Date.now() - this.startTime;
+
+    // Emit final thinking update
+    this.emitThinkingUpdate({
+      score,
+      depth: 1,
+      nodesEvaluated: moves.length,
+      bestMoveFound: {
+        from: selectedMove.from,
+        to: selectedMove.to,
+        cardIndex: selectedMove.cardIndex,
+      },
+    });
 
     return {
       move: selectedMove,

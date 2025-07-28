@@ -6,11 +6,10 @@ export interface SelectableItem<T = string> {
   description?: string;
   icon?: React.ReactNode;
   disabled?: boolean;
-  metadata?: Record<string, any>;
 }
 
 export interface SelectionGroupConfig<T = string> {
-  id: string;
+  id: T;
   title?: string;
   description?: string;
   allowMultiple?: boolean;

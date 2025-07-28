@@ -2,7 +2,7 @@ import { GameState, Player } from "@/types/game";
 import { AIFactory } from "./ai/aiFactory";
 import { AIMoveResult } from "./ai/algorithms/baseAI";
 
-export type AIDifficulty = "easy" | "medium" | "mcts" | "enhanced";
+export type AIDifficulty = "easy" | "medium";
 
 export interface AIConfig {
   difficulty: AIDifficulty;
@@ -27,7 +27,7 @@ export class AIService {
 
   constructor(
     config: AIConfig = {
-      difficulty: "enhanced",
+      difficulty: "medium",
       thinkingTime: 1000,
       randomness: 0.2,
     }

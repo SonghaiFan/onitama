@@ -62,7 +62,7 @@ export interface GameState {
   // AI-related properties
   aiPlayer?: Player | null; // Which player is controlled by AI
   isAITurn?: boolean; // Whether AI is currently thinking
-  aiDifficulty?: "easy" | "medium" | "mcts" | "enhanced"; // AI difficulty level
+  aiDifficulty?: "easy" | "medium"; // AI difficulty level
 }
 
 // Type for the Sensei's Path card pack JSON structure

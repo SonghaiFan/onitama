@@ -5,7 +5,7 @@ import { ZenButton } from "@/components/ui/ZenButton";
 import { AIDropdown } from "@/components/ui/AIDropdown";
 import { motion } from "motion/react";
 import { AIDifficulty } from "@/utils/aiService";
-import { Player, CardPack } from "@/types/game";
+import { CardPack } from "@/types/game";
 interface UnifiedHeaderProps {
   language: Language;
   mode: "landing" | "game";
