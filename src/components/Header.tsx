@@ -6,7 +6,7 @@ import { AIDropdown } from "@/components/ui/AIDropdown";
 import { motion } from "motion/react";
 import { AIDifficulty } from "@/utils/aiService";
 import { CardPack } from "@/types/game";
-interface UnifiedHeaderProps {
+interface HeaderProps {
   language: Language;
   mode: "landing" | "game";
   onToggleLanguage?: () => void;
@@ -21,7 +21,7 @@ interface UnifiedHeaderProps {
   selectedPacks?: Set<CardPack>;
 }
 
-export function UnifiedHeader({
+export function Header({
   language,
   mode,
   onToggleLanguage,
@@ -33,7 +33,7 @@ export function UnifiedHeader({
   aiDifficulty,
   onDifficultyChange,
   selectedPacks,
-}: UnifiedHeaderProps) {
+}: HeaderProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -117,8 +117,8 @@ export function UnifiedHeader({
               <Image
                 src="/Onitama_Logo.svg.png"
                 alt="Onitama"
-                width={120}
-                height={36}
+                width={160}
+                height={20}
                 className="object-contain"
               />
             </motion.div>

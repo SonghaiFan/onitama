@@ -445,11 +445,13 @@ export abstract class BaseAI {
       masterSavingMoves.length > 0 ? masterSavingMoves : moves;
 
     let bestMove = priorityMoves[0];
-    let bestWeightedScore = -Infinity;
+    let bestRelativeScore = -Infinity;
     let totalNodesEvaluated = 0;
     const moveEvaluations: Array<{
       move: MoveWithMetadata;
-      weightedScore: number;
+      aiScore: number;
+      opponentScore: number;
+      relativeScore: number;
       confidence: number;
     }> = [];
 
@@ -463,8 +465,8 @@ export abstract class BaseAI {
         bonusScore += 500; // High bonus for any capture
       }
 
-      // Get weighted average evaluation instead of just max
-      const result = this.minimaxWithTracking(
+      // Calculate AI's score for this position
+      const aiResult = this.minimaxWithTracking(
         newState,
         depth - 1,
         -Infinity,
@@ -472,34 +474,37 @@ export abstract class BaseAI {
         false, // Next turn is opponent (minimizing)
         player
       );
+      const aiScore = aiResult.score + bonusScore;
+      totalNodesEvaluated += aiResult.nodesEvaluated;
 
-      const finalScore = result.score + bonusScore;
-      totalNodesEvaluated += result.nodesEvaluated;
+      // Calculate opponent's average score from this position
+      const opponentScore = this.calculateOpponentAverageScore(
+        newState,
+        player === "red" ? "blue" : "red",
+        depth - 1
+      );
+      totalNodesEvaluated += opponentScore.nodesEvaluated;
+
+      // Calculate relative score: AI advantage - Opponent advantage
+      const relativeScore = aiScore - opponentScore.averageScore;
 
       // Calculate confidence based on search depth and node count
-      const confidence = Math.min(1.0, result.nodesEvaluated / (depth * 10));
+      const confidence = Math.min(
+        1.0,
+        (aiResult.nodesEvaluated + opponentScore.nodesEvaluated) / (depth * 20)
+      );
 
       moveEvaluations.push({
         move,
-        weightedScore: finalScore,
+        aiScore,
+        opponentScore: opponentScore.averageScore,
+        relativeScore,
         confidence,
       });
 
-      if (finalScore > bestWeightedScore) {
-        bestWeightedScore = finalScore;
+      if (relativeScore > bestRelativeScore) {
+        bestRelativeScore = relativeScore;
         bestMove = move;
-
-        // Emit progress update with current best evaluation
-        this.emitThinkingUpdate({
-          score: finalScore,
-          depth,
-          nodesEvaluated: totalNodesEvaluated,
-          bestMoveFound: {
-            from: bestMove.from,
-            to: bestMove.to,
-            cardIndex: bestMove.cardIndex,
-          },
-        });
       }
 
       // Emit frequent updates to show dynamic thinking (every 2-3 moves)
@@ -507,18 +512,27 @@ export abstract class BaseAI {
         i % Math.max(1, Math.floor(priorityMoves.length / 4)) === 0 ||
         i === priorityMoves.length - 1
       ) {
-        // Calculate current position evaluation for more responsive scoring
-        const currentStateScore = this.evaluateState(gameState, player);
-        const progressScore =
+        // Calculate average relative score of all evaluated moves so far
+        const avgAiScore =
           moveEvaluations.length > 0
             ? moveEvaluations.reduce(
-                (sum, evaluation) => sum + evaluation.weightedScore,
+                (sum, evaluation) => sum + evaluation.aiScore,
                 0
               ) / moveEvaluations.length
-            : currentStateScore;
+            : 0;
+
+        const avgOpponentScore =
+          moveEvaluations.length > 0
+            ? moveEvaluations.reduce(
+                (sum, evaluation) => sum + evaluation.opponentScore,
+                0
+              ) / moveEvaluations.length
+            : 0;
+
+        const avgRelativeScore = avgAiScore - avgOpponentScore;
 
         this.emitThinkingUpdate({
-          score: progressScore,
+          score: avgRelativeScore,
           depth,
           nodesEvaluated: totalNodesEvaluated,
           bestMoveFound: {
@@ -530,9 +544,83 @@ export abstract class BaseAI {
       }
     }
 
+    // Calculate final average relative score of all moves
+    const finalAvgAiScore =
+      moveEvaluations.length > 0
+        ? moveEvaluations.reduce(
+            (sum, evaluation) => sum + evaluation.aiScore,
+            0
+          ) / moveEvaluations.length
+        : 0;
+
+    const finalAvgOpponentScore =
+      moveEvaluations.length > 0
+        ? moveEvaluations.reduce(
+            (sum, evaluation) => sum + evaluation.opponentScore,
+            0
+          ) / moveEvaluations.length
+        : 0;
+
+    const finalRelativeScore = finalAvgAiScore - finalAvgOpponentScore;
+
     return {
       move: bestMove,
-      score: bestWeightedScore,
+      score: finalRelativeScore, // Return relative score (AI avg - Opponent avg)
+      nodesEvaluated: totalNodesEvaluated,
+    };
+  }
+
+  /**
+   * Calculate opponent's average score across all their possible moves from a given position
+   */
+  protected calculateOpponentAverageScore(
+    gameState: GameState,
+    opponent: Player,
+    depth: number
+  ): { averageScore: number; nodesEvaluated: number } {
+    if (depth <= 0 || this.isGameOver(gameState)) {
+      return {
+        averageScore: this.evaluateState(gameState, opponent),
+        nodesEvaluated: 1,
+      };
+    }
+
+    const opponentMoves = this.generateLegalMoves(gameState, opponent);
+
+    if (opponentMoves.length === 0) {
+      return {
+        averageScore: this.evaluateState(gameState, opponent),
+        nodesEvaluated: 1,
+      };
+    }
+
+    let totalScore = 0;
+    let totalNodesEvaluated = 0;
+
+    for (const move of opponentMoves) {
+      const newState = this.simulateMove(gameState, move);
+
+      // Add immediate tactical bonus for opponent's capture moves
+      let bonusScore = 0;
+      if (move.isCapture) {
+        bonusScore += 500;
+      }
+
+      const result = this.minimaxWithTracking(
+        newState,
+        depth - 1,
+        -Infinity,
+        Infinity,
+        false, // Still minimizing from opponent's perspective
+        opponent
+      );
+
+      totalScore += result.score + bonusScore;
+      totalNodesEvaluated += result.nodesEvaluated;
+    }
+
+    return {
+      averageScore: totalScore / opponentMoves.length,
       nodesEvaluated: totalNodesEvaluated,
     };
   }

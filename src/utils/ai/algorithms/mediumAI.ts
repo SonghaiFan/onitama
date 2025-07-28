@@ -17,12 +17,6 @@ export class MediumAI extends BaseAI {
       throw new Error("No valid moves available for AI");
     }
 
-    // Emit initial thinking update
-    this.emitThinkingUpdate({
-      depth: 0,
-      nodesEvaluated: 0,
-    });
-
     // Always use minimax with medium depth for MediumAI
     const result = this.findBestMoveWithMinimax(
       gameState,
@@ -31,18 +25,6 @@ export class MediumAI extends BaseAI {
     );
 
     const thinkingTime = Date.now() - this.startTime;
-
-    // Emit final thinking update
-    this.emitThinkingUpdate({
-      score: result.score,
-      depth: this.maxDepth,
-      nodesEvaluated: result.nodesEvaluated,
-      bestMoveFound: {
-        from: result.move.from,
-        to: result.move.to,
-        cardIndex: result.move.cardIndex,
-      },
-    });
 
     return {
       move: result.move,

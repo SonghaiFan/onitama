@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import OnitamaGame from "@/components/OnitamaGame";
-import { UnifiedHeader } from "@/components/Header";
+import { Header } from "@/components/Header";
 import { CardPackSelection } from "@/components/CardPackSelection";
 import { CardPack } from "@/types/game";
 import { GameOverview } from "@/components/GameOverview";
@@ -31,7 +31,7 @@ function GamePage({
 
   return (
     <div className="h-dvh flex flex-col scroll-paper ink-wash">
-      <UnifiedHeader
+      <Header
         language={language}
         mode="game"
         onBackToHome={onBackToHome}
@@ -104,7 +104,7 @@ export default function OnitamaLanding() {
 
   return (
     <div className="min-h-dvh scroll-texture">
-      <UnifiedHeader
+      <Header
         language={language}
         mode="landing"
         onToggleLanguage={toggleLanguage}
