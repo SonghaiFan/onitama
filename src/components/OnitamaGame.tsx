@@ -197,7 +197,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
         {aiPlayer && (
           <div className="absolute top-2 left-2 z-20">
             <AIThinkingIndicator
-              isThinking={true}
+              isThinking={isAITurn}
               player={aiPlayer}
               language={language}
               thinkingData={thinkingData}
