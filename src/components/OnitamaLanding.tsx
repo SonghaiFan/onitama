@@ -2,14 +2,13 @@
 
 import { useState, useRef } from "react";
 import OnitamaGame from "./OnitamaGame";
-import { GameHeader } from "./landing/GameHeader";
-import { LandingHeader } from "./landing/LandingHeader";
+import { UnifiedHeader } from "./ui/Header";
 import { CardPackSelection } from "./landing/CardPackSelection";
 import { GameOverview } from "./landing/GameOverview";
 import { HowToPlay } from "./landing/HowToPlay";
-import { Footer } from "./landing/Footer";
+import { Footer } from "./ui/Footer";
 
-type CardPack = "normal" | "senseis" | "windway" | "promo" | "dual";
+type CardPack = "normal" | "senseis" | "windway" | "promo" | "dual" | "special";
 type Language = "zh" | "en";
 
 export default function OnitamaLanding() {
@@ -41,14 +40,24 @@ export default function OnitamaLanding() {
     setLanguage((lang) => (lang === "zh" ? "en" : "zh"));
   };
 
-  if (showGame) {
-    return (
-      <div className="h-dvh flex flex-col scroll-paper ink-wash">
-        <GameHeader
-          language={language}
-          onBackToHome={() => setShowGame(false)}
-          onNewGame={() => gameRef.current?.resetGame()}
-        />
+  return (
+    <div
+      className={
+        showGame
+          ? "h-dvh flex flex-col scroll-paper ink-wash"
+          : "min-h-dvh scroll-texture"
+      }
+    >
+      <UnifiedHeader
+        language={language}
+        mode={showGame ? "game" : "landing"}
+        onToggleLanguage={toggleLanguage}
+        onStartGame={() => setShowGame(true)}
+        onBackToHome={() => setShowGame(false)}
+        onNewGame={() => gameRef.current?.resetGame()}
+      />
+
+      {showGame ? (
         <div className="flex-1 p-2 sm:p-4 lg:p-6 overflow-hidden">
           <div className="container mx-auto max-w-7xl h-full">
             <div className="zen-card h-full flex flex-col">
@@ -60,28 +69,18 @@ export default function OnitamaLanding() {
             </div>
           </div>
         </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-dvh scroll-texture">
-      <LandingHeader
-        language={language}
-        onToggleLanguage={toggleLanguage}
-        onStartGame={() => setShowGame(true)}
-      />
-
-      <CardPackSelection
-        language={language}
-        selectedPacks={selectedPacks}
-        onTogglePack={togglePack}
-        onStartGame={() => setShowGame(true)}
-      />
-
-      <GameOverview language={language} />
-      <HowToPlay language={language} />
-      <Footer language={language} />
+      ) : (
+        <>
+          <CardPackSelection
+            language={language}
+            selectedPacks={selectedPacks}
+            onTogglePack={togglePack}
+          />
+          <GameOverview language={language} />
+          <HowToPlay language={language} />
+          <Footer language={language} />
+        </>
+      )}
     </div>
   );
 }

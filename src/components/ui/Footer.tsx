@@ -1,5 +1,5 @@
 import React from "react";
-import { content, Language } from "./content";
+import { content, Language } from "../landing/content";
 
 interface FooterProps {
   language: Language;

@@ -46,7 +46,14 @@ const gameContent = {
 };
 
 interface OnitamaGameProps {
-  cardPacks?: ("normal" | "senseis" | "windway" | "promo" | "dual")[];
+  cardPacks?: (
+    | "normal"
+    | "senseis"
+    | "windway"
+    | "promo"
+    | "dual"
+    | "special"
+  )[];
   language?: Language;
 }
 

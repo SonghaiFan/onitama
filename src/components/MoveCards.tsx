@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { MoveCard, Player } from "@/types/game";
 import { getArtName } from "../utils/getArtName";
 import { MoveGrid } from "./MoveGrid";

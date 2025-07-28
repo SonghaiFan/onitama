@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { content, Language } from "./content";
-import { ZenButton } from "./shared";
+import { SelectionGrid, SelectionOption } from "../ui/SelectionGrid";
 import { checkAllPacks, checkCardAvailability } from "@/utils/dataLoader";
-import { getPlayerColors } from "@/utils/gameAestheticConfig";
 
 export type CardPack =
   | "normal"
@@ -16,55 +15,12 @@ interface CardPackSelectionProps {
   language: Language;
   selectedPacks: Set<CardPack>;
   onTogglePack: (pack: CardPack) => void;
-  onStartGame: () => void;
-}
-
-function CardPackButton({
-  pack,
-  isSelected,
-  onClick,
-  lang,
-}: {
-  pack: CardPack;
-  isSelected: boolean;
-  onClick: () => void;
-  lang: Language;
-}) {
-  const packData = content[lang].cardPacks[pack];
-
-  return (
-    <button
-      onClick={onClick}
-      className={`relative zen-card border-2 px-4 py-4 sm:px-6 sm:py-5 lg:px-8 lg:py-6 transition-all duration-500 hover:shadow-xl hover:-translate-y-1 sm:hover:-translate-y-2 tracking-wide font-light zen-text focus:focus-zen overflow-hidden ${
-        isSelected
-          ? "border-stone-600 text-stone-800 bg-gradient-to-br from-stone-50 to-stone-100 shadow-lg scale-105"
-          : "border-stone-300 text-stone-600 hover:border-stone-500 hover:bg-stone-50"
-      }`}
-    >
-      {isSelected && (
-        <div className="absolute top-0 right-0 w-0 h-0 border-l-[16px] sm:border-l-[20px] border-l-transparent border-t-[16px] sm:border-t-[20px] border-t-stone-600"></div>
-      )}
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full transition-transform duration-700 group-hover:translate-x-full"></div>
-      <div className="text-center relative z-10">
-        <div className="text-base sm:text-lg font-medium mb-1 sm:mb-2">
-          {packData.name}
-        </div>
-        <div className="text-xs sm:text-sm text-stone-500 mb-2 sm:mb-3">
-          {packData.description}
-        </div>
-        <div className="text-xs text-stone-400">
-          {isSelected ? packData.selected : packData.unselected}
-        </div>
-      </div>
-    </button>
-  );
 }
 
 export function CardPackSelection({
   language,
   selectedPacks,
   onTogglePack,
-  onStartGame,
 }: CardPackSelectionProps) {
   const [cardValidation, setCardValidation] = useState<{
     hasEnoughCards: boolean;
@@ -109,71 +65,79 @@ export function CardPackSelection({
     validateCards();
   }, [selectedPacks]);
 
+  // Convert card packs to selection options
+  const selectionOptions: SelectionOption<CardPack>[] = [
+    {
+      id: "normal",
+      name: content[language].cardPacks.normal.name,
+      description: content[language].cardPacks.normal.description,
+      selectedText: content[language].cardPacks.normal.selected,
+      unselectedText: content[language].cardPacks.normal.unselected,
+      available: availablePacks.has("normal"),
+    },
+    {
+      id: "senseis",
+      name: content[language].cardPacks.senseis.name,
+      description: content[language].cardPacks.senseis.description,
+      selectedText: content[language].cardPacks.senseis.selected,
+      unselectedText: content[language].cardPacks.senseis.unselected,
+      available: availablePacks.has("senseis"),
+    },
+    {
+      id: "promo",
+      name: content[language].cardPacks.promo.name,
+      description: content[language].cardPacks.promo.description,
+      selectedText: content[language].cardPacks.promo.selected,
+      unselectedText: content[language].cardPacks.promo.unselected,
+      available: availablePacks.has("promo"),
+    },
+    {
+      id: "special",
+      name: content[language].cardPacks.special.name,
+      description: content[language].cardPacks.special.description,
+      selectedText: content[language].cardPacks.special.selected,
+      unselectedText: content[language].cardPacks.special.unselected,
+      available: availablePacks.has("special"),
+    },
+    {
+      id: "windway",
+      name: content[language].cardPacks.windway.name,
+      description: content[language].cardPacks.windway.description,
+      selectedText: content[language].cardPacks.windway.selected,
+      unselectedText: content[language].cardPacks.windway.unselected,
+      available: availablePacks.has("windway"),
+    },
+    {
+      id: "dual",
+      name: content[language].cardPacks.dual.name,
+      description: content[language].cardPacks.dual.description,
+      selectedText: content[language].cardPacks.dual.selected,
+      unselectedText: content[language].cardPacks.dual.unselected,
+      available: availablePacks.has("dual"),
+    },
+  ];
+
+  // Prepare simple status props for SelectionGrid
+  const statusMessage = cardValidation.isLoading
+    ? content[language].cardValidation.checking
+    : `${content[language].cardValidation.availableCards}: ${cardValidation.totalCards}/5`;
+
+  const statusWarning =
+    cardValidation.totalCards < 5 && !cardValidation.isLoading
+      ? content[language].cardValidation.needMoreCards
+      : undefined;
+
   return (
-    <div className="text-center mb-8 sm:mb-12">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <h3 className="text-base sm:text-lg text-stone-700 mb-4 sm:mb-6 font-light tracking-wide zen-text">
-          {content[language].cardPacks.title}
-        </h3>
-
-        {/* Card count indicator */}
-        <div className="mb-4 sm:mb-6">
-          <div className="inline-flex items-center space-x-2 px-4 py-2 bg-stone-50 border border-stone-200 shadow-sm">
-            <span className="text-sm text-stone-600 font-light zen-text">
-              {cardValidation.isLoading
-                ? content[language].cardValidation.checking
-                : `${content[language].cardValidation.availableCards}: ${cardValidation.totalCards}/5`}
-            </span>
-            {cardValidation.totalCards < 5 && !cardValidation.isLoading && (
-              <span
-                className={`${
-                  getPlayerColors("red").tailwind.text
-                } text-sm font-medium zen-text`}
-              >
-                {content[language].cardValidation.needMoreCards}
-              </span>
-            )}
-          </div>
-        </div>
-
-        <div className="flex flex-wrap justify-center gap-4 sm:gap-6 lg:gap-8">
-          {["normal", "senseis", "promo", "special"].map((pack) =>
-            availablePacks.has(pack as CardPack) ? (
-              <CardPackButton
-                key={pack}
-                pack={pack as CardPack}
-                isSelected={selectedPacks.has(pack as CardPack)}
-                onClick={() => onTogglePack(pack as CardPack)}
-                lang={language}
-              />
-            ) : null
-          )}
-          {/* Pack with special */}
-          <div className="w-full h-1 bg-stone-200 my-4 brush-stroke"></div>
-          {["windway", "dual"].map(
-            (pack) =>
-              availablePacks.has(pack as CardPack) && (
-                <CardPackButton
-                  key={pack}
-                  pack={pack as CardPack}
-                  isSelected={selectedPacks.has(pack as CardPack)}
-                  onClick={() => onTogglePack(pack as CardPack)}
-                  lang={language}
-                />
-              )
-          )}
-        </div>
-
-        <ZenButton
-          onClick={onStartGame}
-          disabled={!cardValidation.hasEnoughCards || cardValidation.isLoading}
-          className="text-base sm:text-lg py-4 sm:py-6 px-8 sm:px-12 mt-8 sm:mt-12"
-        >
-          {cardValidation.isLoading
-            ? content[language].cardValidation.checking
-            : content[language].startGame}
-        </ZenButton>
-      </div>
-    </div>
+    <SelectionGrid
+      title={content[language].cardPacks.title}
+      options={selectionOptions}
+      selectedItems={selectedPacks}
+      onToggleItem={onTogglePack}
+      showDivider={true}
+      dividerAfterIndex={4} // Show divider after the first 4 options (normal, senseis, promo, special)
+      statusMessage={statusMessage}
+      statusWarning={statusWarning}
+      isLoading={cardValidation.isLoading}
+    />
   );
 }

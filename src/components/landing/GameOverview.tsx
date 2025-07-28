@@ -1,6 +1,6 @@
 import React from "react";
 import { content, Language } from "./content";
-import { IconCircle } from "./shared";
+import { IconCircle } from "@/components/ui/IconCircle";
 
 interface GameOverviewProps {
   language: Language;

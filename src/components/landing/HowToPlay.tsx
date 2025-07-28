@@ -1,7 +1,8 @@
 import React from "react";
 import { content, Language } from "./content";
-import { IconCircle, SectionTitle } from "./shared";
-import Card from "../MoveCards";
+import { SectionTitle } from "@/components/ui/SectionTitle";
+import { IconCircle } from "@/components/ui/IconCircle";
+import Card from "@/components/MoveCards";
 import { MoveCard, Player } from "@/types/game";
 import { GameSymbol } from "@/utils/gameAestheticConfig";
 
