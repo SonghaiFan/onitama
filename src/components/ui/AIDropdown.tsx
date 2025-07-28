@@ -8,6 +8,7 @@ import {
   SelectionState,
 } from "@/types/ui";
 import { AIDifficulty } from "@/utils/aiService";
+import { AIAlgorithm, AIFactory } from "@/utils/ai/aiFactory";
 import { CardPack } from "@/types/game";
 import { isAICompatible, getAIDisabledReason } from "@/utils/aiRestrictions";
 
@@ -17,6 +18,8 @@ interface AIDropdownProps {
   onSetAIEnabled: (enabled: boolean) => void;
   aiDifficulty?: AIDifficulty;
   onDifficultyChange?: (difficulty: AIDifficulty) => void;
+  aiAlgorithm?: AIAlgorithm;
+  onAlgorithmChange?: (algorithm: AIAlgorithm) => void;
   selectedPacks?: Set<CardPack>;
   className?: string;
 }
@@ -27,6 +30,8 @@ export function AIDropdown({
   onSetAIEnabled,
   aiDifficulty,
   onDifficultyChange,
+  aiAlgorithm,
+  onAlgorithmChange,
   selectedPacks = new Set(),
   className = "",
 }: AIDropdownProps) {
@@ -37,9 +42,19 @@ export function AIDropdown({
       enableAI: "啟用 AI",
       disableAI: "關閉 AI",
       difficulty: "AI 難度",
+      algorithm: "AI 算法",
       difficulties: {
         easy: "簡單",
         medium: "中等",
+      },
+      algorithms: {
+        easy: "簡單",
+        medium: "中等",
+        greedy: "貪心",
+        minimax: "極小極大",
+        alphabeta: "α-β剪枝",
+        montecarlo: "蒙特卡羅",
+        hybrid: "混合算法",
       },
     },
     en: {
@@ -47,9 +62,19 @@ export function AIDropdown({
       enableAI: "Enable AI",
       disableAI: "Disable AI",
       difficulty: "AI Difficulty",
+      algorithm: "AI Algorithm",
       difficulties: {
         easy: "Easy",
         medium: "Medium",
+      },
+      algorithms: {
+        easy: "Easy",
+        medium: "Medium",
+        greedy: "Greedy",
+        minimax: "Minimax",
+        alphabeta: "Alpha-Beta",
+        montecarlo: "Monte Carlo",
+        hybrid: "Hybrid",
       },
     },
   };
@@ -69,13 +94,44 @@ export function AIDropdown({
     }
   }, [aiCompatible, aiEnabled, onSetAIEnabled]);
 
-  // Difficulty selection items
+  // Algorithm selection items
+  const algorithmItems: SelectableItem<AIAlgorithm>[] = [
+    { id: "easy", label: t.algorithms.easy },
+    { id: "medium", label: t.algorithms.medium },
+    { id: "greedy", label: t.algorithms.greedy },
+    { id: "minimax", label: t.algorithms.minimax },
+    { id: "alphabeta", label: t.algorithms.alphabeta },
+    { id: "montecarlo", label: t.algorithms.montecarlo },
+    { id: "hybrid", label: t.algorithms.hybrid },
+  ];
+
+  // Algorithm selection config
+  const algorithmConfig: SelectionGroupConfig<AIAlgorithm> = {
+    id: "ai-algorithm",
+    title: t.algorithm,
+    allowMultiple: false,
+    layout: "grid",
+    columns: 2,
+  };
+
+  // Algorithm selection state
+  const algorithmSelection: SelectionState<AIAlgorithm> = {
+    selected: new Set(aiAlgorithm ? [aiAlgorithm] : []),
+    onChange: (selected) => {
+      const selectedAlgorithm = Array.from(selected)[0];
+      if (selectedAlgorithm && onAlgorithmChange) {
+        onAlgorithmChange(selectedAlgorithm);
+      }
+    },
+  };
+
+  // Legacy difficulty selection items (for backward compatibility)
   const difficultyItems: SelectableItem<AIDifficulty>[] = [
     { id: "easy", label: t.difficulties.easy },
     { id: "medium", label: t.difficulties.medium },
   ];
 
-  // Difficulty selection config
+  // Legacy difficulty selection config
   const difficultyConfig: SelectionGroupConfig<AIDifficulty> = {
     id: "ai-difficulty",
     title: t.difficulty,
@@ -84,7 +140,7 @@ export function AIDropdown({
     columns: 2,
   };
 
-  // Difficulty selection state
+  // Legacy difficulty selection state
   const difficultySelection: SelectionState<AIDifficulty> = {
     selected: new Set(aiDifficulty ? [aiDifficulty] : []),
     onChange: (selected) => {
@@ -135,12 +191,24 @@ export function AIDropdown({
           </ZenButton>
         </div>
 
-        {aiEnabled && aiDifficulty && onDifficultyChange && aiCompatible && (
-          <SelectionGroup
-            items={difficultyItems}
-            config={difficultyConfig}
-            selection={difficultySelection}
-          />
+        {aiEnabled && aiCompatible && (
+          <>
+            {aiAlgorithm && onAlgorithmChange && (
+              <SelectionGroup
+                items={algorithmItems}
+                config={algorithmConfig}
+                selection={algorithmSelection}
+              />
+            )}
+            
+            {aiDifficulty && onDifficultyChange && !aiAlgorithm && (
+              <SelectionGroup
+                items={difficultyItems}
+                config={difficultyConfig}
+                selection={difficultySelection}
+              />
+            )}
+          </>
         )}
       </div>
     </ZenDropdown>

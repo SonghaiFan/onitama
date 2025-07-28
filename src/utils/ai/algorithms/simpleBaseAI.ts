@@ -17,7 +17,6 @@ export interface AIMoveResult {
 /**
  * Simple base class for AI algorithms - inspired by Rust implementation
  * Provides essential utilities without complex built-in algorithms
- * Each algorithm should implement its own strategy
  */
 export abstract class BaseAI {
   protected maxDepth: number;
@@ -53,10 +52,9 @@ export abstract class BaseAI {
 
   /**
    * Apply a move and return new game state (pure function)
-   * Simple deep copy approach - can be optimized later if needed
    */
   protected applyMove(gameState: GameState, move: MoveWithMetadata): GameState {
-    // Deep copy the game state using JSON (simple but effective)
+    // Deep copy the game state
     const newState: GameState = JSON.parse(JSON.stringify(gameState));
 
     // Apply the move
@@ -94,13 +92,12 @@ export abstract class BaseAI {
 
   /**
    * Basic position evaluation (matches Rust heuristics.rs)
-   * Red maximizing (+), Blue minimizing (-)
    */
-  protected basicValue(gameState: GameState): number {
+  protected evaluatePosition(gameState: GameState): number {
     // Check for game over
     const winner = checkWinConditions(gameState);
-    if (winner === "red") return 1000000; // i64::MAX equivalent
-    if (winner === "blue") return -1000000; // i64::MIN equivalent
+    if (winner === "red") return 1000000;
+    if (winner === "blue") return -1000000;
 
     // Count pieces for each player (excluding wind spirits)
     let redPieces = 0;
@@ -141,7 +138,7 @@ export abstract class BaseAI {
   }
 
   // ============================================================================
-  // UTILITY METHODS (Optional helpers)
+  // UTILITY METHODS (Optional helpers for advanced algorithms)
   // ============================================================================
 
   /**
@@ -173,36 +170,24 @@ export abstract class BaseAI {
     return moves[Math.floor(Math.random() * moves.length)];
   }
 
-  /**
-   * Shuffle array in place (for randomized move ordering)
-   */
-  protected shuffleMoves(moves: MoveWithMetadata[]): MoveWithMetadata[] {
-    const shuffled = [...moves];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  }
-
   // ============================================================================
   // ALGORITHM BUILDING BLOCKS (For implementing classic algorithms)
   // ============================================================================
 
   /**
-   * Basic minimax implementation
-   * Returns the score for the maximizing player (red = positive, blue = negative)
+   * Basic minimax implementation (for simple algorithms)
    */
   protected minimax(
     gameState: GameState,
-    depth: number
+    depth: number,
+    maximizingPlayer: Player
   ): { score: number; nodesEvaluated: number } {
     let nodesEvaluated = 1;
 
     // Base case
     if (depth === 0 || this.isGameOver(gameState) || this.isTimeUp()) {
       return {
-        score: this.basicValue(gameState),
+        score: this.evaluatePosition(gameState),
         nodesEvaluated,
       };
     }
@@ -210,45 +195,48 @@ export abstract class BaseAI {
     const moves = this.generateLegalMoves(gameState, gameState.currentPlayer);
     if (moves.length === 0) {
       return {
-        score: this.basicValue(gameState),
+        score: this.evaluatePosition(gameState),
         nodesEvaluated,
       };
     }
 
-    const isMaximizing = gameState.currentPlayer === "red";
-    const scores: number[] = [];
+    const isMaximizing = gameState.currentPlayer === maximizingPlayer;
+    let bestScore = isMaximizing ? -Infinity : Infinity;
 
     for (const move of moves) {
       if (this.isTimeUp()) break;
 
       const newGameState = this.applyMove(gameState, move);
-      const result = this.minimax(newGameState, depth - 1);
+      const result = this.minimax(newGameState, depth - 1, maximizingPlayer);
 
-      scores.push(result.score);
       nodesEvaluated += result.nodesEvaluated;
-    }
 
-    // Find min/max like Rust implementation
-    const bestScore = isMaximizing ? Math.max(...scores) : Math.min(...scores);
+      if (isMaximizing) {
+        bestScore = Math.max(bestScore, result.score);
+      } else {
+        bestScore = Math.min(bestScore, result.score);
+      }
+    }
 
     return { score: bestScore, nodesEvaluated };
   }
 
   /**
-   * Alpha-beta minimax implementation
+   * Alpha-beta minimax implementation (for advanced algorithms)
    */
   protected alphaBeta(
     gameState: GameState,
     depth: number,
     alpha: number,
-    beta: number
+    beta: number,
+    maximizingPlayer: Player
   ): { score: number; nodesEvaluated: number } {
     let nodesEvaluated = 1;
 
     // Base case
     if (depth === 0 || this.isGameOver(gameState) || this.isTimeUp()) {
       return {
-        score: this.basicValue(gameState),
+        score: this.evaluatePosition(gameState),
         nodesEvaluated,
       };
     }
@@ -256,19 +244,25 @@ export abstract class BaseAI {
     const moves = this.generateLegalMoves(gameState, gameState.currentPlayer);
     if (moves.length === 0) {
       return {
-        score: this.basicValue(gameState),
+        score: this.evaluatePosition(gameState),
         nodesEvaluated,
       };
     }
 
-    const isMaximizing = gameState.currentPlayer === "red";
+    const isMaximizing = gameState.currentPlayer === maximizingPlayer;
     let value = isMaximizing ? -Infinity : Infinity;
 
     for (const move of moves) {
       if (this.isTimeUp()) break;
 
       const newGameState = this.applyMove(gameState, move);
-      const result = this.alphaBeta(newGameState, depth - 1, alpha, beta);
+      const result = this.alphaBeta(
+        newGameState,
+        depth - 1,
+        alpha,
+        beta,
+        maximizingPlayer
+      );
 
       nodesEvaluated += result.nodesEvaluated;
 
@@ -370,28 +364,5 @@ export abstract class BaseAI {
     }
 
     return bestResult;
-  }
-
-  // ============================================================================
-  // LEGACY COMPATIBILITY (For existing algorithms)
-  // ============================================================================
-
-  /**
-   * Legacy method - use applyMove instead
-   * @deprecated
-   */
-  protected simulateMove(
-    gameState: GameState,
-    move: MoveWithMetadata
-  ): GameState {
-    return this.applyMove(gameState, move);
-  }
-
-  /**
-   * Legacy method - use basicValue instead
-   * @deprecated
-   */
-  protected evaluateState(gameState: GameState): number {
-    return this.basicValue(gameState);
   }
 }
