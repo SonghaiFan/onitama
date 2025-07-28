@@ -20,6 +20,7 @@ This is a **Next.js 15 Onitama board game** implementation using React 19, TypeS
 - **Tailwind CSS v4** with custom Zen-style utilities
 - **Framer Motion** (`motion` package) for smooth animations
 - **@use-gesture/react** for touch and gesture handling
+- **Howler.js** for audio management and background music
 - **Zustand** for state management (available but not currently used)
 
 ### Game Architecture
@@ -31,12 +32,18 @@ This is a **Next.js 15 Onitama board game** implementation using React 19, TypeS
 - **Piece**: Game pieces with player, master status, position, and optional wind spirit properties
 - **MoveCard**: Cards containing movement patterns, player associations, and optional wind moves
 
-#### Game Logic (`src/utils/gameLogic.ts`)
+#### Game Logic and Data Management
 
-- **Multiple Card Packs**: Supports three card packs with 16 cards each:
-  - `onitama_cards_normal.json` - Standard Onitama cards
-  - `onitama_cards_senseis.json` - Sensei's Path expansion
-  - `onitama_cards_windway.json` - Wind Spirit expansion with wind mechanics
+- **GameController** (`src/utils/gameController.ts`): Centralized game state management with AI integration
+- **GameManager** (`src/utils/gameManager.ts`): Core game logic including move validation and execution
+- **DataLoader** (`src/utils/dataLoader.ts`): Handles card pack loading and game initialization
+- **Multiple Card Packs**: Supports six card packs with 16 cards each:
+  - `onitama_16_cards_normal.json` - Standard Onitama cards
+  - `onitama_16_cards_senseis.json` - Sensei's Path expansion
+  - `onitama_16_cards_windway.json` - Wind Spirit expansion with wind mechanics
+  - `onitama_16_cards_dual.json` - Dual movement cards
+  - `onitama_16_cards_promo.json` - Promotional cards
+  - `onitama_16_cards_special.json` - Special variant cards
 - **Card Selection**: Randomly selects 5 cards per game (2 per player + 1 shared)
 - **Movement System**: Red player moves "forward" (negative y), Blue moves "backward" (positive y)
 - **Wind Spirit Mechanics**: Special cards with `wind_move` properties for enhanced gameplay
@@ -51,6 +58,7 @@ This is a **Next.js 15 Onitama board game** implementation using React 19, TypeS
 - **GameCell** (`src/components/GameCell.tsx`): Individual board cells with drop zones and touch handling
 - **GamePiece** (`src/components/GamePiece.tsx`): Draggable pieces with visual feedback and gesture support
 - **MoveCards** (`src/components/MoveCards.tsx`): Card display with movement patterns and wind move grids
+- **SoundProvider** (`src/components/SoundProvider.tsx`): Audio context and background music management
 
 #### Styling Approach
 
@@ -87,19 +95,41 @@ Cards are defined in JSON with:
 
 #### Card Pack Structure
 
-Three card packs are available in `/public/pack/`:
+Six card packs are available in `/public/pack/`:
 
 - **Normal Pack**: Standard 16-card Onitama set
 - **Sensei's Path**: Advanced expansion cards
 - **Wind Spirit**: Cards with wind mechanics and dual movement grids
+- **Dual Pack**: Cards with separate master/student movement patterns
+- **Promo Pack**: Promotional expansion cards
+- **Special Pack**: Special variant cards
+
+### AI Architecture
+
+#### AI System (`src/utils/ai/`)
+
+- **AIFactory** (`aiFactory.ts`): Factory pattern for AI algorithm selection
+- **BaseAI** (`algorithms/baseAI.ts`): Abstract base class for AI implementations
+- **EasyAI** (`algorithms/easyAI.ts`): Simple random strategy with basic piece safety
+- **MediumAI** (`algorithms/mediumAI.ts`): Tactical evaluation with position scoring
+- **AIService** (`src/utils/aiService.ts`): Service layer with thinking time simulation
+- **Two Difficulty Levels**: Easy and Medium with configurable parameters
+
+#### AI Integration
+
+- Game Controller manages AI player assignment and turn execution
+- Asynchronous AI move calculation with simulated thinking time
+- Configurable randomness and response timing
+- Real-time difficulty switching during gameplay
 
 ### Development Notes
 
 #### State Management
 
-- The game uses imperative handles for game reset functionality via `forwardRef`
-- State management is primarily local with React hooks (no global store currently used)
-- Game state is centralized in the `OnitamaGame` component and passed down via props
+- **GameController**: Centralized state management with observer pattern for UI updates
+- **useGameController Hook**: React integration with automatic state subscriptions
+- **GameContext**: Context provider for eliminating prop drilling
+- Game state flows from controller through hook to components
 
 #### Interaction Model
 
@@ -113,9 +143,19 @@ Three card packs are available in `/public/pack/`:
 - UI is primarily displayed in Chinese with bilingual card names
 - Card pack metadata includes multilingual descriptions
 
+#### Architecture Patterns
+
+- **Event Bus** (`src/utils/eventBus.ts`): Publish-subscribe system for loose coupling
+- **Game Persistence** (`src/utils/gamePersistence.ts`): Save/load game state functionality
+- **Content System** (`src/utils/content.ts`): Multilingual content management
+- **AI Restrictions** (`src/utils/aiRestrictions.ts`): AI behavior constraints and rules
+
 #### File Structure
 
 - Card data stored as JSON files in `/public/pack/`
-- Custom fonts located in `/public/fonts/`
+- Custom fonts (Chinese calligraphy) in `/public/fonts/`
+- SVG symbols for game pieces in `/public/symbol/`
+- Background music in `/public/music/`
 - Game logic separated into utility functions in `/src/utils/`
 - TypeScript interfaces centralized in `/src/types/`
+- UI components organized in `/src/components/ui/`
