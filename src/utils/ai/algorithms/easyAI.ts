@@ -12,6 +12,7 @@ export class EasyAI extends BaseAI {
     player: Player
   ): Promise<AIMoveResult> {
     this.startTime = Date.now();
+    const config = await this.getTacticalConfig();
     const moves = this.generateLegalMoves(gameState, player);
 
     if (moves.length === 0) {
@@ -19,7 +20,7 @@ export class EasyAI extends BaseAI {
     }
 
     // Emit initial thinking update with a starting evaluation
-    const initialScore = this.evaluateState(gameState, player);
+    const initialScore = this.evaluateState(gameState, player, config);
     this.emitThinkingUpdate({
       score: initialScore,
       depth: 1,
@@ -39,10 +40,11 @@ export class EasyAI extends BaseAI {
     if (masterCaptures.length > 0) {
       // Found a master capture - take it immediately!
       selectedMove = masterCaptures[0];
-      score = 999; // Clear win
+      score = config.evaluation.terminal.masterCapturePriority; // Clear win
       
       this.emitThinkingUpdate({
-        score: 95 + Math.random() * 4, // Show as clear winning move
+        score: config.evaluation.scoreDisplay.clearWin.min + 
+               Math.random() * (config.evaluation.scoreDisplay.clearWin.max - config.evaluation.scoreDisplay.clearWin.min),
         depth: 1,
         nodesEvaluated: moves.length,
         bestMoveFound: {
@@ -51,7 +53,7 @@ export class EasyAI extends BaseAI {
           cardIndex: selectedMove.cardIndex,
         },
       });
-    } else if (Math.random() < 0.8) {
+    } else if (Math.random() < config.algorithm.randomness.easyAI.capturePreference) {
       // 80% chance to use improved capture logic, 20% use minimax
       const captures = moves.filter((move) => move.isCapture);
 
@@ -64,12 +66,14 @@ export class EasyAI extends BaseAI {
 
       // Simulate the move to get a better evaluation
       const simState = this.simulateMove(gameState, selectedMove);
-      score = this.evaluateState(simState, player);
+      score = this.evaluateState(simState, player, config);
       
       // Normalize the score for UI display with more variance
-      const displayScore = score >= 9000 ? 85 + Math.random() * 10 : // Winning: 85-95
-                          score <= -9000 ? -95 + Math.random() * 10 : // Losing: -95 to -85  
-                          score * 0.1 + (Math.random() - 0.5) * 8; // Normal: scaled with larger variance
+      const displayScore = score >= config.evaluation.terminal.templeArchReached ? 
+                          config.evaluation.scoreDisplay.clearWin.min + Math.random() * config.algorithm.randomness.easyAI.displayVariance.winning :
+                          score <= -config.evaluation.terminal.templeArchReached ? 
+                          config.evaluation.scoreDisplay.clearLoss.min + Math.random() * config.algorithm.randomness.easyAI.displayVariance.losing :
+                          score * config.evaluation.scoreDisplay.normalScaling + (Math.random() - 0.5) * config.algorithm.randomness.easyAI.displayVariance.normal;
       
       // Emit mid-thinking update with normalized score
       this.emitThinkingUpdate({
@@ -85,9 +89,11 @@ export class EasyAI extends BaseAI {
       
       // Add a second thinking update to show progression
       setTimeout(() => {
-        const finalDisplayScore = score >= 9000 ? 88 + Math.random() * 7 : 
-                                 score <= -9000 ? -95 + Math.random() * 5 :
-                                 score * 0.1 + (Math.random() - 0.5) * 6;
+        const finalDisplayScore = score >= config.evaluation.terminal.templeArchReached ? 
+                                  config.evaluation.scoreDisplay.clearWin.min + Math.random() * 7 :
+                                  score <= -config.evaluation.terminal.templeArchReached ? 
+                                  config.evaluation.scoreDisplay.clearLoss.min + Math.random() * 5 :
+                                  score * config.evaluation.scoreDisplay.normalScaling + (Math.random() - 0.5) * 6;
         this.emitThinkingUpdate({
           score: finalDisplayScore,
           depth: 1,
@@ -98,10 +104,10 @@ export class EasyAI extends BaseAI {
             cardIndex: selectedMove.cardIndex,
           },
         });
-      }, 150);
+      }, config.algorithm.randomness.easyAI.thinkingDelay);
     } else {
       // Use minimax with depth 1
-      const result = this.findBestMoveWithMinimax(gameState, player, 1);
+      const result = await this.findBestMoveWithMinimax(gameState, player, 1);
       selectedMove = result.move;
       score = result.score;
     }
@@ -109,9 +115,11 @@ export class EasyAI extends BaseAI {
     const thinkingTime = Date.now() - this.startTime;
 
     // Final score normalization for UI
-    const finalDisplayScore = score >= 9000 ? 90 + Math.random() * 8 : // Winning: 90-98
-                             score <= -9000 ? -98 + Math.random() * 8 : // Losing: -98 to -90
-                             score * 0.1 + (Math.random() - 0.5) * 3; // Normal: scaled with variance
+    const finalDisplayScore = score >= config.evaluation.terminal.templeArchReached ? 
+                             config.evaluation.scoreDisplay.clearWin.min + Math.random() * 8 :
+                             score <= -config.evaluation.terminal.templeArchReached ? 
+                             config.evaluation.scoreDisplay.clearLoss.max + Math.random() * 8 :
+                             score * config.evaluation.scoreDisplay.normalScaling + (Math.random() - 0.5) * 3;
 
     // Emit final thinking update
     this.emitThinkingUpdate({

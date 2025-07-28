@@ -1,0 +1,106 @@
+{
+  "metadata": {
+    "name": "Default Onitama AI Tactical Configuration",
+    "description": "Balanced tactical parameters for AI opponents with configurable difficulty levels",
+    "version": "1.0.0",
+    "author": "Onitama AI System"
+  },
+  
+  "difficulties": {
+    "easy": {
+      "maxDepth": 1,
+      "maxThinkingTime": 1000,
+      "strategy": "mixed",
+      "randomnessRatio": 0.8,
+      "minimaxDepth": 1
+    },
+    "medium": {
+      "maxDepth": 2,
+      "maxThinkingTime": 2000,
+      "strategy": "minimax"
+    }
+  },
+  
+  "evaluation": {
+    "terminal": {
+      "masterCaptured": 10000,
+      "templeArchReached": 10000,
+      "masterCapturePriority": 999,
+      "templeArchPriority": 998
+    },
+    
+    "material": {
+      "pieceValue": 150,
+      "masterSafetyValue": 15,
+      "masterSafetyRadius": 1
+    },
+    
+    "positional": {
+      "masterProgress": 50,
+      "masterNearGoal": 100,
+      "masterCenterColumn": 30,
+      "centerControl": 25,
+      "centerPositions": [[2, 2], [1, 2], [2, 1], [2, 3], [3, 2]],
+      "masterCenterMultiplier": 3
+    },
+    
+    "tactical": {
+      "captureOpportunity": 30,
+      "captureBonus": 500,
+      "flexibility": 5,
+      "maxFlexibility": 50,
+      "masterThreatPenalty": 1000
+    },
+    
+    "moveWeighting": {
+      "baseWeight": 1.0,
+      "captureWeight": 0.5,
+      "masterMoveWeight": 0.3,
+      "centerWeight": 0.1,
+      "maxCenterDistance": 4
+    },
+    
+    "scoreDisplay": {
+      "clearWin": { "min": 95, "max": 99 },
+      "clearLoss": { "min": -99, "max": -95 },
+      "strongAdvantage": { "min": 70, "max": 90 },
+      "strongDisadvantage": { "min": -90, "max": -70 },
+      "normalRange": { "min": -60, "max": 60 },
+      "normalScaling": 0.1,
+      "variance": 8,
+      "strongAdvantageThreshold": 500,
+      "strongAdvantageScaling": 50
+    }
+  },
+  
+  "algorithm": {
+    "expectimax": {
+      "averageWeight": 0.7,
+      "extremeWeight": 0.3
+    },
+    
+    "search": {
+      "updateFrequency": 4,
+      "confidenceCalculation": {
+        "base": 10,
+        "maxConfidence": 1.0
+      }
+    },
+    
+    "randomness": {
+      "positionRandomness": 20,
+      "scoreBounds": { "min": -2000, "max": 2000 },
+      
+      "easyAI": {
+        "capturePreference": 0.8,
+        "minimaxChance": 0.2,
+        "thinkingDelay": 150,
+        "displayVariance": {
+          "winning": 10,
+          "losing": 10,
+          "normal": 8
+        }
+      }
+    }
+  }
+}

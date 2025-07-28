@@ -24,7 +24,7 @@ export class MediumAI extends BaseAI {
     });
 
     // Always use minimax with medium depth for MediumAI
-    const result = this.findBestMoveWithMinimax(
+    const result = await this.findBestMoveWithMinimax(
       gameState,
       player,
       this.maxDepth

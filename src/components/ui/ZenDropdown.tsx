@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { DropdownConfig } from "@/types/ui";
 
@@ -24,13 +24,13 @@ export function ZenDropdown({
 
   // Use controlled or uncontrolled state
   const isOpen = open !== undefined ? open : isInternalOpen;
-  const setIsOpen = (newOpen: boolean) => {
+  const setIsOpen = useCallback((newOpen: boolean) => {
     if (onOpenChange) {
       onOpenChange(newOpen);
     } else {
       setIsInternalOpen(newOpen);
     }
-  };
+  }, [onOpenChange]);
 
   // Default config
   const { positioning = {}, behavior = {}, animation = {} } = config;
