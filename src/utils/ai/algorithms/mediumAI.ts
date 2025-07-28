@@ -3,7 +3,7 @@ import { BaseAI, AIMoveResult } from "./baseAI";
 
 export class MediumAI extends BaseAI {
   constructor() {
-    super(2, 2000); // Medium: moderate depth and time
+    super(6, 20000); // Medium: moderate depth and time
   }
 
   async findBestMove(

@@ -44,10 +44,9 @@ const AIThinkingIndicator: React.FC<AIThinkingIndicatorProps> = ({
     }
   }, [thinkingData, isThinking]);
 
-  // Clear history when thinking stops
+  // Reset current time when thinking stops (but keep history)
   useEffect(() => {
     if (!isThinking) {
-      setThinkingHistory([]);
       setCurrentTime(0);
     }
   }, [isThinking]);
@@ -85,117 +84,121 @@ const AIThinkingIndicator: React.FC<AIThinkingIndicatorProps> = ({
     },
   };
 
-  if (!isThinking) return null;
-
   const latestThinking = thinkingHistory[thinkingHistory.length - 1];
   const displayTime = latestThinking?.elapsedTime || currentTime;
   const playerColors = getPlayerColors(player);
 
+  // If not thinking and no history, don't show anything
+  if (!isThinking && thinkingHistory.length === 0) return null;
+
   return (
     <div className={`flex flex-col space-y-3 ${className}`}>
-      {/* Main thinking indicator with zen card styling */}
-      <div className="zen-card border border-stone-300 shadow-lg overflow-hidden">
-        <div className="flex items-center space-x-4 p-4">
-          {/* Animated thinking dots */}
-          <div className="flex space-x-1">
-            {[0, 1, 2].map((i) => (
-              <div
-                key={i}
-                className={`w-2.5 h-2.5 rounded-full ai-thinking-dot ${playerColors.tailwind.text.replace(
-                  "text-",
-                  "bg-"
-                )}`}
-                style={{
-                  animationDelay: `${i * 0.2}s`,
-                }}
-              />
-            ))}
-          </div>
-
-          {/* Main content */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4
-                  className={`text-sm font-medium zen-text ${playerColors.tailwind.text}`}
-                >
-                  {content[language].thinking}
-                </h4>
-                <p className="text-xs text-stone-500 zen-text mt-0.5">
-                  {content[language].calculating}
-                </p>
-              </div>
-
-              {/* Time display */}
-              <div className="text-right">
-                <div className="text-xs text-stone-400 zen-text">
-                  {content[language].time}
-                </div>
-                <div className="font-mono text-sm text-stone-700">
-                  {(displayTime / 1000).toFixed(1)}s
-                </div>
-              </div>
+      {isThinking && (
+        /* Main thinking indicator with zen card styling */
+        <div className="zen-card border border-stone-300 shadow-lg overflow-hidden">
+          <div className="flex items-center space-x-4 p-4">
+            {/* Animated thinking dots */}
+            <div className="flex space-x-1">
+              {[0, 1, 2].map((i) => (
+                <div
+                  key={i}
+                  className={`w-2.5 h-2.5 rounded-full ai-thinking-dot ${playerColors.tailwind.text.replace(
+                    "text-",
+                    "bg-"
+                  )}`}
+                  style={{
+                    animationDelay: `${i * 0.2}s`,
+                  }}
+                />
+              ))}
             </div>
 
-            {/* Stats row */}
-            {latestThinking && (
-              <div className="flex items-center space-x-6 mt-3 pt-3 border-t border-stone-200">
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs text-stone-500 zen-text">
-                    {content[language].score}
-                  </span>
-                  <span
-                    className={`font-mono text-xs font-medium ${
-                      Math.abs(latestThinking.score) >= 10000
-                        ? latestThinking.score > 0
-                          ? "text-emerald-600"
-                          : "text-red-600"
-                        : "text-stone-700"
-                    }`}
+            {/* Main content */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4
+                    className={`text-sm font-medium zen-text ${playerColors.tailwind.text}`}
                   >
-                    {Math.abs(latestThinking.score) >= 10000
-                      ? latestThinking.score > 0
-                        ? "勝利"
-                        : "敗北"
-                      : latestThinking.score.toFixed(1)}
-                  </span>
+                    {content[language].thinking}
+                  </h4>
+                  <p className="text-xs text-stone-500 zen-text mt-0.5">
+                    {content[language].calculating}
+                  </p>
                 </div>
 
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs text-stone-500 zen-text">
-                    {content[language].nodes}
-                  </span>
-                  <span className="font-mono text-xs text-stone-700">
-                    {latestThinking.nodesEvaluated.toLocaleString()}
-                  </span>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs text-stone-500 zen-text">
-                    {content[language].depth}
-                  </span>
-                  <span className="font-mono text-xs text-stone-700">
-                    {latestThinking.depth}
-                  </span>
+                {/* Time display */}
+                <div className="text-right">
+                  <div className="text-xs text-stone-400 zen-text">
+                    {content[language].time}
+                  </div>
+                  <div className="font-mono text-sm text-stone-700">
+                    {(displayTime / 1000).toFixed(1)}s
+                  </div>
                 </div>
               </div>
-            )}
+
+              {/* Stats row */}
+              {latestThinking && (
+                <div className="flex items-center space-x-6 mt-3 pt-3 border-t border-stone-200">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs text-stone-500 zen-text">
+                      {content[language].score}
+                    </span>
+                    <span
+                      className={`font-mono text-xs font-medium ${
+                        Math.abs(latestThinking.score) >= 10000
+                          ? latestThinking.score > 0
+                            ? "text-emerald-600"
+                            : "text-red-600"
+                          : "text-stone-700"
+                      }`}
+                    >
+                      {Math.abs(latestThinking.score) >= 10000
+                        ? latestThinking.score > 0
+                          ? "勝利"
+                          : "敗北"
+                        : latestThinking.score.toFixed(1)}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs text-stone-500 zen-text">
+                      {content[language].nodes}
+                    </span>
+                    <span className="font-mono text-xs text-stone-700">
+                      {latestThinking.nodesEvaluated.toLocaleString()}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs text-stone-500 zen-text">
+                      {content[language].depth}
+                    </span>
+                    <span className="font-mono text-xs text-stone-700">
+                      {latestThinking.depth}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Thinking history with subtle zen styling */}
-      {thinkingHistory.length > 1 && (
+      {((!isThinking && thinkingHistory.length > 0) ||
+        (isThinking && thinkingHistory.length > 1)) && (
         <div className="space-y-2">
           <div className="text-xs text-stone-400 zen-text px-1">
             {content[language].recentThoughts}
           </div>
           <div className="space-y-1">
-            {thinkingHistory
-              .slice(0, -1)
+            {(isThinking ? thinkingHistory.slice(0, -1) : thinkingHistory)
+              .slice()
               .reverse()
               .map((thinking, index) => {
-                const opacity = Math.max(0.4, 1 - (index + 1) * 0.2);
+                const opacity = Math.max(0.4, 1 - index * 0.2);
                 const age = Date.now() - thinking.timestamp;
 
                 return (
@@ -204,15 +207,10 @@ const AIThinkingIndicator: React.FC<AIThinkingIndicatorProps> = ({
                     className="zen-card border-stone-200 transition-opacity duration-500 p-3"
                     style={{ opacity }}
                   >
-                    <div className="flex items-center justify-between text-xs">
-                      <div className="flex space-x-4 text-stone-600 zen-text">
+                    <div className="flex items-center justify-between text-xs zen-text">
+                      <div className="flex space-x-4 text-stone-600 ">
                         <span>
-                          {content[language].score}:{" "}
-                          {Math.abs(thinking.score) >= 10000
-                            ? thinking.score > 0
-                              ? "勝"
-                              : "敗"
-                            : thinking.score.toFixed(1)}
+                          {content[language].score}: {thinking.score.toFixed(1)}
                         </span>
                         <span>
                           {content[language].nodes}:{" "}
@@ -221,10 +219,10 @@ const AIThinkingIndicator: React.FC<AIThinkingIndicatorProps> = ({
                         <span>
                           {content[language].depth}: {thinking.depth}
                         </span>
+                        <span className="text-stone-400 font-mono">
+                          -{(age / 1000).toFixed(1)}s
+                        </span>
                       </div>
-                      <span className="text-stone-400 font-mono">
-                        -{(age / 1000).toFixed(1)}s
-                      </span>
                     </div>
                   </div>
                 );
