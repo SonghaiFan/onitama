@@ -3,14 +3,58 @@
 import { useState, useRef } from "react";
 import OnitamaGame from "@/components/OnitamaGame";
 import { UnifiedHeader } from "@/components/Header";
-import { CardPackSelection, CardPack } from "@/components/CardPackSelection";
+import { CardPackSelection } from "@/components/CardPackSelection";
+import { CardPack } from "@/types/game";
 import { GameOverview } from "@/components/GameOverview";
 import { HowToPlay } from "@/components/HowToPlay";
 import { Footer } from "@/components/Footer";
-import { GameProvider } from "@/contexts/GameContext";
+import { GameProvider, useGame } from "@/contexts/GameContext";
 import { defaultGameController } from "@/utils/gameController";
 
 type Language = "zh" | "en";
+
+// Game page component that has access to GameContext
+function GamePage({
+  language,
+  onBackToHome,
+  gameRef,
+  cardPacks,
+}: {
+  language: Language;
+  onBackToHome: () => void;
+  gameRef: React.RefObject<{ resetGame: () => void } | null>;
+  cardPacks: CardPack[];
+}) {
+  const { aiPlayer, setAIPlayer, config, updateAIConfig } = useGame();
+
+  return (
+    <div className="h-dvh flex flex-col scroll-paper ink-wash">
+      <UnifiedHeader
+        language={language}
+        mode="game"
+        onBackToHome={onBackToHome}
+        onNewGame={() => gameRef.current?.resetGame()}
+        aiPlayer={aiPlayer}
+        onSetAIPlayer={setAIPlayer}
+        aiDifficulty={config.aiDifficulty}
+        onDifficultyChange={(difficulty) =>
+          updateAIConfig({ aiDifficulty: difficulty })
+        }
+      />
+      <div className="flex-1 p-2 sm:p-4 lg:p-6 overflow-hidden">
+        <div className="container mx-auto max-w-7xl h-full">
+          <div className="zen-card h-full flex flex-col">
+            <OnitamaGame
+              ref={gameRef}
+              cardPacks={cardPacks}
+              language={language}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function OnitamaLanding() {
   const [showGame, setShowGame] = useState(false);
@@ -44,25 +88,12 @@ export default function OnitamaLanding() {
   if (showGame) {
     return (
       <GameProvider controller={defaultGameController}>
-        <div className="h-dvh flex flex-col scroll-paper ink-wash">
-          <UnifiedHeader
-            language={language}
-            mode="game"
-            onBackToHome={() => setShowGame(false)}
-            onNewGame={() => gameRef.current?.resetGame()}
-          />
-          <div className="flex-1 p-2 sm:p-4 lg:p-6 overflow-hidden">
-            <div className="container mx-auto max-w-7xl h-full">
-              <div className="zen-card h-full flex flex-col">
-                <OnitamaGame
-                  ref={gameRef}
-                  cardPacks={getSelectedPacksForGame()}
-                  language={language}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        <GamePage
+          language={language}
+          onBackToHome={() => setShowGame(false)}
+          gameRef={gameRef}
+          cardPacks={getSelectedPacksForGame()}
+        />
       </GameProvider>
     );
   }
@@ -80,7 +111,6 @@ export default function OnitamaLanding() {
         language={language}
         selectedPacks={selectedPacks}
         onTogglePack={togglePack}
-        onStartGame={() => setShowGame(true)}
       />
 
       <GameOverview language={language} />

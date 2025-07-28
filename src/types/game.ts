@@ -1,5 +1,13 @@
 export type Player = "red" | "blue";
 
+export type CardPack =
+  | "normal"
+  | "senseis"
+  | "windway"
+  | "promo"
+  | "dual"
+  | "special";
+
 export interface Piece {
   id: string; // Unique identifier like "red_1", "blue_master", "wind_spirit", etc.
   player: Player | "neutral"; // Add neutral for wind spirit

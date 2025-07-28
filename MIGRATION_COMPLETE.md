@@ -24,14 +24,10 @@ The Onitama game architecture has been successfully refactored with the followin
 
 ## 🎮 How to Use
 
-### **Main Game** (New Architecture)
-- Visit `/` for the new, improved version with working AI
-- Features: Working AI, centralized state, clean architecture
-
-### **Comparison Demo**
-- Visit `/demo` to compare legacy vs new architecture
-- Toggle between "Legacy" and "New" to see the differences
-- The legacy version shows the old broken AI for comparison
+### **Main Game** (Clean Architecture)
+- Visit `/` for the game with the new architecture
+- Features: Working AI, centralized state, clean separation of concerns
+- **All legacy code has been removed** - only the new architecture remains
 
 ## 🏗️ Architecture Overview
 
@@ -90,20 +86,26 @@ The Onitama game architecture has been successfully refactored with the followin
 
 ## 📁 Key Files Created/Modified
 
-### **New Architecture Files**
+### **Architecture Files**
 - `src/utils/gameController.ts` - Centralized game logic
 - `src/hooks/useGameController.ts` - React hook interface
 - `src/contexts/GameContext.tsx` - Context provider
 - `src/utils/eventBus.ts` - Event communication system
 - `src/utils/gamePersistence.ts` - Data persistence
 - `src/components/ui/AIConfigPanel.tsx` - Simple AI configuration
-- `src/components/OnitamaGameRefactored.tsx` - New game component
-- `src/components/OnitamaLandingRefactored.tsx` - New landing page
+- `src/components/OnitamaGame.tsx` - Main game component (new architecture)
+- `src/components/OnitamaLanding.tsx` - Landing page (new architecture)
 
 ### **Updated Files**
-- `src/app/page.tsx` - Now uses refactored version by default
-- `src/app/demo/page.tsx` - Comparison demo page
+- `src/app/page.tsx` - Uses the clean architecture
 - `ARCHITECTURE_IMPROVEMENTS.md` - Complete documentation
+- `MIGRATION_COMPLETE.md` - Migration summary
+
+### **Removed Files**
+- ❌ Legacy `OnitamaGameRefactored.tsx` (renamed to `OnitamaGame.tsx`)
+- ❌ Legacy `OnitamaLandingRefactored.tsx` (renamed to `OnitamaLanding.tsx`)
+- ❌ Legacy `AIGameMode.tsx` (replaced with `AIConfigPanel.tsx`)
+- ❌ Demo comparison page (no longer needed)
 
 ## 🚀 What's Next?
 

@@ -1,8 +1,11 @@
 import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { content, Language } from "../utils/content";
-import { ZenButton } from "./ui/ZenButton";
+import { ZenButton } from "@/components/ui/ZenButton";
+import { AIDropdown } from "@/components/ui/AIDropdown";
 import { motion } from "motion/react";
+import { AIDifficulty } from "@/utils/aiService";
+import { Player } from "@/types/game";
 interface UnifiedHeaderProps {
   language: Language;
   mode: "landing" | "game";
@@ -10,6 +13,11 @@ interface UnifiedHeaderProps {
   onStartGame?: () => void;
   onBackToHome?: () => void;
   onNewGame?: () => void;
+  // AI Settings props (only for game mode)
+  aiPlayer?: Player | null;
+  onSetAIPlayer?: (player: Player | null) => void;
+  aiDifficulty?: AIDifficulty;
+  onDifficultyChange?: (difficulty: AIDifficulty) => void;
 }
 
 export function UnifiedHeader({
@@ -19,6 +27,10 @@ export function UnifiedHeader({
   onStartGame,
   onBackToHome,
   onNewGame,
+  aiPlayer,
+  onSetAIPlayer,
+  aiDifficulty,
+  onDifficultyChange,
 }: UnifiedHeaderProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -40,7 +52,7 @@ export function UnifiedHeader({
 
   return (
     <header
-      className={`relative z-10 ${
+      className={`relative z-[9998] ${
         mode === "landing"
           ? "bg-transparent"
           : "flex-shrink-0 bg-white/80 backdrop-blur-sm"
@@ -109,6 +121,17 @@ export function UnifiedHeader({
               />
             </motion.div>
             <div className="flex items-center gap-2 sm:gap-4">
+              {/* AI Settings Dropdown - only show in game mode when AI props are provided */}
+              {mode === "game" && onSetAIPlayer && (
+                <AIDropdown
+                  language={language}
+                  aiPlayer={aiPlayer ?? null}
+                  onSetAIPlayer={onSetAIPlayer}
+                  aiDifficulty={aiDifficulty}
+                  onDifficultyChange={onDifficultyChange}
+                />
+              )}
+
               <ZenButton
                 onClick={toggleMusic}
                 variant="secondary"
@@ -119,13 +142,17 @@ export function UnifiedHeader({
                 <span className="hidden sm:inline">
                   {content[language].music}
                 </span>
+                <span className="sm:hidden">♪</span>
               </ZenButton>
               <ZenButton
                 onClick={onNewGame || (() => {})}
                 variant="secondary"
                 className="px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm"
               >
-                {content[language].newGame}
+                <span className="hidden sm:inline">
+                  {content[language].newGame}
+                </span>
+                <span className="sm:hidden">新</span>
               </ZenButton>
             </div>
           </div>
