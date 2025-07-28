@@ -9,7 +9,7 @@ export interface SelectableItem<T = string> {
 }
 
 export interface SelectionGroupConfig<T = string> {
-  id: T;
+  id: string;
   title?: string;
   description?: string;
   allowMultiple?: boolean;

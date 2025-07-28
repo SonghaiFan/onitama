@@ -4,7 +4,11 @@ import { checkAllPacks, checkCardAvailability } from "@/utils/dataLoader";
 import { getPlayerColors } from "@/utils/gameAestheticConfig";
 import { SelectionGroup } from "./ui/SelectionGroup";
 import { CardPack } from "@/types/game";
-import { SelectableItem, SelectionGroupConfig, SelectionState } from "@/types/ui";
+import {
+  SelectableItem,
+  SelectionGroupConfig,
+  SelectionState,
+} from "@/types/ui";
 
 interface CardPackSelectionProps {
   language: Language;
@@ -63,8 +67,8 @@ export function CardPackSelection({
   // Helper functions for new UI architecture
   const getPackItems = (packs: string[]): SelectableItem<CardPack>[] => {
     return packs
-      .filter(pack => availablePacks.has(pack as CardPack))
-      .map(pack => {
+      .filter((pack) => availablePacks.has(pack as CardPack))
+      .map((pack) => {
         const packData = content[language].cardPacks[pack as CardPack];
         return {
           id: pack as CardPack,
@@ -83,7 +87,7 @@ export function CardPackSelection({
   });
 
   const getSpecialPacksConfig = (): SelectionGroupConfig<CardPack> => ({
-    id: "special-packs", 
+    id: "special-packs",
     title: undefined,
     allowMultiple: true,
     layout: "grid",
@@ -96,11 +100,11 @@ export function CardPackSelection({
       // Handle selection changes
       const currentPacks = Array.from(selectedPacks);
       const newPacks = Array.from(newSelected);
-      
+
       // Find what changed
-      const added = newPacks.find(pack => !currentPacks.includes(pack));
-      const removed = currentPacks.find(pack => !newPacks.includes(pack));
-      
+      const added = newPacks.find((pack) => !currentPacks.includes(pack));
+      const removed = currentPacks.find((pack) => !newPacks.includes(pack));
+
       if (added) {
         onTogglePack(added);
       } else if (removed) {

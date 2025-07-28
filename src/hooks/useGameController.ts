@@ -5,7 +5,7 @@ import {
   GameControllerConfig,
   defaultGameController,
 } from "@/utils/gameController";
-import { Player } from "@/types/game";
+import { Player, CardPack } from "@/types/game";
 
 /**
  * Custom hook for managing game state through the game controller
@@ -51,7 +51,7 @@ export function useGameController(
     []
   );
 
-  const resetGame = useCallback(async (cardPacks: string[] = ["normal"]) => {
+  const resetGame = useCallback(async (cardPacks: CardPack[] = ["normal"]) => {
     await controllerRef.current.resetGame(cardPacks);
   }, []);
 

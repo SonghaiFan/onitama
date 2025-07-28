@@ -91,7 +91,7 @@ const AIThinkingIndicator: React.FC<AIThinkingIndicatorProps> = ({
   return (
     <div className={`flex flex-col space-y-2 ${className}`}>
       {/* Main thinking indicator */}
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-2 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg">
         {/* Animated dots */}
         <div className="flex space-x-1">
           {[0, 1, 2].map((i) => (
@@ -126,24 +126,28 @@ const AIThinkingIndicator: React.FC<AIThinkingIndicatorProps> = ({
         <div className="flex flex-col text-xs text-stone-600 ml-4">
           <div className="flex items-center space-x-2">
             <span>{content[language].time}:</span>
-            <span className="font-mono">
-              {Math.round(displayTime)}
-              {content[language].ms}
-            </span>
+            <span className="font-mono">{Math.round(displayTime)}{content[language].ms}</span>
           </div>
           {latestThinking && (
             <>
               <div className="flex items-center space-x-2">
                 <span>{content[language].score}:</span>
-                <span className="font-mono">
-                  {latestThinking.score.toFixed(1)}
+                <span className={`font-mono ${
+                  Math.abs(latestThinking.score) >= 10000 
+                    ? latestThinking.score > 0 
+                      ? 'text-green-600 font-bold' 
+                      : 'text-red-600 font-bold'
+                    : 'text-stone-600'
+                }`}>
+                  {Math.abs(latestThinking.score) >= 10000 
+                    ? (latestThinking.score > 0 ? '🏆 WIN' : '💀 LOSE')
+                    : latestThinking.score.toFixed(1)
+                  }
                 </span>
               </div>
               <div className="flex items-center space-x-2">
                 <span>{content[language].nodes}:</span>
-                <span className="font-mono">
-                  {latestThinking.nodesEvaluated.toLocaleString()}
-                </span>
+                <span className="font-mono">{latestThinking.nodesEvaluated.toLocaleString()}</span>
               </div>
             </>
           )}
@@ -168,7 +172,11 @@ const AIThinkingIndicator: React.FC<AIThinkingIndicatorProps> = ({
                 >
                   <div className="flex space-x-3 text-stone-600">
                     <span>
-                      {content[language].score}: {thinking.score.toFixed(1)}
+                      {content[language].score}: {
+                        Math.abs(thinking.score) >= 10000 
+                          ? (thinking.score > 0 ? '🏆 WIN' : '💀 LOSE')
+                          : thinking.score.toFixed(1)
+                      }
                     </span>
                     <span>
                       {content[language].nodes}:{" "}

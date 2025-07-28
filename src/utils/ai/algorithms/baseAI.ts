@@ -185,6 +185,9 @@ export abstract class BaseAI {
     const moves = this.generateLegalMoves(gameState, gameState.currentPlayer);
 
     if (maximizingPlayer) {
+      // Use expectimax approach - calculate weighted average of outcomes
+      let totalScore = 0;
+      let totalWeight = 0;
       let maxScore = -Infinity;
 
       for (const move of moves) {
@@ -199,6 +202,12 @@ export abstract class BaseAI {
         );
 
         nodesEvaluated += result.nodesEvaluated;
+        
+        // Weight the score based on move quality
+        const weight = this.getMoveWeight(move, gameState);
+        totalScore += result.score * weight;
+        totalWeight += weight;
+        
         maxScore = Math.max(maxScore, result.score);
         alpha = Math.max(alpha, result.score);
 
@@ -208,8 +217,15 @@ export abstract class BaseAI {
         }
       }
 
-      return { score: maxScore, nodesEvaluated };
+      // Blend average score with max score (70% average, 30% max)
+      const averageScore = totalWeight > 0 ? totalScore / totalWeight : maxScore;
+      const blendedScore = averageScore * 0.7 + maxScore * 0.3;
+
+      return { score: blendedScore, nodesEvaluated };
     } else {
+      // For minimizing player, use similar expectimax approach
+      let totalScore = 0;
+      let totalWeight = 0;
       let minScore = Infinity;
 
       for (const move of moves) {
@@ -224,6 +240,11 @@ export abstract class BaseAI {
         );
 
         nodesEvaluated += result.nodesEvaluated;
+        
+        const weight = this.getMoveWeight(move, gameState);
+        totalScore += result.score * weight;
+        totalWeight += weight;
+        
         minScore = Math.min(minScore, result.score);
         beta = Math.min(beta, result.score);
 
@@ -233,8 +254,37 @@ export abstract class BaseAI {
         }
       }
 
-      return { score: minScore, nodesEvaluated };
+      // Blend average score with min score (70% average, 30% min)
+      const averageScore = totalWeight > 0 ? totalScore / totalWeight : minScore;
+      const blendedScore = averageScore * 0.7 + minScore * 0.3;
+
+      return { score: blendedScore, nodesEvaluated };
     }
+  }
+
+  /**
+   * Calculate weight for a move based on its characteristics
+   */
+  protected getMoveWeight(move: MoveWithMetadata, gameState: GameState): number {
+    let weight = 1.0;
+    
+    // Capturing moves get higher weight
+    if (move.isCapture) {
+      weight += 0.5;
+    }
+    
+    // Master moves get higher weight
+    const piece = gameState.board[move.from[0]][move.from[1]];
+    if (piece?.isMaster) {
+      weight += 0.3;
+    }
+    
+    // Moves toward center get slightly higher weight
+    const [toRow, toCol] = move.to;
+    const distanceFromCenter = Math.abs(toRow - 2) + Math.abs(toCol - 2);
+    weight += (4 - distanceFromCenter) * 0.1;
+    
+    return weight;
   }
 
   /**
@@ -307,7 +357,7 @@ export abstract class BaseAI {
   }
 
   /**
-   * Find the best move using Minimax algorithm
+   * Find the best move using improved weighted average scoring
    */
   protected findBestMoveWithMinimax(
     gameState: GameState,
@@ -320,13 +370,86 @@ export abstract class BaseAI {
       throw new Error("No valid moves available for AI");
     }
 
-    let bestScore = -Infinity;
-    let bestMove = moves[0];
-    let totalNodesEvaluated = 0;
+    // FIRST PRIORITY: Check for immediate master captures (instant win)
+    const masterCaptures = moves.filter(move => {
+      if (!move.isCapture) return false;
+      const targetPiece = gameState.board[move.to[0]][move.to[1]];
+      return targetPiece?.isMaster === true;
+    });
 
-    for (let i = 0; i < moves.length; i++) {
-      const move = moves[i];
+    if (masterCaptures.length > 0) {
+      // Master capture found - this wins the game immediately!
+      const winningMove = masterCaptures[0];
+      this.emitThinkingUpdate({
+        score: 999, // Clear winning score
+        depth,
+        nodesEvaluated: moves.length,
+        bestMoveFound: {
+          from: winningMove.from,
+          to: winningMove.to,
+          cardIndex: winningMove.cardIndex,
+        },
+      });
+      
+      return { 
+        move: winningMove, 
+        score: 999, 
+        nodesEvaluated: moves.length 
+      };
+    }
+
+    // SECOND PRIORITY: Check for temple arch moves (also instant win)
+    const templeArchMoves = moves.filter(move => {
+      const piece = gameState.board[move.from[0]][move.from[1]];
+      if (!piece?.isMaster) return false;
+      
+      const [toRow, toCol] = move.to;
+      if (player === "red" && toRow === 4 && toCol === 2) return true; // Red reaches blue temple
+      if (player === "blue" && toRow === 0 && toCol === 2) return true; // Blue reaches red temple
+      return false;
+    });
+
+    if (templeArchMoves.length > 0) {
+      // Temple arch move found - this also wins!
+      const winningMove = templeArchMoves[0];
+      this.emitThinkingUpdate({
+        score: 998, // Clear winning score
+        depth,
+        nodesEvaluated: moves.length,
+        bestMoveFound: {
+          from: winningMove.from,
+          to: winningMove.to,
+          cardIndex: winningMove.cardIndex,
+        },
+      });
+      
+      return { 
+        move: winningMove, 
+        score: 998, 
+        nodesEvaluated: moves.length 
+      };
+    }
+
+    // THIRD PRIORITY: Check if our master is in immediate danger
+    const masterSavingMoves = this.findMasterSavingMoves(gameState, player, moves);
+    const priorityMoves = masterSavingMoves.length > 0 ? masterSavingMoves : moves;
+
+    let bestMove = priorityMoves[0];
+    let bestWeightedScore = -Infinity;
+    let totalNodesEvaluated = 0;
+    const moveEvaluations: Array<{ move: MoveWithMetadata; weightedScore: number; confidence: number }> = [];
+
+    for (let i = 0; i < priorityMoves.length; i++) {
+      const move = priorityMoves[i];
       const newState = this.simulateMove(gameState, move);
+      
+      // Add immediate tactical bonus for capture moves
+      let bonusScore = 0;
+      if (move.isCapture) {
+        bonusScore += 500; // High bonus for any capture
+      }
+      
+      // Get weighted average evaluation instead of just max
       const result = this.minimaxWithTracking(
         newState,
         depth - 1,
@@ -336,27 +459,120 @@ export abstract class BaseAI {
         player
       );
 
+      const finalScore = result.score + bonusScore;
       totalNodesEvaluated += result.nodesEvaluated;
+      
+      // Calculate confidence based on search depth and node count
+      const confidence = Math.min(1.0, result.nodesEvaluated / (depth * 10));
+      
+      moveEvaluations.push({
+        move,
+        weightedScore: finalScore,
+        confidence
+      });
 
-      if (result.score > bestScore) {
-        bestScore = result.score;
+      if (finalScore > bestWeightedScore) {
+        bestWeightedScore = finalScore;
         bestMove = move;
+        
+        // Emit progress update with current best evaluation
+        this.emitThinkingUpdate({
+          score: this.normalizeScoreForDisplay(finalScore),
+          depth,
+          nodesEvaluated: totalNodesEvaluated,
+          bestMoveFound: {
+            from: bestMove.from,
+            to: bestMove.to,
+            cardIndex: bestMove.cardIndex,
+          },
+        });
       }
 
-      // Emit progress update
-      this.emitThinkingUpdate({
-        score: bestScore,
-        depth,
-        nodesEvaluated: totalNodesEvaluated,
-        bestMoveFound: {
-          from: bestMove.from,
-          to: bestMove.to,
-          cardIndex: bestMove.cardIndex,
-        },
-      });
+      // Emit frequent updates to show dynamic thinking (every 2-3 moves)
+      if (i % Math.max(1, Math.floor(priorityMoves.length / 4)) === 0 || i === priorityMoves.length - 1) {
+        // Calculate current position evaluation for more responsive scoring
+        const currentStateScore = this.evaluateState(gameState, player);
+        const progressScore = moveEvaluations.length > 0 ? 
+          moveEvaluations.reduce((sum, evaluation) => sum + evaluation.weightedScore, 0) / moveEvaluations.length :
+          currentStateScore;
+          
+        this.emitThinkingUpdate({
+          score: this.normalizeScoreForDisplay(progressScore),
+          depth,
+          nodesEvaluated: totalNodesEvaluated,
+          bestMoveFound: {
+            from: bestMove.from,
+            to: bestMove.to,
+            cardIndex: bestMove.cardIndex,
+          },
+        });
+      }
     }
 
-    return { move: bestMove, score: bestScore, nodesEvaluated: totalNodesEvaluated };
+    return { 
+      move: bestMove, 
+      score: this.normalizeScoreForDisplay(bestWeightedScore), 
+      nodesEvaluated: totalNodesEvaluated 
+    };
+  }
+
+  /**
+   * Find moves that save the master from immediate capture
+   */
+  protected findMasterSavingMoves(gameState: GameState, player: Player, allMoves: MoveWithMetadata[]): MoveWithMetadata[] {
+    const opponent = player === "red" ? "blue" : "red";
+    
+    // Check if master is currently threatened
+    const playerMaster = this.findMaster(gameState.board, player);
+    if (!playerMaster) return [];
+    
+    // Simulate each opponent move to see if they can capture our master
+    const opponentMoves = this.generateLegalMoves(gameState, opponent);
+    const masterThreats = opponentMoves.filter(move => {
+      return move.isCapture && 
+             move.to[0] === playerMaster.position[0] && 
+             move.to[1] === playerMaster.position[1];
+    });
+    
+    if (masterThreats.length === 0) return []; // Master not in danger
+    
+    // Find moves that either move the master or block the threat
+    return allMoves.filter(move => {
+      const piece = gameState.board[move.from[0]][move.from[1]];
+      
+      // Moving the master to safety
+      if (piece?.isMaster) return true;
+      
+      // Capturing the threatening piece
+      if (move.isCapture) {
+        return masterThreats.some(threat => 
+          threat.from[0] === move.to[0] && threat.from[1] === move.to[1]
+        );
+      }
+      
+      return false;
+    });
+  }
+
+  /**
+   * Normalize extreme scores for better display in UI
+   */
+  protected normalizeScoreForDisplay(score: number): number {
+    // For immediate wins/losses, show clear confidence
+    if (score >= 999) return 95 + Math.random() * 4; // Clear wins: 95-99
+    if (score <= -999) return -99 + Math.random() * 4; // Clear losses: -99 to -95
+    
+    // For high advantage positions
+    if (score >= 500) return 70 + (score - 500) / 50; // Strong advantage: 70-90
+    if (score <= -500) return -70 - (Math.abs(score) - 500) / 50; // Strong disadvantage: -90 to -70
+    
+    // For normal game positions, use a more dynamic range
+    const baseScore = Math.max(-60, Math.min(60, score * 0.1)); // Base range: -60 to +60
+    
+    // Add some variance to show the AI is actively thinking
+    const variance = (Math.random() - 0.5) * 8; // ±4 variance
+    
+    return baseScore + variance;
   }
 
   /**
@@ -370,11 +586,11 @@ export abstract class BaseAI {
     const playerMaster = this.findMaster(gameState.board, player);
     const opponentMaster = this.findMaster(gameState.board, opponent);
 
-    // Master captured
+    // Master captured - only return extreme values for actual game-ending conditions
     if (!playerMaster) return -10000;
     if (!opponentMaster) return 10000;
 
-    // Temple arch reached
+    // Temple arch reached - only if the game is actually over
     const [masterRow, masterCol] = playerMaster.position;
     const [oppMasterRow, oppMasterCol] = opponentMaster.position;
 
@@ -388,24 +604,55 @@ export abstract class BaseAI {
     if (opponent === "blue" && oppMasterRow === 0 && oppMasterCol === 2)
       return -10000;
 
-    // Material count
+    // If we get here, it's a normal game position - calculate incremental score
+    
+    // Material count (more pieces = better)
     const playerPieces = this.getPieceCount(gameState.board, player);
     const opponentPieces = this.getPieceCount(gameState.board, opponent);
-    score += (playerPieces - opponentPieces) * 100;
+    score += (playerPieces - opponentPieces) * 150;
 
-    // Master position value
-    score += this.getMasterPositionValue(playerMaster, player);
-    score -= this.getMasterPositionValue(opponentMaster, opponent);
+    // Master position value (progress toward opponent temple)
+    const masterProgress = this.getMasterPositionValue(playerMaster, player);
+    const oppMasterProgress = this.getMasterPositionValue(opponentMaster, opponent);
+    score += masterProgress - oppMasterProgress;
 
     // Center control
-    score += this.getCenterControl(gameState.board, player) * 20;
-    score -= this.getCenterControl(gameState.board, opponent) * 20;
+    score += this.getCenterControl(gameState.board, player) * 25;
+    score -= this.getCenterControl(gameState.board, opponent) * 25;
 
-    // Master safety
-    score += this.evaluateMasterSafety(gameState, player);
-    score -= this.evaluateMasterSafety(gameState, opponent);
+    // Master safety (being threatened is bad)
+    const masterSafety = this.evaluateMasterSafety(gameState, player);
+    const oppMasterSafety = this.evaluateMasterSafety(gameState, opponent);
+    score += masterSafety - oppMasterSafety;
+
+    // Add tactical bonuses for strong positions
+    score += this.evaluateTacticalPosition(gameState, player);
+    score -= this.evaluateTacticalPosition(gameState, opponent);
+
+    // Add some controlled randomness to avoid repetitive play
+    score += (Math.random() - 0.5) * 20;
+
+    // Clamp the score to reasonable bounds for non-terminal positions
+    score = Math.max(-2000, Math.min(2000, score));
 
     return score;
+  }
+
+    /**
+   * Evaluate tactical aspects of the position
+   */
+  protected evaluateTacticalPosition(gameState: GameState, player: Player): number {
+    let tacticalScore = 0;
+    
+    // Count pieces that can capture opponent pieces next turn
+    const moves = this.generateLegalMoves(gameState, player);
+    const captureMoves = moves.filter(move => move.isCapture);
+    tacticalScore += captureMoves.length * 30;
+    
+    // Bonus for having multiple move options (flexibility)
+    tacticalScore += Math.min(moves.length * 5, 50);
+    
+    return tacticalScore;
   }
 
   /**
