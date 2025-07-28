@@ -4,13 +4,13 @@ import {
   getAllPossibleMoves,
   validateWindSpiritMove,
 } from "./gameManager";
-import { AIService, AIDifficulty } from "./aiService";
+import { AIService } from "./aiService";
+import { AIAlgorithm } from "./ai/aiFactory";
 import { createNewGameAsync } from "./dataLoader";
 
 export interface GameControllerConfig {
-  aiDifficulty: AIDifficulty;
+  aiAlgorithm: AIAlgorithm;
   aiThinkingTime: number;
-  aiRandomness: number;
 }
 
 export interface GameAction {
@@ -44,20 +44,18 @@ export class GameController {
   private aiService: AIService;
 
   constructor(config: Partial<GameControllerConfig> = {}) {
-    this.aiService = new AIService({
-      difficulty: config.aiDifficulty || "medium",
-      thinkingTime: config.aiThinkingTime || 1000,
-      randomness: config.aiRandomness || 0.2,
-    });
+    this.aiService = new AIService(
+      config.aiAlgorithm || "medium",
+      config.aiThinkingTime || 1000
+    );
 
     this.state = {
       gameState: {} as GameState, // Will be initialized in init()
       isLoading: true,
       aiService: this.aiService,
       config: {
-        aiDifficulty: config.aiDifficulty || "medium",
+        aiAlgorithm: config.aiAlgorithm || "medium",
         aiThinkingTime: config.aiThinkingTime || 1000,
-        aiRandomness: config.aiRandomness || 0.2,
       },
       isAITurn: false,
       aiPlayer: null,
@@ -243,11 +241,12 @@ export class GameController {
    * Update AI configuration
    */
   updateAIConfig(config: Partial<GameControllerConfig>): void {
-    this.aiService.setConfig({
-      difficulty: config.aiDifficulty || this.state.config.aiDifficulty,
-      thinkingTime: config.aiThinkingTime || this.state.config.aiThinkingTime,
-      randomness: config.aiRandomness || this.state.config.aiRandomness,
-    });
+    if (config.aiAlgorithm) {
+      this.aiService.setAlgorithm(config.aiAlgorithm);
+    }
+    if (config.aiThinkingTime) {
+      this.aiService.setThinkingTime(config.aiThinkingTime);
+    }
 
     this.setState({
       config: { ...this.state.config, ...config },

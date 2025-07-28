@@ -57,5 +57,3 @@ export const getAIByStrength = (strength: number): AIAlgorithm => {
   return order[clampedStrength];
 };
 
-// Re-export types for convenience
-export type { AIDifficulty } from "../aiService";

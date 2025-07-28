@@ -55,7 +55,10 @@ export abstract class BaseAI {
    * Apply a move and return new game state (pure function)
    * Simple deep copy approach - can be optimized later if needed
    */
-  protected applyMove(gameState: GameState, move: MoveWithMetadata): GameState {
+  protected simulateMove(
+    gameState: GameState,
+    move: MoveWithMetadata
+  ): GameState {
     // Deep copy the game state using JSON (simple but effective)
     const newState: GameState = JSON.parse(JSON.stringify(gameState));
 
@@ -221,7 +224,7 @@ export abstract class BaseAI {
     for (const move of moves) {
       if (this.isTimeUp()) break;
 
-      const newGameState = this.applyMove(gameState, move);
+      const newGameState = this.simulateMove(gameState, move);
       const result = this.minimax(newGameState, depth - 1);
 
       scores.push(result.score);
@@ -267,7 +270,7 @@ export abstract class BaseAI {
     for (const move of moves) {
       if (this.isTimeUp()) break;
 
-      const newGameState = this.applyMove(gameState, move);
+      const newGameState = this.simulateMove(gameState, move);
       const result = this.alphaBeta(newGameState, depth - 1, alpha, beta);
 
       nodesEvaluated += result.nodesEvaluated;
@@ -308,7 +311,7 @@ export abstract class BaseAI {
       if (availableMoves.length === 0) return null;
 
       const randomMove = this.selectRandomMove(availableMoves);
-      currentState = this.applyMove(currentState, randomMove);
+      currentState = this.simulateMove(currentState, randomMove);
       moves++;
     }
 
@@ -321,9 +324,7 @@ export abstract class BaseAI {
   protected iterativeDeepening(
     gameState: GameState,
     player: Player,
-    searchFunction: (
-      depth: number
-    ) => {
+    searchFunction: (depth: number) => {
       move: MoveWithMetadata;
       score: number;
       nodesEvaluated: number;
@@ -375,17 +376,6 @@ export abstract class BaseAI {
   // ============================================================================
   // LEGACY COMPATIBILITY (For existing algorithms)
   // ============================================================================
-
-  /**
-   * Legacy method - use applyMove instead
-   * @deprecated
-   */
-  protected simulateMove(
-    gameState: GameState,
-    move: MoveWithMetadata
-  ): GameState {
-    return this.applyMove(gameState, move);
-  }
 
   /**
    * Legacy method - use basicValue instead

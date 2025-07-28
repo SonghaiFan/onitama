@@ -1,5 +1,4 @@
 import { GameState, Player } from "@/types/game";
-import { AIDifficulty } from "@/utils/aiService";
 import { BaseAI, AIMoveResult } from "./algorithms/baseAI";
 import { EasyAI } from "./algorithms/easyAI";
 import { MediumAI } from "./algorithms/mediumAI";
@@ -60,18 +59,6 @@ export class AIFactory {
   }
 
   /**
-   * Map difficulty to algorithm (for backward compatibility)
-   */
-  static getAIFromDifficulty(difficulty: AIDifficulty): BaseAI {
-    const algorithmMap: Record<AIDifficulty, AIAlgorithm> = {
-      easy: "easy",
-      medium: "alphabeta", // Use alpha-beta for medium difficulty
-    };
-
-    return this.getAI(algorithmMap[difficulty]);
-  }
-
-  /**
    * Find best move using the specified AI algorithm
    */
   static async findBestMove(
@@ -80,18 +67,6 @@ export class AIFactory {
     algorithm: AIAlgorithm
   ): Promise<AIMoveResult> {
     const ai = this.getAI(algorithm);
-    return await ai.findBestMove(gameState, player);
-  }
-
-  /**
-   * Find best move using difficulty (for backward compatibility)
-   */
-  static async findBestMoveWithDifficulty(
-    gameState: GameState,
-    player: Player,
-    difficulty: AIDifficulty
-  ): Promise<AIMoveResult> {
-    const ai = this.getAIFromDifficulty(difficulty);
     return await ai.findBestMove(gameState, player);
   }
 
@@ -217,47 +192,5 @@ export class AIFactory {
     };
 
     return details[algorithm];
-  }
-
-  /**
-   * Get recommended algorithm based on game situation
-   */
-  static getRecommendedAlgorithm(
-    gameState: GameState,
-    timeConstraint: "fast" | "normal" | "slow" = "normal"
-  ): AIAlgorithm {
-    const movesCount = this.countTotalMoves(gameState);
-
-    // Early game (lots of pieces) - use faster algorithms
-    if (movesCount > 40) {
-      switch (timeConstraint) {
-        case "fast":
-          return "greedy";
-        case "normal":
-          return "alphabeta";
-        case "slow":
-          return "hybrid";
-      }
-    }
-
-    // Mid to late game - can afford more computation
-    switch (timeConstraint) {
-      case "fast":
-        return "alphabeta";
-      case "normal":
-        return "hybrid";
-      case "slow":
-        return "hybrid";
-    }
-  }
-
-  private static countTotalMoves(gameState: GameState): number {
-    let moves = 0;
-    for (let row = 0; row < 5; row++) {
-      for (let col = 0; col < 5; col++) {
-        if (gameState.board[row][col]) moves++;
-      }
-    }
-    return moves * 10; // Approximate moves available
   }
 }

@@ -38,9 +38,9 @@ function GamePage({
         onNewGame={() => gameRef.current?.resetGame()}
         aiEnabled={aiPlayer !== null}
         onSetAIEnabled={(enabled) => setAIPlayer(enabled ? "blue" : null)}
-        aiDifficulty={config.aiDifficulty}
-        onDifficultyChange={(difficulty) =>
-          updateAIConfig({ aiDifficulty: difficulty })
+        aiAlgorithm={config.aiAlgorithm}
+        onAlgorithmChange={(algorithm) =>
+          updateAIConfig({ aiAlgorithm: algorithm })
         }
         selectedPacks={selectedPacks}
       />

@@ -4,7 +4,7 @@ import { content, Language } from "../utils/content";
 import { ZenButton } from "@/components/ui/ZenButton";
 import { AIDropdown } from "@/components/ui/AIDropdown";
 import { motion } from "motion/react";
-import { AIDifficulty } from "@/utils/aiService";
+import { AIAlgorithm } from "@/utils/ai/aiFactory";
 import { CardPack } from "@/types/game";
 interface HeaderProps {
   language: Language;
@@ -16,8 +16,8 @@ interface HeaderProps {
   // AI Settings props (only for game mode)
   aiEnabled?: boolean;
   onSetAIEnabled?: (enabled: boolean) => void;
-  aiDifficulty?: AIDifficulty;
-  onDifficultyChange?: (difficulty: AIDifficulty) => void;
+  aiAlgorithm?: AIAlgorithm;
+  onAlgorithmChange?: (algorithm: AIAlgorithm) => void;
   selectedPacks?: Set<CardPack>;
 }
 
@@ -30,8 +30,8 @@ export function Header({
   onNewGame,
   aiEnabled,
   onSetAIEnabled,
-  aiDifficulty,
-  onDifficultyChange,
+  aiAlgorithm,
+  onAlgorithmChange,
   selectedPacks,
 }: HeaderProps) {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -129,8 +129,8 @@ export function Header({
                   language={language}
                   aiEnabled={aiEnabled ?? false}
                   onSetAIEnabled={onSetAIEnabled}
-                  aiDifficulty={aiDifficulty}
-                  onDifficultyChange={onDifficultyChange}
+                  aiAlgorithm={aiAlgorithm}
+                  onAlgorithmChange={onAlgorithmChange}
                   selectedPacks={selectedPacks}
                 />
               )}

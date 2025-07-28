@@ -129,9 +129,8 @@ export class GamePersistence {
       musicEnabled: true,
       defaultCardPacks: ["normal"],
       defaultAIConfig: {
-        aiDifficulty: "medium",
+        aiAlgorithm: "medium",
         aiThinkingTime: 1000,
-        aiRandomness: 0.2,
       },
     };
   }

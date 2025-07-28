@@ -37,7 +37,7 @@ Transformed the complex 862-line BaseAI into a clean, Rust-inspired foundation:
 #### Core Utilities:
 
 - `generateLegalMoves()` - Move generation
-- `applyMove()` - Pure functional state transitions
+- `simulateMove()` - Pure functional state transitions
 - `isGameOver()` - Terminal state detection
 - `basicValue()` - Simple piece count evaluation (matches Rust heuristics.rs)
 
