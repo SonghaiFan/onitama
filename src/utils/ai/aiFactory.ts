@@ -5,6 +5,8 @@ import { EasyAI } from "./algorithms/easyAI";
 import { MediumAI } from "./algorithms/mediumAI";
 import { HardAI } from "./algorithms/hardAI";
 import { ExpertAI } from "./algorithms/expertAI";
+import { MCTSAI } from "./algorithms/mctsAI";
+import { EnhancedAI } from "./algorithms/enhancedAI";
 
 export class AIFactory {
   private static instances: Map<AIDifficulty, BaseAI> = new Map();
@@ -23,14 +25,14 @@ export class AIFactory {
         case "medium":
           ai = new MediumAI();
           break;
-        case "hard":
-          ai = new HardAI();
+        case "mcts":
+          ai = new MCTSAI(4, 5000);
           break;
-        case "expert":
-          ai = new ExpertAI();
+        case "enhanced":
+          ai = new EnhancedAI(4, 5000, true);
           break;
         default:
-          ai = new MediumAI();
+          ai = new EnhancedAI(4, 5000, true);
       }
 
       this.instances.set(difficulty, ai);
@@ -62,15 +64,16 @@ export class AIFactory {
       zh: {
         easy: "簡單 - 隨機移動，偶爾捕捉，適合初學者",
         medium: "中等 - 基本策略，適度隨機，適合休閒玩家",
-        hard: "困難 - 較強策略，很少隨機，適合有經驗的玩家",
-        expert: "專家 - 最佳策略，無隨機，適合挑戰性對戰",
+        mcts: "MCTS - 蒙特卡洛樹搜索，複雜局面處理能力強",
+        enhanced: "增強 - 混合算法，自動選擇最佳策略",
       },
       en: {
         easy: "Easy - Random moves, occasional captures, good for beginners",
         medium:
           "Medium - Basic strategy, moderate randomness, good for casual players",
-        hard: "Hard - Strong strategy, minimal randomness, good for experienced players",
-        expert: "Expert - Best strategy, no randomness, challenging gameplay",
+        mcts: "MCTS - Monte Carlo Tree Search, excels at complex positions",
+        enhanced:
+          "Enhanced - Hybrid algorithm, automatically selects best strategy",
       },
     };
 
@@ -108,32 +111,30 @@ export class AIFactory {
           "Defensive moves",
         ],
       },
-      hard: {
+
+      mcts: {
         searchDepth: 4,
-        searchAlgorithm: "Alpha-Beta pruning",
-        evaluationMethod: "Sophisticated position evaluation",
+        searchAlgorithm: "Monte Carlo Tree Search",
+        evaluationMethod: "Simulation-based evaluation",
         features: [
-          "5% randomness",
-          "Piece coordination",
-          "King safety",
-          "Card advantage",
-          "Center control",
+          "Inspired by jackadamson's implementation",
+          "Adaptive exploration/exploitation",
+          "Random playouts for evaluation",
+          "Visit count-based move selection",
+          "Handles complex positions well",
         ],
       },
-      expert: {
-        searchDepth: 8,
-        searchAlgorithm: "Negamax with iterative deepening",
-        evaluationMethod: "Advanced strategic evaluation with quiescence",
+      enhanced: {
+        searchDepth: 4,
+        searchAlgorithm: "Hybrid MCTS + Minimax",
+        evaluationMethod: "Combined simulation and evaluation",
         features: [
-          "No randomness",
-          "Transposition table with Zobrist hashing",
-          "MVV-LVA move ordering",
-          "Quiescence search",
-          "History heuristics",
-          "Card advantage evaluation",
-          "Mobility evaluation",
-          "King safety evaluation",
-          "Pawn structure evaluation",
+          "Automatic algorithm selection",
+          "MCTS for complex positions",
+          "Minimax for simple positions",
+          "Enhanced card evaluation",
+          "Mobility assessment",
+          "Best of both worlds",
         ],
       },
     };

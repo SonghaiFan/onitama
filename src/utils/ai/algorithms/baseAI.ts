@@ -302,7 +302,7 @@ export abstract class BaseAI {
   /**
    * Evaluate master position value
    */
-  private getMasterPositionValue(master: Piece, player: Player): number {
+  protected getMasterPositionValue(master: Piece, player: Player): number {
     const [row, col] = master.position;
     let value = 0;
 
@@ -324,7 +324,7 @@ export abstract class BaseAI {
   /**
    * Evaluate master safety
    */
-  private evaluateMasterSafety(gameState: GameState, player: Player): number {
+  protected evaluateMasterSafety(gameState: GameState, player: Player): number {
     const master = this.findMaster(gameState.board, player);
     if (!master) return -1000;
 
