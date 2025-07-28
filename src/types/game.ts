@@ -1,14 +1,5 @@
 export type Player = "red" | "blue";
 
-export type AIDifficulty = "easy" | "medium";
-export type TacticalPreset = "default" | "aggressive" | "defensive" | "custom";
-
-export interface AIPlayerConfig {
-  difficulty: AIDifficulty;
-  tacticalPreset: TacticalPreset;
-  isEnabled: boolean;
-}
-
 export type CardPack =
   | "normal"
   | "senseis"
@@ -69,11 +60,9 @@ export interface GameState {
     cardIndex: number;
   }; // Track the first move of a dual move sequence
   // AI-related properties
-  aiPlayers?: {
-    red?: AIPlayerConfig | null;
-    blue?: AIPlayerConfig | null;
-  };
+  aiPlayer?: Player | null; // Which player is controlled by AI
   isAITurn?: boolean; // Whether AI is currently thinking
+  aiDifficulty?: "easy" | "medium"; // AI difficulty level
 }
 
 // Type for the Sensei's Path card pack JSON structure

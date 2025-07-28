@@ -5,7 +5,7 @@ import { ZenButton } from "@/components/ui/ZenButton";
 import { AIDropdown } from "@/components/ui/AIDropdown";
 import { motion } from "motion/react";
 import { AIDifficulty } from "@/utils/aiService";
-import { CardPack, AIPlayerConfig } from "@/types/game";
+import { CardPack } from "@/types/game";
 interface UnifiedHeaderProps {
   language: Language;
   mode: "landing" | "game";
@@ -19,11 +19,6 @@ interface UnifiedHeaderProps {
   aiDifficulty?: AIDifficulty;
   onDifficultyChange?: (difficulty: AIDifficulty) => void;
   selectedPacks?: Set<CardPack>;
-  // New AI vs AI props
-  redAIConfig?: AIPlayerConfig | null;
-  blueAIConfig?: AIPlayerConfig | null;
-  onRedAIChange?: (config: AIPlayerConfig | null) => void;
-  onBlueAIChange?: (config: AIPlayerConfig | null) => void;
 }
 
 export function UnifiedHeader({
@@ -38,10 +33,6 @@ export function UnifiedHeader({
   aiDifficulty,
   onDifficultyChange,
   selectedPacks,
-  redAIConfig,
-  blueAIConfig,
-  onRedAIChange,
-  onBlueAIChange,
 }: UnifiedHeaderProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -141,10 +132,6 @@ export function UnifiedHeader({
                   aiDifficulty={aiDifficulty}
                   onDifficultyChange={onDifficultyChange}
                   selectedPacks={selectedPacks}
-                  redAIConfig={redAIConfig}
-                  blueAIConfig={blueAIConfig}
-                  onRedAIChange={onRedAIChange}
-                  onBlueAIChange={onBlueAIChange}
                 />
               )}
 

@@ -8,7 +8,7 @@ export interface SelectableItem<T = string> {
   disabled?: boolean;
 }
 
-export interface SelectionGroupConfig {
+export interface SelectionGroupConfig<T = string> {
   id: string;
   title?: string;
   description?: string;

@@ -27,7 +27,7 @@ function GamePage({
   cardPacks: CardPack[];
   selectedPacks: Set<CardPack>;
 }) {
-  const { aiPlayers, setAIPlayer, config, updateAIConfig } = useGame();
+  const { aiPlayer, setAIPlayer, config, updateAIConfig } = useGame();
 
   return (
     <div className="h-dvh flex flex-col scroll-paper ink-wash">
@@ -36,18 +36,8 @@ function GamePage({
         mode="game"
         onBackToHome={onBackToHome}
         onNewGame={() => gameRef.current?.resetGame()}
-        aiEnabled={aiPlayers.blue?.isEnabled || false}
-        onSetAIEnabled={(enabled) => 
-          setAIPlayer("blue", enabled ? {
-            difficulty: config.aiDifficulty,
-            tacticalPreset: "default",
-            isEnabled: true
-          } : null)
-        }
-        redAIConfig={aiPlayers.red}
-        blueAIConfig={aiPlayers.blue}
-        onRedAIChange={(config) => setAIPlayer("red", config)}
-        onBlueAIChange={(config) => setAIPlayer("blue", config)}
+        aiEnabled={aiPlayer !== null}
+        onSetAIEnabled={(enabled) => setAIPlayer(enabled ? "blue" : null)}
         aiDifficulty={config.aiDifficulty}
         onDifficultyChange={(difficulty) =>
           updateAIConfig({ aiDifficulty: difficulty })

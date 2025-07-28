@@ -5,7 +5,7 @@ import {
   GameControllerConfig,
   defaultGameController,
 } from "@/utils/gameController";
-import { Player, CardPack, AIPlayerConfig } from "@/types/game";
+import { Player, CardPack } from "@/types/game";
 
 /**
  * Custom hook for managing game state through the game controller
@@ -40,16 +40,8 @@ export function useGameController(
     []
   );
 
-  const setAIPlayer = useCallback(async (player: Player, config: AIPlayerConfig | null) => {
-    await controllerRef.current.setAIPlayer(player, config);
-  }, []);
-
-  const setAIvsAI = useCallback(async (redConfig: AIPlayerConfig, blueConfig: AIPlayerConfig) => {
-    await controllerRef.current.setAIvsAI(redConfig, blueConfig);
-  }, []);
-
-  const setHumanvsHuman = useCallback(async () => {
-    await controllerRef.current.setHumanvsHuman();
+  const setAIPlayer = useCallback((player: Player | null) => {
+    controllerRef.current.setAIPlayer(player);
   }, []);
 
   const updateAIConfig = useCallback(
@@ -74,31 +66,6 @@ export function useGameController(
     []
   );
 
-  // New AI control methods
-  const setAIAutoMode = useCallback((enabled: boolean) => {
-    controllerRef.current.setAIAutoMode(enabled);
-  }, []);
-
-  const setAIMoveDelay = useCallback((delay: number) => {
-    controllerRef.current.setAIMoveDelay(delay);
-  }, []);
-
-  const triggerAIMove = useCallback(async () => {
-    await controllerRef.current.triggerAIMove();
-  }, []);
-
-  const startAIvsAI = useCallback(async () => {
-    await controllerRef.current.startAIvsAI();
-  }, []);
-
-  const stopAIvsAI = useCallback(() => {
-    controllerRef.current.stopAIvsAI();
-  }, []);
-
-  const resetGameForAIvsAI = useCallback(async (cardPacks: CardPack[] = ["normal"]) => {
-    await controllerRef.current.resetGameForAIvsAI(cardPacks);
-  }, []);
-
   // Initialize game on mount
   useEffect(() => {
     controllerRef.current.init(["normal"]);
@@ -109,31 +76,18 @@ export function useGameController(
     gameState: state.gameState,
     isLoading: state.isLoading,
     isAITurn: state.isAITurn,
-    aiPlayers: state.aiPlayers,
+    aiPlayer: state.aiPlayer,
     config: state.config,
-    // New AI control state
-    isAIAutoMode: state.isAIAutoMode,
-    isAIvsAIRunning: state.isAIvsAIRunning,
-    aiMoveDelay: state.aiMoveDelay,
 
     // Actions
     selectPiece,
     selectCard,
     executeMove,
     setAIPlayer,
-    setAIvsAI,
-    setHumanvsHuman,
     updateAIConfig,
     resetGame,
     getPossibleMoves,
     isValidMove,
-    // New AI control actions
-    setAIAutoMode,
-    setAIMoveDelay,
-    triggerAIMove,
-    startAIvsAI,
-    stopAIvsAI,
-    resetGameForAIvsAI,
 
     // Controller reference for advanced usage
     controller: controllerRef.current,

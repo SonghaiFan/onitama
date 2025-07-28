@@ -1,22 +1,16 @@
-import { GameState, Player, CardPack, AIPlayerConfig, AIDifficulty } from "@/types/game";
+import { GameState, Player, CardPack } from "@/types/game";
 import {
   executeMove,
   getAllPossibleMoves,
   validateWindSpiritMove,
 } from "./gameManager";
-import { AIService } from "./aiService";
+import { AIService, AIDifficulty } from "./aiService";
 import { createNewGameAsync } from "./dataLoader";
-import { AIFactory } from "./ai/aiFactory";
-import { loadTacticalConfig } from "./ai/tacticalConfigLoader";
 
 export interface GameControllerConfig {
   aiDifficulty: AIDifficulty;
   aiThinkingTime: number;
   aiRandomness: number;
-  // New AI control config
-  defaultAIAutoMode: boolean;
-  defaultAIMoveDelay: number;
-  maxAIMoveDelay: number;
 }
 
 export interface GameAction {
@@ -34,20 +28,10 @@ export interface GameAction {
 export interface GameControllerState {
   gameState: GameState;
   isLoading: boolean;
-  aiServices: {
-    red: AIService | null;
-    blue: AIService | null;
-  };
+  aiService: AIService;
   config: GameControllerConfig;
   isAITurn: boolean;
-  aiPlayers: {
-    red: AIPlayerConfig | null;
-    blue: AIPlayerConfig | null;
-  };
-  // New AI control features
-  isAIAutoMode: boolean;
-  isAIvsAIRunning: boolean;
-  aiMoveDelay: number;
+  aiPlayer: Player | null;
 }
 
 /**
@@ -57,33 +41,26 @@ export interface GameControllerState {
 export class GameController {
   private state: GameControllerState;
   private listeners: Set<(state: GameControllerState) => void> = new Set();
+  private aiService: AIService;
 
   constructor(config: Partial<GameControllerConfig> = {}) {
+    this.aiService = new AIService({
+      difficulty: config.aiDifficulty || "medium",
+      thinkingTime: config.aiThinkingTime || 1000,
+      randomness: config.aiRandomness || 0.2,
+    });
+
     this.state = {
       gameState: {} as GameState, // Will be initialized in init()
       isLoading: true,
-      aiServices: {
-        red: null,
-        blue: null,
-      },
+      aiService: this.aiService,
       config: {
         aiDifficulty: config.aiDifficulty || "medium",
         aiThinkingTime: config.aiThinkingTime || 1000,
         aiRandomness: config.aiRandomness || 0.2,
-        // New AI control config
-        defaultAIAutoMode: config.defaultAIAutoMode ?? true,
-        defaultAIMoveDelay: config.defaultAIMoveDelay || 1500,
-        maxAIMoveDelay: config.maxAIMoveDelay || 5000,
       },
       isAITurn: false,
-      aiPlayers: {
-        red: null,
-        blue: null,
-      },
-      // New AI control features
-      isAIAutoMode: config.defaultAIAutoMode ?? true,
-      isAIvsAIRunning: false,
-      aiMoveDelay: config.defaultAIMoveDelay || 1500,
+      aiPlayer: null,
     };
   }
 
@@ -102,7 +79,12 @@ export class GameController {
 
       // Check if AI should make the first move
       setTimeout(() => {
-        this.checkAITurn();
+        if (
+          this.state.aiPlayer &&
+          this.state.gameState.currentPlayer === this.state.aiPlayer
+        ) {
+          this.checkAITurn();
+        }
       }, 200);
     } catch (error) {
       console.error("Failed to initialize game:", error);
@@ -249,74 +231,22 @@ export class GameController {
   }
 
   /**
-   * Set AI player configuration
+   * Set AI player
    */
-  async setAIPlayer(player: Player, config: AIPlayerConfig | null): Promise<void> {
-    const newAIPlayers = { ...this.state.aiPlayers };
-    const newAIServices = { ...this.state.aiServices };
-    
-    if (config && config.isEnabled) {
-      // Create AI service for this player
-      const aiService = new AIService({
-        difficulty: config.difficulty,
-        thinkingTime: this.state.config.aiThinkingTime,
-        randomness: this.state.config.aiRandomness,
-      });
-      
-      // Load tactical configuration
-      const tacticalConfig = await loadTacticalConfig(config.tacticalPreset);
-      const ai = AIFactory.getAI(config.difficulty);
-      ai.setTacticalConfig(tacticalConfig);
-      
-      newAIPlayers[player] = config;
-      newAIServices[player] = aiService;
-    } else {
-      // Remove AI for this player
-      newAIPlayers[player] = null;
-      newAIServices[player] = null;
-    }
-    
-    this.setState({ 
-      aiPlayers: newAIPlayers,
-      aiServices: newAIServices
-    });
-    
+  setAIPlayer(player: Player | null): void {
+    this.setState({ aiPlayer: player });
     // Delay AI check to ensure state is fully updated
     setTimeout(() => this.checkAITurn(), 100);
-  }
-
-  /**
-   * Set both AI players for AI vs AI mode
-   */
-  async setAIvsAI(
-    redConfig: AIPlayerConfig,
-    blueConfig: AIPlayerConfig
-  ): Promise<void> {
-    await this.setAIPlayer("red", redConfig);
-    await this.setAIPlayer("blue", blueConfig);
-  }
-
-  /**
-   * Disable all AI players (human vs human)
-   */
-  async setHumanvsHuman(): Promise<void> {
-    await this.setAIPlayer("red", null);
-    await this.setAIPlayer("blue", null);
   }
 
   /**
    * Update AI configuration
    */
   updateAIConfig(config: Partial<GameControllerConfig>): void {
-    // Update all AI services
-    Object.values(this.state.aiServices).forEach(aiService => {
-      if (aiService) {
-        aiService.setConfig({
-          difficulty: config.aiDifficulty || this.state.config.aiDifficulty,
-          thinkingTime: config.aiThinkingTime || this.state.config.aiThinkingTime,
-          randomness: config.aiRandomness || this.state.config.aiRandomness,
-        });
-      }
+    this.aiService.setConfig({
+      difficulty: config.aiDifficulty || this.state.config.aiDifficulty,
+      thinkingTime: config.aiThinkingTime || this.state.config.aiThinkingTime,
+      randomness: config.aiRandomness || this.state.config.aiRandomness,
     });
 
     this.setState({
@@ -331,7 +261,9 @@ export class GameController {
     await this.init(cardPacks);
     // Delay AI check to ensure React state updates are complete
     setTimeout(() => {
-      this.checkAITurn();
+      if (this.state.aiPlayer) {
+        this.checkAITurn();
+      }
     }, 200);
   }
 
@@ -339,16 +271,14 @@ export class GameController {
    * Check if AI should make a move
    */
   private async checkAITurn(): Promise<void> {
-    const { gameState, aiPlayers, isAITurn, isAIAutoMode } = this.state;
-    const currentPlayerAI = aiPlayers[gameState.currentPlayer];
+    const { gameState, aiPlayer, isAITurn } = this.state;
 
     if (
-      currentPlayerAI &&
-      currentPlayerAI.isEnabled &&
+      aiPlayer &&
+      gameState.currentPlayer === aiPlayer &&
       !gameState.winner &&
       !isAITurn &&
-      gameState.gamePhase === "playing" &&
-      isAIAutoMode // Only auto-execute if in auto mode
+      gameState.gamePhase === "playing"
     ) {
       await this.executeAIMove();
     }
@@ -358,23 +288,15 @@ export class GameController {
    * Execute AI move
    */
   private async executeAIMove(): Promise<void> {
-    const { gameState, aiPlayers, aiServices } = this.state;
-    const currentPlayer = gameState.currentPlayer;
-    const currentPlayerAI = aiPlayers[currentPlayer];
-    const aiService = aiServices[currentPlayer];
-    
-    if (!currentPlayerAI || !aiService || gameState.winner || gameState.gamePhase !== "playing")
+    const { gameState, aiPlayer } = this.state;
+    if (!aiPlayer || gameState.winner || gameState.gamePhase !== "playing")
       return;
 
     this.setState({ isAITurn: true });
 
     try {
-      // Use the AI with tactical configuration
-      const ai = AIFactory.getAI(currentPlayerAI.difficulty);
-      await ai.initialize(currentPlayerAI.tacticalPreset);
-      
-      const aiMove = await ai.findBestMove(gameState, currentPlayer);
-      this.executeMove(aiMove.move.from, aiMove.move.to, aiMove.move.cardIndex);
+      const aiMove = await this.aiService.getAIMove(gameState, aiPlayer);
+      this.executeMove(aiMove.from, aiMove.to, aiMove.cardIndex);
     } catch (error) {
       console.error("AI move failed:", error);
     } finally {
@@ -407,116 +329,6 @@ export class GameController {
     const { gameState } = this.state;
     const possibleMoves = getAllPossibleMoves(gameState, from, cardIndex);
     return possibleMoves.some(([row, col]) => row === to[0] && col === to[1]);
-  }
-
-  /**
-   * New AI Control Methods
-   */
-
-  /**
-   * Toggle AI auto mode (automatic vs manual execution)
-   */
-  setAIAutoMode(enabled: boolean): void {
-    this.setState({ isAIAutoMode: enabled });
-    // If enabling auto mode and it's AI's turn, immediately check for move
-    if (enabled) {
-      setTimeout(() => this.checkAITurn(), 100);
-    }
-  }
-
-  /**
-   * Set AI move delay for AI vs AI games
-   */
-  setAIMoveDelay(delay: number): void {
-    const { config } = this.state;
-    const clampedDelay = Math.min(Math.max(delay, 100), config.maxAIMoveDelay);
-    this.setState({ aiMoveDelay: clampedDelay });
-  }
-
-  /**
-   * Manually trigger AI move (when in manual mode)
-   */
-  async triggerAIMove(): Promise<void> {
-    const { gameState, aiPlayers, isAITurn } = this.state;
-    const currentPlayerAI = aiPlayers[gameState.currentPlayer];
-
-    if (
-      currentPlayerAI &&
-      currentPlayerAI.isEnabled &&
-      !gameState.winner &&
-      !isAITurn &&
-      gameState.gamePhase === "playing"
-    ) {
-      await this.executeAIMove();
-    }
-  }
-
-  /**
-   * Start continuous AI vs AI gameplay
-   */
-  async startAIvsAI(): Promise<void> {
-    const { aiPlayers } = this.state;
-    
-    if (!aiPlayers.red?.isEnabled || !aiPlayers.blue?.isEnabled) {
-      console.warn("Both players must have AI enabled for AI vs AI mode");
-      return;
-    }
-
-    this.setState({ 
-      isAIvsAIRunning: true,
-      isAIAutoMode: true 
-    });
-    
-    // Start the AI vs AI loop
-    this.runAIvsAILoop();
-  }
-
-  /**
-   * Stop continuous AI vs AI gameplay
-   */
-  stopAIvsAI(): void {
-    this.setState({ isAIvsAIRunning: false });
-  }
-
-  /**
-   * Main AI vs AI game loop
-   */
-  private async runAIvsAILoop(): Promise<void> {
-    const runNextMove = async () => {
-      const { gameState, isAIvsAIRunning, aiMoveDelay } = this.state;
-      
-      if (!isAIvsAIRunning || gameState.winner || gameState.gamePhase !== "playing") {
-        this.setState({ isAIvsAIRunning: false });
-        return;
-      }
-
-      // Execute the current AI move
-      await this.checkAITurn();
-      
-      // Schedule next move with delay
-      setTimeout(() => {
-        const { isAIvsAIRunning: stillRunning } = this.state;
-        if (stillRunning) {
-          runNextMove();
-        }
-      }, aiMoveDelay);
-    };
-
-    // Start the loop
-    setTimeout(runNextMove, this.state.aiMoveDelay);
-  }
-
-  /**
-   * Reset game and maintain AI vs AI running state
-   */
-  async resetGameForAIvsAI(cardPacks: CardPack[] = ["normal"]): Promise<void> {
-    const wasRunning = this.state.isAIvsAIRunning;
-    await this.resetGame(cardPacks);
-    
-    if (wasRunning) {
-      // Restart AI vs AI after reset
-      setTimeout(() => this.startAIvsAI(), 500);
-    }
   }
 }
 

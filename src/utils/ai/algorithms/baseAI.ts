@@ -1,8 +1,6 @@
 import { GameState, Player, Piece } from "@/types/game";
 import { MoveWithMetadata, getAllPlayerMoves } from "@/utils/gameManager";
 import { eventBus, AIThinkingUpdateEvent } from "@/utils/eventBus";
-import { AITacticalConfig } from "@/types/aiTactical";
-import { loadTacticalConfig, TacticalPreset } from "../tacticalConfigLoader";
 
 export interface AIMoveResult {
   move: MoveWithMetadata;
@@ -16,35 +14,10 @@ export abstract class BaseAI {
   protected maxDepth: number;
   protected maxTime: number; // milliseconds
   protected startTime: number = 0;
-  protected tacticalConfig: AITacticalConfig | null = null;
 
   constructor(maxDepth: number = 4, maxTime: number = 5000) {
     this.maxDepth = maxDepth;
     this.maxTime = maxTime;
-  }
-
-  /**
-   * Initialize AI with a tactical configuration preset
-   */
-  async initialize(preset: TacticalPreset = "default"): Promise<void> {
-    this.tacticalConfig = await loadTacticalConfig(preset);
-  }
-
-  /**
-   * Set custom tactical configuration
-   */
-  setTacticalConfig(config: AITacticalConfig): void {
-    this.tacticalConfig = config;
-  }
-
-  /**
-   * Get tactical configuration, loading default if not set
-   */
-  protected async getTacticalConfig(): Promise<AITacticalConfig> {
-    if (!this.tacticalConfig) {
-      this.tacticalConfig = await loadTacticalConfig("default");
-    }
-    return this.tacticalConfig;
   }
 
   /**
@@ -197,15 +170,14 @@ export abstract class BaseAI {
     alpha: number,
     beta: number,
     maximizingPlayer: boolean,
-    originalPlayer: Player,
-    config: AITacticalConfig
+    originalPlayer: Player
   ): { score: number; nodesEvaluated: number } {
     let nodesEvaluated = 1;
 
     // Terminal conditions
     if (depth === 0 || this.isGameOver(gameState)) {
       return {
-        score: this.evaluateState(gameState, originalPlayer, config),
+        score: this.evaluateState(gameState, originalPlayer),
         nodesEvaluated
       };
     }
@@ -226,14 +198,13 @@ export abstract class BaseAI {
           alpha,
           beta,
           false,
-          originalPlayer,
-          config
+          originalPlayer
         );
 
         nodesEvaluated += result.nodesEvaluated;
         
         // Weight the score based on move quality
-        const weight = this.getMoveWeight(move, gameState, config);
+        const weight = this.getMoveWeight(move, gameState);
         totalScore += result.score * weight;
         totalWeight += weight;
         
@@ -246,10 +217,9 @@ export abstract class BaseAI {
         }
       }
 
-      // Blend average score with max score using config
+      // Blend average score with max score (70% average, 30% max)
       const averageScore = totalWeight > 0 ? totalScore / totalWeight : maxScore;
-      const blendedScore = averageScore * config.algorithm.expectimax.averageWeight + 
-                          maxScore * config.algorithm.expectimax.extremeWeight;
+      const blendedScore = averageScore * 0.7 + maxScore * 0.3;
 
       return { score: blendedScore, nodesEvaluated };
     } else {
@@ -266,13 +236,12 @@ export abstract class BaseAI {
           alpha,
           beta,
           true,
-          originalPlayer,
-          config
+          originalPlayer
         );
 
         nodesEvaluated += result.nodesEvaluated;
         
-        const weight = this.getMoveWeight(move, gameState, config);
+        const weight = this.getMoveWeight(move, gameState);
         totalScore += result.score * weight;
         totalWeight += weight;
         
@@ -285,10 +254,9 @@ export abstract class BaseAI {
         }
       }
 
-      // Blend average score with min score using config
+      // Blend average score with min score (70% average, 30% min)
       const averageScore = totalWeight > 0 ? totalScore / totalWeight : minScore;
-      const blendedScore = averageScore * config.algorithm.expectimax.averageWeight + 
-                          minScore * config.algorithm.expectimax.extremeWeight;
+      const blendedScore = averageScore * 0.7 + minScore * 0.3;
 
       return { score: blendedScore, nodesEvaluated };
     }
@@ -297,26 +265,24 @@ export abstract class BaseAI {
   /**
    * Calculate weight for a move based on its characteristics
    */
-  protected getMoveWeight(move: MoveWithMetadata, gameState: GameState, config: AITacticalConfig): number {
-    const weights = config.evaluation.moveWeighting;
-    
-    let weight = weights.baseWeight;
+  protected getMoveWeight(move: MoveWithMetadata, gameState: GameState): number {
+    let weight = 1.0;
     
     // Capturing moves get higher weight
     if (move.isCapture) {
-      weight += weights.captureWeight;
+      weight += 0.5;
     }
     
     // Master moves get higher weight
     const piece = gameState.board[move.from[0]][move.from[1]];
     if (piece?.isMaster) {
-      weight += weights.masterMoveWeight;
+      weight += 0.3;
     }
     
     // Moves toward center get slightly higher weight
     const [toRow, toCol] = move.to;
     const distanceFromCenter = Math.abs(toRow - 2) + Math.abs(toCol - 2);
-    weight += (weights.maxCenterDistance - distanceFromCenter) * weights.centerWeight;
+    weight += (4 - distanceFromCenter) * 0.1;
     
     return weight;
   }
@@ -330,12 +296,11 @@ export abstract class BaseAI {
     alpha: number,
     beta: number,
     maximizingPlayer: boolean,
-    originalPlayer: Player,
-    config: AITacticalConfig
+    originalPlayer: Player
   ): number {
     // Terminal conditions
     if (depth === 0 || this.isGameOver(gameState)) {
-      return this.evaluateState(gameState, originalPlayer, config);
+      return this.evaluateState(gameState, originalPlayer);
     }
 
     const moves = this.generateLegalMoves(gameState, gameState.currentPlayer);
@@ -351,8 +316,7 @@ export abstract class BaseAI {
           alpha,
           beta,
           false,
-          originalPlayer,
-          config
+          originalPlayer
         );
 
         maxScore = Math.max(maxScore, score);
@@ -376,8 +340,7 @@ export abstract class BaseAI {
           alpha,
           beta,
           true,
-          originalPlayer,
-          config
+          originalPlayer
         );
 
         minScore = Math.min(minScore, score);
@@ -396,12 +359,11 @@ export abstract class BaseAI {
   /**
    * Find the best move using improved weighted average scoring
    */
-  protected async findBestMoveWithMinimax(
+  protected findBestMoveWithMinimax(
     gameState: GameState,
     player: Player,
     depth: number
-  ): Promise<{ move: MoveWithMetadata; score: number; nodesEvaluated: number }> {
-    const config = await this.getTacticalConfig();
+  ): { move: MoveWithMetadata; score: number; nodesEvaluated: number } {
     const moves = this.generateLegalMoves(gameState, player);
 
     if (moves.length === 0) {
@@ -419,7 +381,7 @@ export abstract class BaseAI {
       // Master capture found - this wins the game immediately!
       const winningMove = masterCaptures[0];
       this.emitThinkingUpdate({
-        score: config.evaluation.terminal.masterCapturePriority, // Clear winning score
+        score: 999, // Clear winning score
         depth,
         nodesEvaluated: moves.length,
         bestMoveFound: {
@@ -431,7 +393,7 @@ export abstract class BaseAI {
       
       return { 
         move: winningMove, 
-        score: config.evaluation.terminal.masterCapturePriority, 
+        score: 999, 
         nodesEvaluated: moves.length 
       };
     }
@@ -451,7 +413,7 @@ export abstract class BaseAI {
       // Temple arch move found - this also wins!
       const winningMove = templeArchMoves[0];
       this.emitThinkingUpdate({
-        score: config.evaluation.terminal.templeArchPriority, // Clear winning score
+        score: 998, // Clear winning score
         depth,
         nodesEvaluated: moves.length,
         bestMoveFound: {
@@ -463,7 +425,7 @@ export abstract class BaseAI {
       
       return { 
         move: winningMove, 
-        score: config.evaluation.terminal.templeArchPriority, 
+        score: 998, 
         nodesEvaluated: moves.length 
       };
     }
@@ -484,7 +446,7 @@ export abstract class BaseAI {
       // Add immediate tactical bonus for capture moves
       let bonusScore = 0;
       if (move.isCapture) {
-        bonusScore += config.evaluation.tactical.captureBonus; // High bonus for any capture
+        bonusScore += 500; // High bonus for any capture
       }
       
       // Get weighted average evaluation instead of just max
@@ -494,16 +456,14 @@ export abstract class BaseAI {
         -Infinity,
         Infinity,
         false, // Next turn is opponent (minimizing)
-        player,
-        config
+        player
       );
 
       const finalScore = result.score + bonusScore;
       totalNodesEvaluated += result.nodesEvaluated;
       
       // Calculate confidence based on search depth and node count
-      const confidence = Math.min(config.algorithm.search.confidenceCalculation.maxConfidence, 
-                                 result.nodesEvaluated / (depth * config.algorithm.search.confidenceCalculation.base));
+      const confidence = Math.min(1.0, result.nodesEvaluated / (depth * 10));
       
       moveEvaluations.push({
         move,
@@ -517,7 +477,7 @@ export abstract class BaseAI {
         
         // Emit progress update with current best evaluation
         this.emitThinkingUpdate({
-          score: this.normalizeScoreForDisplay(finalScore, config),
+          score: this.normalizeScoreForDisplay(finalScore),
           depth,
           nodesEvaluated: totalNodesEvaluated,
           bestMoveFound: {
@@ -529,15 +489,15 @@ export abstract class BaseAI {
       }
 
       // Emit frequent updates to show dynamic thinking (every 2-3 moves)
-      if (i % Math.max(1, Math.floor(priorityMoves.length / config.algorithm.search.updateFrequency)) === 0 || i === priorityMoves.length - 1) {
+      if (i % Math.max(1, Math.floor(priorityMoves.length / 4)) === 0 || i === priorityMoves.length - 1) {
         // Calculate current position evaluation for more responsive scoring
-        const currentStateScore = this.evaluateState(gameState, player, config);
+        const currentStateScore = this.evaluateState(gameState, player);
         const progressScore = moveEvaluations.length > 0 ? 
           moveEvaluations.reduce((sum, evaluation) => sum + evaluation.weightedScore, 0) / moveEvaluations.length :
           currentStateScore;
           
         this.emitThinkingUpdate({
-          score: this.normalizeScoreForDisplay(progressScore, config),
+          score: this.normalizeScoreForDisplay(progressScore),
           depth,
           nodesEvaluated: totalNodesEvaluated,
           bestMoveFound: {
@@ -551,7 +511,7 @@ export abstract class BaseAI {
 
     return { 
       move: bestMove, 
-      score: this.normalizeScoreForDisplay(bestWeightedScore, config), 
+      score: this.normalizeScoreForDisplay(bestWeightedScore), 
       nodesEvaluated: totalNodesEvaluated 
     };
   }
@@ -597,31 +557,20 @@ export abstract class BaseAI {
   /**
    * Normalize extreme scores for better display in UI
    */
-  protected normalizeScoreForDisplay(score: number, config: AITacticalConfig): number {
-    const display = config.evaluation.scoreDisplay;
-    
+  protected normalizeScoreForDisplay(score: number): number {
     // For immediate wins/losses, show clear confidence
-    if (score >= config.evaluation.terminal.masterCapturePriority) {
-      return display.clearWin.min + Math.random() * (display.clearWin.max - display.clearWin.min);
-    }
-    if (score <= -config.evaluation.terminal.masterCapturePriority) {
-      return display.clearLoss.min + Math.random() * (display.clearLoss.max - display.clearLoss.min);
-    }
+    if (score >= 999) return 95 + Math.random() * 4; // Clear wins: 95-99
+    if (score <= -999) return -99 + Math.random() * 4; // Clear losses: -99 to -95
     
     // For high advantage positions
-    if (score >= display.strongAdvantageThreshold) {
-      return display.strongAdvantage.min + (score - display.strongAdvantageThreshold) / display.strongAdvantageScaling;
-    }
-    if (score <= -display.strongAdvantageThreshold) {
-      return display.strongDisadvantage.min - (Math.abs(score) - display.strongAdvantageThreshold) / display.strongAdvantageScaling;
-    }
+    if (score >= 500) return 70 + (score - 500) / 50; // Strong advantage: 70-90
+    if (score <= -500) return -70 - (Math.abs(score) - 500) / 50; // Strong disadvantage: -90 to -70
     
     // For normal game positions, use a more dynamic range
-    const baseScore = Math.max(display.normalRange.min, 
-                              Math.min(display.normalRange.max, score * display.normalScaling));
+    const baseScore = Math.max(-60, Math.min(60, score * 0.1)); // Base range: -60 to +60
     
     // Add some variance to show the AI is actively thinking
-    const variance = (Math.random() - 0.5) * display.variance;
+    const variance = (Math.random() - 0.5) * 8; // ±4 variance
     
     return baseScore + variance;
   }
@@ -629,7 +578,7 @@ export abstract class BaseAI {
   /**
    * Evaluate game state from a player's perspective
    */
-  protected evaluateState(gameState: GameState, player: Player, config: AITacticalConfig): number {
+  protected evaluateState(gameState: GameState, player: Player): number {
     let score = 0;
     const opponent = player === "red" ? "blue" : "red";
 
@@ -638,54 +587,53 @@ export abstract class BaseAI {
     const opponentMaster = this.findMaster(gameState.board, opponent);
 
     // Master captured - only return extreme values for actual game-ending conditions
-    if (!playerMaster) return -config.evaluation.terminal.masterCaptured;
-    if (!opponentMaster) return config.evaluation.terminal.masterCaptured;
+    if (!playerMaster) return -10000;
+    if (!opponentMaster) return 10000;
 
     // Temple arch reached - only if the game is actually over
     const [masterRow, masterCol] = playerMaster.position;
     const [oppMasterRow, oppMasterCol] = opponentMaster.position;
 
     // Check if player's master reached opponent's temple arch
-    if (player === "red" && masterRow === 4 && masterCol === 2) return config.evaluation.terminal.templeArchReached;
-    if (player === "blue" && masterRow === 0 && masterCol === 2) return config.evaluation.terminal.templeArchReached;
+    if (player === "red" && masterRow === 4 && masterCol === 2) return 10000;
+    if (player === "blue" && masterRow === 0 && masterCol === 2) return 10000;
 
     // Check if opponent's master reached player's temple arch
     if (opponent === "red" && oppMasterRow === 4 && oppMasterCol === 2)
-      return -config.evaluation.terminal.templeArchReached;
+      return -10000;
     if (opponent === "blue" && oppMasterRow === 0 && oppMasterCol === 2)
-      return -config.evaluation.terminal.templeArchReached;
+      return -10000;
 
     // If we get here, it's a normal game position - calculate incremental score
     
     // Material count (more pieces = better)
     const playerPieces = this.getPieceCount(gameState.board, player);
     const opponentPieces = this.getPieceCount(gameState.board, opponent);
-    score += (playerPieces - opponentPieces) * config.evaluation.material.pieceValue;
+    score += (playerPieces - opponentPieces) * 150;
 
     // Master position value (progress toward opponent temple)
-    const masterProgress = this.getMasterPositionValue(playerMaster, player, config);
-    const oppMasterProgress = this.getMasterPositionValue(opponentMaster, opponent, config);
+    const masterProgress = this.getMasterPositionValue(playerMaster, player);
+    const oppMasterProgress = this.getMasterPositionValue(opponentMaster, opponent);
     score += masterProgress - oppMasterProgress;
 
     // Center control
-    score += this.getCenterControl(gameState.board, player, config) * config.evaluation.positional.centerControl;
-    score -= this.getCenterControl(gameState.board, opponent, config) * config.evaluation.positional.centerControl;
+    score += this.getCenterControl(gameState.board, player) * 25;
+    score -= this.getCenterControl(gameState.board, opponent) * 25;
 
     // Master safety (being threatened is bad)
-    const masterSafety = this.evaluateMasterSafety(gameState, player, config);
-    const oppMasterSafety = this.evaluateMasterSafety(gameState, opponent, config);
+    const masterSafety = this.evaluateMasterSafety(gameState, player);
+    const oppMasterSafety = this.evaluateMasterSafety(gameState, opponent);
     score += masterSafety - oppMasterSafety;
 
     // Add tactical bonuses for strong positions
-    score += this.evaluateTacticalPosition(gameState, player, config);
-    score -= this.evaluateTacticalPosition(gameState, opponent, config);
+    score += this.evaluateTacticalPosition(gameState, player);
+    score -= this.evaluateTacticalPosition(gameState, opponent);
 
     // Add some controlled randomness to avoid repetitive play
-    score += (Math.random() - 0.5) * config.algorithm.randomness.positionRandomness;
+    score += (Math.random() - 0.5) * 20;
 
     // Clamp the score to reasonable bounds for non-terminal positions
-    score = Math.max(config.algorithm.randomness.scoreBounds.min, 
-                    Math.min(config.algorithm.randomness.scoreBounds.max, score));
+    score = Math.max(-2000, Math.min(2000, score));
 
     return score;
   }
@@ -693,17 +641,16 @@ export abstract class BaseAI {
     /**
    * Evaluate tactical aspects of the position
    */
-  protected evaluateTacticalPosition(gameState: GameState, player: Player, config: AITacticalConfig): number {
+  protected evaluateTacticalPosition(gameState: GameState, player: Player): number {
     let tacticalScore = 0;
     
     // Count pieces that can capture opponent pieces next turn
     const moves = this.generateLegalMoves(gameState, player);
     const captureMoves = moves.filter(move => move.isCapture);
-    tacticalScore += captureMoves.length * config.evaluation.tactical.captureOpportunity;
+    tacticalScore += captureMoves.length * 30;
     
     // Bonus for having multiple move options (flexibility)
-    tacticalScore += Math.min(moves.length * config.evaluation.tactical.flexibility, 
-                             config.evaluation.tactical.maxFlexibility);
+    tacticalScore += Math.min(moves.length * 5, 50);
     
     return tacticalScore;
   }
@@ -711,21 +658,21 @@ export abstract class BaseAI {
   /**
    * Evaluate master position value
    */
-  protected getMasterPositionValue(master: Piece, player: Player, config: AITacticalConfig): number {
+  protected getMasterPositionValue(master: Piece, player: Player): number {
     const [row, col] = master.position;
     let value = 0;
 
     // Progress toward opponent's temple arch
     if (player === "red") {
-      value += (4 - row) * config.evaluation.positional.masterProgress; // Red moves down
-      if (row >= 3) value += config.evaluation.positional.masterNearGoal; // Close to goal
+      value += (4 - row) * 50; // Red moves down
+      if (row >= 3) value += 100; // Close to goal
     } else {
-      value += row * config.evaluation.positional.masterProgress; // Blue moves up
-      if (row <= 1) value += config.evaluation.positional.masterNearGoal; // Close to goal
+      value += row * 50; // Blue moves up
+      if (row <= 1) value += 100; // Close to goal
     }
 
     // Center column bonus
-    if (col === 2) value += config.evaluation.positional.masterCenterColumn;
+    if (col === 2) value += 30;
 
     return value;
   }
@@ -733,17 +680,16 @@ export abstract class BaseAI {
   /**
    * Evaluate master safety
    */
-  protected evaluateMasterSafety(gameState: GameState, player: Player, config: AITacticalConfig): number {
+  protected evaluateMasterSafety(gameState: GameState, player: Player): number {
     const master = this.findMaster(gameState.board, player);
-    if (!master) return -config.evaluation.tactical.masterThreatPenalty;
+    if (!master) return -1000;
 
     let safety = 0;
     const [masterRow, masterCol] = master.position;
-    const radius = config.evaluation.material.masterSafetyRadius;
 
     // Count friendly pieces nearby
-    for (let dr = -radius; dr <= radius; dr++) {
-      for (let dc = -radius; dc <= radius; dc++) {
+    for (let dr = -1; dr <= 1; dr++) {
+      for (let dc = -1; dc <= 1; dc++) {
         if (dr === 0 && dc === 0) continue;
 
         const newRow = masterRow + dr;
@@ -752,7 +698,7 @@ export abstract class BaseAI {
         if (newRow >= 0 && newRow < 5 && newCol >= 0 && newCol < 5) {
           const piece = gameState.board[newRow][newCol];
           if (piece && piece.player === player && !piece.isMaster) {
-            safety += config.evaluation.material.masterSafetyValue;
+            safety += 15;
           }
         }
       }
@@ -792,16 +738,21 @@ export abstract class BaseAI {
    */
   protected getCenterControl(
     board: (Piece | null)[][],
-    player: Player,
-    config: AITacticalConfig
+    player: Player
   ): number {
-    const centerPositions = config.evaluation.positional.centerPositions;
+    const centerPositions: [number, number][] = [
+      [2, 2], // center
+      [1, 2],
+      [2, 1],
+      [2, 3],
+      [3, 2], // adjacent to center
+    ];
 
     let score = 0;
     for (const [row, col] of centerPositions) {
       const piece = board[row][col];
       if (piece && piece.player === player) {
-        score += piece.isMaster ? config.evaluation.positional.masterCenterMultiplier : 1;
+        score += piece.isMaster ? 3 : 1;
       }
     }
     return score;
