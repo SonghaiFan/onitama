@@ -289,6 +289,62 @@
   outline-offset: 2px;
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
+
+/* ==========================================================================
+   AI COMPONENTS
+   ========================================================================== */
+
+/* AI thinking animation */
+@keyframes ai-thinking {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.ai-thinking-dot {
+  animation: ai-thinking 1.4s ease-in-out infinite;
+}
+
+.ai-thinking-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+.ai-thinking-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.ai-thinking-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* AI settings panel */
+.ai-settings-panel {
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(139, 126, 102, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* AI difficulty buttons */
+.ai-difficulty-btn {
+  transition: all 0.2s ease-in-out;
+  border: 2px solid transparent;
+}
+
+.ai-difficulty-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.ai-difficulty-btn.active {
+  border-color: rgb(139, 126, 102);
+  background: rgb(250, 248, 242);
+  box-shadow: 0 2px 8px rgba(139, 126, 102, 0.2);
+}
 /* ==========================================================================
    LAYOUT & GRID SYSTEM
    ========================================================================== */

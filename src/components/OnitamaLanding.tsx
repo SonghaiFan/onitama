@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+<<<<<<< Updated upstream
 import OnitamaGame from "./OnitamaGame";
 import { GameHeader } from "./landing/GameHeader";
 import { LandingHeader } from "./landing/LandingHeader";
@@ -8,6 +9,14 @@ import { CardPackSelection } from "./landing/CardPackSelection";
 import { GameOverview } from "./landing/GameOverview";
 import { HowToPlay } from "./landing/HowToPlay";
 import { Footer } from "./landing/Footer";
+=======
+import OnitamaGame from "@/components/OnitamaGame";
+import { UnifiedHeader } from "@/components/Header";
+import { CardPackSelection } from "@/components/CardPackSelection";
+import { GameOverview } from "@/components/GameOverview";
+import { HowToPlay } from "@/components/HowToPlay";
+import { Footer } from "@/components/Footer";
+>>>>>>> Stashed changes
 
 type CardPack = "normal" | "senseis" | "windway" | "promo" | "dual";
 type Language = "zh" | "en";

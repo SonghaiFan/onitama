@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import GameBoard from "./GameBoard";
 import Card from "./MoveCards";
+import AIGameMode from "./AIGameMode";
 import { GameState, Player } from "@/types/game";
 import { INITIAL_GAME_STATE, createNewGameAsync } from "@/utils/dataLoader";
 import { getPlayerColors } from "@/utils/gameAestheticConfig";
@@ -32,6 +33,8 @@ const gameContent = {
     warnings: "警告",
     close: "關閉",
     dualWindPhase: "风起云涌",
+    aiMode: "AI 模式",
+    settings: "設置",
   },
   en: {
     victory: "Victory!",
@@ -42,6 +45,8 @@ const gameContent = {
     warnings: "Warnings",
     close: "Close",
     dualWindPhase: "Wind Move",
+    aiMode: "AI Mode",
+    settings: "Settings",
   },
 };
 
@@ -54,6 +59,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
   function OnitamaGame({ cardPacks = ["normal"], language = "zh" }, ref) {
     const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
     const [isLoading, setIsLoading] = useState(true);
+    const [showAISettings, setShowAISettings] = useState(false);
 
     // Sound effects - removed card selection sound
 
@@ -312,6 +318,27 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
 
     return (
       <div className="w-full h-full flex flex-col watercolor-wash z-10 relative">
+        {/* AI Settings Button */}
+        <div className="absolute top-2 right-2 z-20">
+          <button
+            onClick={() => setShowAISettings(!showAISettings)}
+            className="px-3 py-1.5 text-xs font-medium text-stone-600 bg-white/80 backdrop-blur-sm rounded-lg border border-stone-300 hover:bg-white hover:border-stone-400 transition-all duration-200 shadow-sm"
+          >
+            {gameContent[language].aiMode}
+          </button>
+        </div>
+
+        {/* AI Settings Panel */}
+        {showAISettings && (
+          <div className="absolute top-12 right-2 z-20 bg-white/95 backdrop-blur-sm rounded-lg border border-stone-300 shadow-lg p-4 min-w-64">
+            <AIGameMode
+              gameState={gameState}
+              onGameStateChange={setGameState}
+              language={language}
+            />
+          </div>
+        )}
+
         <div
           className={`absolute inset-0 -z-10 pointer-events-none ${
             gameState.winner
