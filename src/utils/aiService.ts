@@ -37,10 +37,13 @@ export class AIService {
   }
 
   /**
-   * Get AI move with thinking time simulation
+   * Get AI move with thinking time simulation (non-blocking)
    */
   async getAIMove(gameState: GameState, player: Player): Promise<AIMove> {
     const startTime = Date.now();
+
+    // Yield control to the browser first to ensure smooth animations
+    await new Promise(resolve => requestAnimationFrame(resolve));
 
     const aiResult = await AIFactory.findBestMove(gameState, player, this.algorithm);
 

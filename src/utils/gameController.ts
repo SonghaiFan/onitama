@@ -211,7 +211,7 @@ export class GameController {
   }
 
   /**
-   * Execute a move
+   * Execute a move (player move)
    */
   executeMove(
     from: [number, number],
@@ -224,8 +224,14 @@ export class GameController {
     const newGameState = executeMove(gameState, from, to, cardIndex);
     this.setState({ gameState: newGameState });
 
-    // Check if AI should make a move
-    this.checkAITurn();
+    // Wait for player move animation to complete before starting AI turn
+    // The motion animation uses spring with damping: 20, which typically takes ~500ms to settle
+    // Use requestAnimationFrame to ensure this doesn't block the current animation frame
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        this.checkAITurn();
+      }, 600);
+    });
   }
 
   /**
@@ -267,9 +273,9 @@ export class GameController {
   }
 
   /**
-   * Check if AI should make a move
+   * Check if AI should make a move (non-blocking)
    */
-  private async checkAITurn(): Promise<void> {
+  private checkAITurn(): void {
     const { gameState, aiPlayer, isAITurn } = this.state;
 
     if (
@@ -279,28 +285,47 @@ export class GameController {
       !isAITurn &&
       gameState.gamePhase === "playing"
     ) {
-      await this.executeAIMove();
+      this.executeAIMove();
     }
   }
 
   /**
-   * Execute AI move
+   * Execute AI move (fully asynchronous, non-blocking)
    */
-  private async executeAIMove(): Promise<void> {
+  private executeAIMove(): void {
     const { gameState, aiPlayer } = this.state;
     if (!aiPlayer || gameState.winner || gameState.gamePhase !== "playing")
       return;
 
+    // Set AI turn state immediately for UI feedback
     this.setState({ isAITurn: true });
 
-    try {
-      const aiMove = await this.aiService.getAIMove(gameState, aiPlayer);
-      this.executeMove(aiMove.from, aiMove.to, aiMove.cardIndex);
-    } catch (error) {
-      console.error("AI move failed:", error);
-    } finally {
-      this.setState({ isAITurn: false });
-    }
+    // Process AI move asynchronously without blocking
+    this.aiService
+      .getAIMove(gameState, aiPlayer)
+      .then((aiMove) => {
+        // Check if game state is still valid when AI move completes
+        if (this.state.gameState.winner || this.state.gameState.gamePhase !== "playing") {
+          this.setState({ isAITurn: false });
+          return;
+        }
+
+        // Execute the AI move
+        const newGameState = executeMove(this.state.gameState, aiMove.from, aiMove.to, aiMove.cardIndex);
+        this.setState({ 
+          gameState: newGameState,
+          isAITurn: false 
+        });
+
+        // Schedule next AI turn check after AI animation completes
+        setTimeout(() => {
+          this.checkAITurn();
+        }, 600);
+      })
+      .catch((error) => {
+        console.error("AI move failed:", error);
+        this.setState({ isAITurn: false });
+      });
   }
 
   /**
