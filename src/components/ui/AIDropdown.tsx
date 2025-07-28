@@ -8,13 +8,13 @@ import {
   SelectionState,
 } from "@/types/ui";
 import { AIDifficulty } from "@/utils/aiService";
-import { Player, CardPack } from "@/types/game";
+import { CardPack } from "@/types/game";
 import { isAICompatible, getAIDisabledReason } from "@/utils/aiRestrictions";
 
 interface AIDropdownProps {
   language: "zh" | "en";
-  aiPlayer: Player | null;
-  onSetAIPlayer: (player: Player | null) => void;
+  aiEnabled: boolean;
+  onSetAIEnabled: (enabled: boolean) => void;
   aiDifficulty?: AIDifficulty;
   onDifficultyChange?: (difficulty: AIDifficulty) => void;
   selectedPacks?: Set<CardPack>;
@@ -23,8 +23,8 @@ interface AIDropdownProps {
 
 export function AIDropdown({
   language,
-  aiPlayer,
-  onSetAIPlayer,
+  aiEnabled,
+  onSetAIEnabled,
   aiDifficulty,
   onDifficultyChange,
   selectedPacks = new Set(),
@@ -34,30 +34,26 @@ export function AIDropdown({
   const content = {
     zh: {
       aiSettings: "AI 設置",
-      players: "選擇 AI 玩家",
+      enableAI: "啟用 AI",
+      disableAI: "關閉 AI",
       difficulty: "AI 難度",
-      humanVsHuman: "雙人遊戲",
-      redAI: "紅方 AI",
-      blueAI: "藍方 AI",
       difficulties: {
         easy: "簡單",
         medium: "中等",
-        hard: "困難",
-        expert: "專家",
+        mcts: "MCTS",
+        enhanced: "增強",
       },
     },
     en: {
       aiSettings: "AI Settings",
-      players: "Choose AI Players",
+      enableAI: "Enable AI",
+      disableAI: "Disable AI",
       difficulty: "AI Difficulty",
-      humanVsHuman: "Human vs Human",
-      redAI: "Red AI",
-      blueAI: "Blue AI",
       difficulties: {
         easy: "Easy",
         medium: "Medium",
-        hard: "Hard",
-        expert: "Expert",
+        mcts: "MCTS",
+        enhanced: "Enhanced",
       },
     },
   };
@@ -66,48 +62,24 @@ export function AIDropdown({
 
   // Check AI compatibility
   const aiCompatible = isAICompatible(selectedPacks);
-  const disabledReason = !aiCompatible ? getAIDisabledReason(selectedPacks, language) : "";
+  const disabledReason = !aiCompatible
+    ? getAIDisabledReason(selectedPacks, language)
+    : "";
 
   // Auto-disable AI if not compatible
   React.useEffect(() => {
-    if (!aiCompatible && aiPlayer !== null) {
-      onSetAIPlayer(null);
+    if (!aiCompatible && aiEnabled) {
+      onSetAIEnabled(false);
     }
-  }, [aiCompatible, aiPlayer, onSetAIPlayer]);
-
-  // Player selection items
-  const playerItems: SelectableItem<string>[] = [
-    {
-      id: "none",
-      label: t.humanVsHuman,
-    },
-    {
-      id: "red",
-      label: t.redAI,
-      disabled: !aiCompatible,
-    },
-    {
-      id: "blue", 
-      label: t.blueAI,
-      disabled: !aiCompatible,
-    },
-  ];
+  }, [aiCompatible, aiEnabled, onSetAIEnabled]);
 
   // Difficulty selection items
   const difficultyItems: SelectableItem<AIDifficulty>[] = [
     { id: "easy", label: t.difficulties.easy },
     { id: "medium", label: t.difficulties.medium },
-    { id: "hard", label: t.difficulties.hard },
-    { id: "expert", label: t.difficulties.expert },
+    { id: "mcts", label: t.difficulties.mcts },
+    { id: "enhanced", label: t.difficulties.enhanced },
   ];
-
-  // Player selection config
-  const playerConfig: SelectionGroupConfig<string> = {
-    id: "ai-player",
-    title: t.players,
-    allowMultiple: false,
-    layout: "list",
-  };
 
   // Difficulty selection config
   const difficultyConfig: SelectionGroupConfig<AIDifficulty> = {
@@ -116,17 +88,6 @@ export function AIDropdown({
     allowMultiple: false,
     layout: "grid",
     columns: 2,
-  };
-
-  // Player selection state
-  const playerSelection: SelectionState<string> = {
-    selected: new Set([aiPlayer || "none"]),
-    onChange: (selected) => {
-      const selectedPlayer = Array.from(selected)[0];
-      onSetAIPlayer(
-        selectedPlayer === "none" ? null : (selectedPlayer as Player)
-      );
-    },
   };
 
   // Difficulty selection state
@@ -152,17 +113,13 @@ export function AIDropdown({
         <ZenButton
           onClick={() => {}}
           variant="secondary"
-          selected={!!aiPlayer}
+          selected={aiEnabled}
           disabled={!aiCompatible}
           className="px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm"
         >
           <span className="hidden sm:inline">{t.aiSettings}</span>
           <span className="sm:hidden">AI</span>
-          {aiPlayer && (
-            <span className="ml-1 text-xs">
-              ({aiPlayer === "red" ? "🔴" : "🔵"})
-            </span>
-          )}
+          {aiEnabled && <span className="ml-1 text-xs">(🔵)</span>}
         </ZenButton>
       }
     >
@@ -172,14 +129,19 @@ export function AIDropdown({
             {disabledReason}
           </div>
         )}
-        
-        <SelectionGroup
-          items={playerItems}
-          config={playerConfig}
-          selection={playerSelection}
-        />
 
-        {aiPlayer && aiDifficulty && onDifficultyChange && aiCompatible && (
+        <div className="flex flex-col space-y-2">
+          <ZenButton
+            onClick={() => onSetAIEnabled(!aiEnabled)}
+            variant={aiEnabled ? "primary" : "secondary"}
+            disabled={!aiCompatible}
+            className="w-full justify-start px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm"
+          >
+            {aiEnabled ? t.disableAI : t.enableAI}
+          </ZenButton>
+        </div>
+
+        {aiEnabled && aiDifficulty && onDifficultyChange && aiCompatible && (
           <SelectionGroup
             items={difficultyItems}
             config={difficultyConfig}

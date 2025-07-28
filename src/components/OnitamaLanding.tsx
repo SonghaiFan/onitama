@@ -36,8 +36,8 @@ function GamePage({
         mode="game"
         onBackToHome={onBackToHome}
         onNewGame={() => gameRef.current?.resetGame()}
-        aiPlayer={aiPlayer}
-        onSetAIPlayer={setAIPlayer}
+        aiEnabled={aiPlayer !== null}
+        onSetAIEnabled={(enabled) => setAIPlayer(enabled ? "blue" : null)}
         aiDifficulty={config.aiDifficulty}
         onDifficultyChange={(difficulty) =>
           updateAIConfig({ aiDifficulty: difficulty })

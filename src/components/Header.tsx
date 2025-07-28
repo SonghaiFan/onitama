@@ -14,8 +14,8 @@ interface UnifiedHeaderProps {
   onBackToHome?: () => void;
   onNewGame?: () => void;
   // AI Settings props (only for game mode)
-  aiPlayer?: Player | null;
-  onSetAIPlayer?: (player: Player | null) => void;
+  aiEnabled?: boolean;
+  onSetAIEnabled?: (enabled: boolean) => void;
   aiDifficulty?: AIDifficulty;
   onDifficultyChange?: (difficulty: AIDifficulty) => void;
   selectedPacks?: Set<CardPack>;
@@ -28,8 +28,8 @@ export function UnifiedHeader({
   onStartGame,
   onBackToHome,
   onNewGame,
-  aiPlayer,
-  onSetAIPlayer,
+  aiEnabled,
+  onSetAIEnabled,
   aiDifficulty,
   onDifficultyChange,
   selectedPacks,
@@ -124,11 +124,11 @@ export function UnifiedHeader({
             </motion.div>
             <div className="flex items-center gap-2 sm:gap-4">
               {/* AI Settings Dropdown - only show in game mode when AI props are provided */}
-              {mode === "game" && onSetAIPlayer && (
+              {mode === "game" && onSetAIEnabled && (
                 <AIDropdown
                   language={language}
-                  aiPlayer={aiPlayer ?? null}
-                  onSetAIPlayer={onSetAIPlayer}
+                  aiEnabled={aiEnabled ?? false}
+                  onSetAIEnabled={onSetAIEnabled}
                   aiDifficulty={aiDifficulty}
                   onDifficultyChange={onDifficultyChange}
                   selectedPacks={selectedPacks}
