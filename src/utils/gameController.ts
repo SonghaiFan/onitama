@@ -45,7 +45,7 @@ export class GameController {
 
   constructor(config: Partial<GameControllerConfig> = {}) {
     this.aiService = new AIService(
-      config.aiAlgorithm || "medium",
+      config.aiAlgorithm || "montecarlo",
       config.aiThinkingTime || 1000
     );
 
@@ -54,7 +54,7 @@ export class GameController {
       isLoading: true,
       aiService: this.aiService,
       config: {
-        aiAlgorithm: config.aiAlgorithm || "medium",
+        aiAlgorithm: config.aiAlgorithm || "montecarlo",
         aiThinkingTime: config.aiThinkingTime || 1000,
       },
       isAITurn: false,
@@ -305,16 +305,24 @@ export class GameController {
       .getAIMove(gameState, aiPlayer)
       .then((aiMove) => {
         // Check if game state is still valid when AI move completes
-        if (this.state.gameState.winner || this.state.gameState.gamePhase !== "playing") {
+        if (
+          this.state.gameState.winner ||
+          this.state.gameState.gamePhase !== "playing"
+        ) {
           this.setState({ isAITurn: false });
           return;
         }
 
         // Execute the AI move
-        const newGameState = executeMove(this.state.gameState, aiMove.from, aiMove.to, aiMove.cardIndex);
-        this.setState({ 
+        const newGameState = executeMove(
+          this.state.gameState,
+          aiMove.from,
+          aiMove.to,
+          aiMove.cardIndex
+        );
+        this.setState({
           gameState: newGameState,
-          isAITurn: false 
+          isAITurn: false,
         });
 
         // Schedule next AI turn check after AI animation completes

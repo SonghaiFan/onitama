@@ -17,7 +17,10 @@ export class AIService {
   private algorithm: AIAlgorithm;
   private thinkingTime: number;
 
-  constructor(algorithm: AIAlgorithm = "medium", thinkingTime: number = 1000) {
+  constructor(
+    algorithm: AIAlgorithm = "montecarlo",
+    thinkingTime: number = 1000
+  ) {
     this.algorithm = algorithm;
     this.thinkingTime = thinkingTime;
   }
@@ -43,9 +46,13 @@ export class AIService {
     const startTime = Date.now();
 
     // Yield control to the browser first to ensure smooth animations
-    await new Promise(resolve => requestAnimationFrame(resolve));
+    await new Promise((resolve) => requestAnimationFrame(resolve));
 
-    const aiResult = await AIFactory.findBestMove(gameState, player, this.algorithm);
+    const aiResult = await AIFactory.findBestMove(
+      gameState,
+      player,
+      this.algorithm
+    );
 
     // Simulate additional thinking time if needed
     const elapsedTime = Date.now() - startTime;

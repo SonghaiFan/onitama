@@ -2,37 +2,17 @@
 export { AIFactory, type AIAlgorithm } from "./aiFactory";
 export { BaseAI, type AIMoveResult } from "./algorithms/baseAI";
 
-// Algorithm implementations (based on Rust agents)
+// Algorithm implementations (Monte Carlo only)
+export { MonteCarloAI } from "./algorithms/monteCarloAI";
 export { EasyAI } from "./algorithms/easyAI";
-export { MediumAI } from "./algorithms/mediumAI";
-export { GreedyAI } from "./algorithms/greedyAI";
-export { MinimaxAI } from "./algorithms/minimaxAI";
-export { AlphaBetaAI } from "./algorithms/alphaBetaAI";
-export { MonteCarloAI, HybridMonteCarloAI } from "./algorithms/monteCarloAI";
 
 // Import types for use in utilities
 import type { AIAlgorithm } from "./aiFactory";
 
 // Utility functions
-export const getAllAIAlgorithms = (): AIAlgorithm[] => [
-  "easy",
-  "medium",
-  "greedy",
-  "minimax",
-  "alphabeta",
-  "montecarlo",
-  "hybrid",
-];
+export const getAllAIAlgorithms = (): AIAlgorithm[] => ["easy", "montecarlo"];
 
-export const getAIStrengthOrder = (): AIAlgorithm[] => [
-  "easy",
-  "greedy",
-  "medium",
-  "montecarlo",
-  "minimax",
-  "alphabeta",
-  "hybrid",
-];
+export const getAIStrengthOrder = (): AIAlgorithm[] => ["easy", "montecarlo"];
 
 /**
  * Compare AI algorithm strength
@@ -56,4 +36,3 @@ export const getAIByStrength = (strength: number): AIAlgorithm => {
   const clampedStrength = Math.max(0, Math.min(strength, order.length - 1));
   return order[clampedStrength];
 };
-

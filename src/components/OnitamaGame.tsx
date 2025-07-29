@@ -1,20 +1,11 @@
 "use client";
 
-import React, {
-  forwardRef,
-  useImperativeHandle,
-  useState,
-  useEffect,
-} from "react";
+import React, { forwardRef, useImperativeHandle } from "react";
 import { useGame } from "@/contexts/GameContext";
 import GameBoard from "./GameBoard";
 import Card from "./MoveCards";
 import { getPlayerColors } from "@/utils/gameAestheticConfig";
-import {
-  gameEventBus,
-  GameEvents,
-  AIThinkingUpdateEvent,
-} from "@/utils/eventBus";
+import { gameEventBus, GameEvents } from "@/utils/eventBus";
 
 type Language = "zh" | "en";
 

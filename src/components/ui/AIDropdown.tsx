@@ -38,13 +38,8 @@ export function AIDropdown({
       disableAI: "關閉 AI",
       algorithm: "AI 算法",
       algorithms: {
-        easy: "簡單",
-        medium: "中等",
-        greedy: "貪心 (快速)",
-        minimax: "極小極大 (經典)",
-        alphabeta: "α-β剪枝 (優化)",
+        easy: "簡易",
         montecarlo: "蒙特卡羅 (統計)",
-        hybrid: "混合算法 (高級)",
       },
     },
     en: {
@@ -54,12 +49,7 @@ export function AIDropdown({
       algorithm: "AI Algorithm",
       algorithms: {
         easy: "Easy",
-        medium: "Medium",
-        greedy: "Greedy (Fast)",
-        minimax: "Minimax (Classic)",
-        alphabeta: "Alpha-Beta (Optimized)",
         montecarlo: "Monte Carlo (Statistical)",
-        hybrid: "Hybrid (Advanced)",
       },
     },
   };
@@ -79,18 +69,10 @@ export function AIDropdown({
     }
   }, [aiCompatible, aiEnabled, onSetAIEnabled]);
 
-  // Algorithm selection items organized by complexity
+  // Algorithm selection items
   const algorithmItems: SelectableItem<AIAlgorithm>[] = [
-    // Beginner algorithms
     { id: "easy", label: t.algorithms.easy },
-    { id: "medium", label: t.algorithms.medium },
-    // Classic algorithms
-    { id: "greedy", label: t.algorithms.greedy },
-    { id: "minimax", label: t.algorithms.minimax },
-    // Advanced algorithms
-    { id: "alphabeta", label: t.algorithms.alphabeta },
     { id: "montecarlo", label: t.algorithms.montecarlo },
-    { id: "hybrid", label: t.algorithms.hybrid },
   ];
 
   // Algorithm selection config
