@@ -785,6 +785,7 @@ export function getAllPlayerMoves(
 
           for (const [toRow, toCol] of possibleMoves) {
             const targetPiece = gameState.board[toRow][toCol];
+            // A capture is when we move to a position occupied by an opponent piece
             const isCapture = !!targetPiece && targetPiece.player !== player;
             const isMasterMove = piece.isMaster;
             const isWindSpiritMove = piece.isWindSpirit;
@@ -807,48 +808,6 @@ export function getAllPlayerMoves(
             });
           }
         }
-      }
-    }
-  }
-
-  // Also check wind spirit moves if available
-  if (gameState.windSpiritPosition) {
-    const windSpiritPiece: Piece = {
-      id: "wind_spirit",
-      player: "neutral",
-      isMaster: false,
-      isWindSpirit: true,
-      position: gameState.windSpiritPosition,
-    };
-
-    for (
-      let cardIndex = 0;
-      cardIndex < gameState.players[player].cards.length;
-      cardIndex++
-    ) {
-      const card = gameState.players[player].cards[cardIndex];
-      const possibleMoves = getPossibleMoves(
-        windSpiritPiece,
-        card,
-        gameState.board,
-        player
-      );
-
-      for (const [toRow, toCol] of possibleMoves) {
-        const targetPiece = gameState.board[toRow][toCol];
-        const isCapture = !!targetPiece && targetPiece.player !== player;
-
-        moves.push({
-          from: gameState.windSpiritPosition!,
-          to: [toRow, toCol],
-          cardIndex,
-          piece: windSpiritPiece,
-          card,
-          isCapture,
-          isMasterMove: false,
-          isWindSpiritMove: true,
-          distanceToGoal: 0, // Wind spirit doesn't have a goal
-        });
       }
     }
   }
