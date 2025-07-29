@@ -111,9 +111,6 @@ Six card packs are available in `/public/pack/`:
 - **AIFactory** (`aiFactory.ts`): Factory pattern for AI algorithm selection
 - **BaseAI** (`algorithms/baseAI.ts`): Abstract base class for AI implementations
 - **EasyAI** (`algorithms/easyAI.ts`): Simple random strategy with basic piece safety
-- **MediumAI** (`algorithms/mediumAI.ts`): Tactical evaluation with position scoring
-- **AIService** (`src/utils/aiService.ts`): Service layer with thinking time simulation
-- **Two Difficulty Levels**: Easy and Medium with configurable parameters
 
 #### AI Integration
 
