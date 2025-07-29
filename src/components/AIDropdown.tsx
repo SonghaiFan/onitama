@@ -129,7 +129,7 @@ export function AIDropdown({
             onClick={() => onSetAIEnabled(!aiEnabled)}
             variant={aiEnabled ? "primary" : "secondary"}
             disabled={!aiCompatible}
-            className="w-full justify-start px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm"
+            className="w-full justify-center px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm"
           >
             {aiEnabled ? t.disableAI : t.enableAI}
           </ZenButton>
