@@ -81,6 +81,11 @@ class DataCache {
   }
 
   private loadFromStorage() {
+    // Check if we're in a browser environment
+    if (typeof window === "undefined" || typeof localStorage === "undefined") {
+      return;
+    }
+
     try {
       const keys = Object.keys(localStorage).filter((key) =>
         key.startsWith(CACHE_KEY_PREFIX)
@@ -122,7 +127,9 @@ class DataCache {
     // Remove invalid cache
     if (entry) {
       this.cache.delete(packName);
-      localStorage.removeItem(CACHE_KEY_PREFIX + packName);
+      if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
+        localStorage.removeItem(CACHE_KEY_PREFIX + packName);
+      }
     }
 
     return null;
@@ -136,6 +143,11 @@ class DataCache {
     };
 
     this.cache.set(packName, entry);
+
+    // Only use localStorage in browser environment
+    if (typeof window === "undefined" || typeof localStorage === "undefined") {
+      return;
+    }
 
     try {
       localStorage.setItem(CACHE_KEY_PREFIX + packName, JSON.stringify(entry));
@@ -162,17 +174,21 @@ class DataCache {
 
     entries.forEach(({ key }) => {
       this.cache.delete(key);
-      localStorage.removeItem(CACHE_KEY_PREFIX + key);
+      if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
+        localStorage.removeItem(CACHE_KEY_PREFIX + key);
+      }
     });
   }
 
   clear() {
     this.cache.clear();
-    Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith(CACHE_KEY_PREFIX)) {
-        localStorage.removeItem(key);
-      }
-    });
+    if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith(CACHE_KEY_PREFIX)) {
+          localStorage.removeItem(key);
+        }
+      });
+    }
   }
 
   getCacheStatus() {
