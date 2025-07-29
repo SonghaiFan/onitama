@@ -853,28 +853,5 @@ export function getAllPlayerMoves(
     }
   }
 
-  // Sort moves by priority: captures first, then other moves
-  // This improves Alpha-Beta pruning efficiency
-  moves.sort((a, b) => {
-    // Captures have highest priority (0), non-captures have lower priority (1)
-    const aPriority = a.isCapture ? 0 : 1;
-    const bPriority = b.isCapture ? 0 : 1;
-
-    if (aPriority !== bPriority) {
-      return aPriority - bPriority;
-    }
-
-    // Secondary sort: Master moves have higher priority than student moves
-    const aMasterPriority = a.isMasterMove ? 0 : 1;
-    const bMasterPriority = b.isMasterMove ? 0 : 1;
-
-    if (aMasterPriority !== bMasterPriority) {
-      return aMasterPriority - bMasterPriority;
-    }
-
-    // Tertiary sort: Closer to goal has higher priority
-    return a.distanceToGoal! - b.distanceToGoal!;
-  });
-
   return moves;
 }

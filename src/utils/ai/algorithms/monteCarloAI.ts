@@ -42,10 +42,11 @@ interface MonteCarloThinkingEvent {
 }
 
 export class HybridMonteCarloAI extends BaseAI {
-  private readonly simulationsPerBatch = 50; // Check timeout every 50 simulations
+  private readonly simulationsPerBatch = 100; // 增加批次大小，减少时间检查频率
+  private readonly maxSimulationMoves = 1000; // 增加模拟深度
 
   constructor() {
-    super(0, 5000); // No depth limit, but time-limited
+    super(0, 5000); // 保持5秒时间限制
   }
 
   async findBestMove(
@@ -117,22 +118,41 @@ export class HybridMonteCarloAI extends BaseAI {
       }
     }
 
-    // Filter moves based on Alpha-Beta scores
-    const sortedMoves = alphaBetaResults
-      .sort((a, b) => {
-        if (player === "red") {
-          return b.score - a.score; // Red maximizes
-        } else {
-          return a.score - b.score; // Blue minimizes
-        }
-      })
+    // Filter moves based on Alpha-Beta scores (like Rust implementation)
+    const guaranteedLoseScore = player === "red" ? -1000000 : 1000000;
+    const filteredMoves = alphaBetaResults
+      .filter(({ score }) => score !== guaranteedLoseScore)
       .map(({ move }) => move);
+
+    // If all moves lead to loss, still choose a move
+    const movesToEvaluate = filteredMoves.length > 0 ? filteredMoves : moves;
+
+    if (movesToEvaluate.length === 1) {
+      this.emitMonteCarloUpdate({
+        score: 0,
+        depth: 0,
+        nodesEvaluated: 1,
+        phase: "decision",
+        bestMoveFound: movesToEvaluate[0],
+        totalMoves: moves.length,
+        filteredMoves: 1,
+        aiType: "hybrid",
+      });
+      eventBus.publish("ai_thinking_end", {});
+      return {
+        move: movesToEvaluate[0],
+        score: 0,
+        depth: 0,
+        nodesEvaluated: 1,
+        thinkingTime: Date.now() - startTime,
+      };
+    }
 
     // Run Monte Carlo on the filtered moves
     const monteCarloDuration = this.maxTime / 2;
     const monteCarloResults = this.runMonteCarloSimulations(
       gameState,
-      sortedMoves,
+      movesToEvaluate,
       monteCarloDuration
     );
 
@@ -173,10 +193,10 @@ export class HybridMonteCarloAI extends BaseAI {
       nodesEvaluated: bestResult.simulations,
       phase: "decision",
       bestMoveFound: bestResult.move,
-      moveWinRates,
       totalMoves: moves.length,
-      filteredMoves: sortedMoves.length,
+      filteredMoves: movesToEvaluate.length,
       aiType: "hybrid",
+      moveWinRates,
       alphaBetaScores,
     });
 
@@ -184,7 +204,7 @@ export class HybridMonteCarloAI extends BaseAI {
 
     return {
       move: bestResult.move,
-      score: bestWinRate,
+      score: bestResult.score,
       depth: 0,
       nodesEvaluated: bestResult.simulations,
       thinkingTime,
@@ -277,8 +297,8 @@ export class HybridMonteCarloAI extends BaseAI {
 
       batchCount++;
 
-      // Update thinking display every few batches
-      if (batchCount % 5 === 0) {
+      // Update thinking display less frequently (every 10 batches instead of 5)
+      if (batchCount % 10 === 0) {
         const bestResult = this.selectBestMove(
           results,
           gameState.currentPlayer
@@ -338,7 +358,7 @@ export class HybridMonteCarloAI extends BaseAI {
   private runRandomPlayoutSimulation(gameState: GameState): Player | null {
     let currentState = gameState;
     let moves = 0;
-    const maxMoves = 200; // Prevent infinite games
+    const maxMoves = this.maxSimulationMoves; // 使用类成员变量
 
     while (moves < maxMoves) {
       const winner = checkWinConditions(currentState);
@@ -352,18 +372,15 @@ export class HybridMonteCarloAI extends BaseAI {
       );
 
       if (availableMoves.length === 0) {
-        return null; // Draw due to no moves
+        return null;
       }
 
-      // Select random move
       const randomMove = this.selectRandomMove(availableMoves);
-
-      // Apply the move
       currentState = this.simulateMove(currentState, randomMove);
       moves++;
     }
 
-    return null; // Draw due to move limit
+    return null;
   }
 }
 
@@ -371,10 +388,11 @@ export class HybridMonteCarloAI extends BaseAI {
  * Hard Hybrid Monte Carlo AI - Only considers moves with the best Alpha-Beta score
  */
 export class HardMonteCarloAI extends BaseAI {
-  private readonly simulationsPerBatch = 50;
+  private readonly simulationsPerBatch = 150;
+  private readonly maxSimulationMoves = 1000; // 添加模拟深度属性
 
   constructor() {
-    super(0, 3000);
+    super(0, 8000);
   }
 
   async findBestMove(
@@ -680,7 +698,7 @@ export class HardMonteCarloAI extends BaseAI {
   private runRandomPlayoutSimulation(gameState: GameState): Player | null {
     let currentState = gameState;
     let moves = 0;
-    const maxMoves = 200;
+    const maxMoves = this.maxSimulationMoves; // 使用类成员变量
 
     while (moves < maxMoves) {
       const winner = checkWinConditions(currentState);
@@ -785,7 +803,8 @@ export class HardMonteCarloAI extends BaseAI {
  * Pure Monte Carlo AI without Alpha-Beta filtering
  */
 export class PureMonteCarloAI extends BaseAI {
-  private readonly simulationsPerBatch = 50;
+  private readonly simulationsPerBatch = 100; // 增加批次大小
+  private readonly maxSimulationMoves = 1000; // 添加模拟深度属性
 
   constructor() {
     super(0, 3000);
@@ -989,7 +1008,7 @@ export class PureMonteCarloAI extends BaseAI {
   private runRandomPlayoutSimulation(gameState: GameState): Player | null {
     let currentState = gameState;
     let moves = 0;
-    const maxMoves = 200;
+    const maxMoves = this.maxSimulationMoves;
 
     while (moves < maxMoves) {
       const winner = checkWinConditions(currentState);

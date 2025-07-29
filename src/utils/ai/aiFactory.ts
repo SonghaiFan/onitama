@@ -3,8 +3,8 @@ import { BaseAI, AIMoveResult } from "./algorithms/baseAI";
 import { EasyAI } from "./algorithms/easyAI";
 import {
   HybridMonteCarloAI,
-  PureMonteCarloAI,
   HardMonteCarloAI,
+  PureMonteCarloAI,
 } from "./algorithms/monteCarloAI";
 
 export type AIAlgorithm =
@@ -37,7 +37,7 @@ export class AIFactory {
           ai = new PureMonteCarloAI();
           break;
         default:
-          ai = new EasyAI();
+          ai = new HybridMonteCarloAI(); // 使用优化后的混合AI作为默认
       }
 
       this.instances.set(algorithm, ai);

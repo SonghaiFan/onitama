@@ -123,15 +123,15 @@ export abstract class BaseAI {
     const valueFromPawnCount = (count: number): number => {
       switch (count) {
         case 0:
-          return 0;
+          return 0; // 与Rust版本保持一致
         case 1:
           return 8;
         case 2:
-          return 8 + 6; // 14
+          return 14; // 8 + 6
         case 3:
-          return 8 + 6 + 4; // 18
+          return 18; // 8 + 6 + 4
         case 4:
-          return 8 + 6 + 4 + 2; // 20
+          return 20; // 8 + 6 + 4 + 2
         default:
           return 20;
       }
