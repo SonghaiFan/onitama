@@ -712,36 +712,6 @@ export function checkWinConditions(gameState: GameState): Player | null {
 }
 
 /**
- * Convert move card to display pattern (for UI display)
- */
-export function getCardDisplayPattern(card: MoveCard): string[][] {
-  // Create 5x5 pattern grid for display
-  const pattern = Array(5)
-    .fill(null)
-    .map(() => Array(5).fill(" "));
-
-  // Center is at [2, 2]
-  pattern[2][2] = "O";
-
-  // Add moves to pattern
-  card.moves.forEach((move) => {
-    const displayRow = 2 - move.y; // y=-2 becomes row 4, y=2 becomes row 0
-    const displayCol = 2 + move.x; // x=-2 becomes col 0, x=2 becomes col 4
-
-    if (
-      displayRow >= 0 &&
-      displayRow < 5 &&
-      displayCol >= 0 &&
-      displayCol < 5
-    ) {
-      pattern[displayRow][displayCol] = "X";
-    }
-  });
-
-  return pattern;
-}
-
-/**
  * Create initial game state with wind spirit support
  */
 export function createInitialGameState(
@@ -883,96 +853,28 @@ export function getAllPlayerMoves(
     }
   }
 
+  // Sort moves by priority: captures first, then other moves
+  // This improves Alpha-Beta pruning efficiency
+  moves.sort((a, b) => {
+    // Captures have highest priority (0), non-captures have lower priority (1)
+    const aPriority = a.isCapture ? 0 : 1;
+    const bPriority = b.isCapture ? 0 : 1;
+
+    if (aPriority !== bPriority) {
+      return aPriority - bPriority;
+    }
+
+    // Secondary sort: Master moves have higher priority than student moves
+    const aMasterPriority = a.isMasterMove ? 0 : 1;
+    const bMasterPriority = b.isMasterMove ? 0 : 1;
+
+    if (aMasterPriority !== bMasterPriority) {
+      return aMasterPriority - bMasterPriority;
+    }
+
+    // Tertiary sort: Closer to goal has higher priority
+    return a.distanceToGoal! - b.distanceToGoal!;
+  });
+
   return moves;
-}
-
-/**
- * Evaluate a game state for AI decision making
- */
-export function evaluateGameState(
-  gameState: GameState,
-  player: Player
-): number {
-  let score = 0;
-  const opponent = player === "red" ? "blue" : "red";
-
-  // Check win conditions first
-  if (gameState.winner === player) return 1000;
-  if (gameState.winner === opponent) return -1000;
-
-  // Count pieces
-  let playerPieces = 0;
-  let opponentPieces = 0;
-  let playerMaster = false;
-  let opponentMaster = false;
-
-  for (let row = 0; row < 5; row++) {
-    for (let col = 0; col < 5; col++) {
-      const piece = gameState.board[row][col];
-      if (piece) {
-        if (piece.player === player) {
-          playerPieces++;
-          if (piece.isMaster) playerMaster = true;
-          // Bonus for master being close to opponent's goal
-          if (piece.isMaster) {
-            const goalRow = player === "red" ? 4 : 0;
-            const distanceToGoal = Math.abs(row - goalRow) + Math.abs(col - 2);
-            score += (5 - distanceToGoal) * 10; // Closer is better
-          }
-        } else if (piece.player === opponent) {
-          opponentPieces++;
-          if (piece.isMaster) opponentMaster = true;
-        }
-      }
-    }
-  }
-
-  // Piece count advantage
-  score += (playerPieces - opponentPieces) * 5;
-
-  // Master survival bonus
-  if (playerMaster) score += 50;
-  if (!opponentMaster) score += 100; // Opponent lost their master
-
-  // Wind spirit position bonus (if applicable)
-  if (gameState.windSpiritPosition) {
-    const [windRow, windCol] = gameState.windSpiritPosition;
-    // Bonus for wind spirit being in advantageous position
-    const centerDistance = Math.abs(windRow - 2) + Math.abs(windCol - 2);
-    score += (5 - centerDistance) * 2; // Closer to center is better
-  }
-
-  return score;
-}
-
-/**
- * Get the best move using simple evaluation (for MVP AI)
- */
-export function getBestMove(
-  gameState: GameState,
-  player: Player
-): MoveWithMetadata | null {
-  const allMoves = getAllPlayerMoves(gameState, player);
-  if (allMoves.length === 0) return null;
-
-  let bestMove: MoveWithMetadata | null = null;
-  let bestScore = -Infinity;
-
-  for (const move of allMoves) {
-    // Simulate the move
-    const simulatedState = executeMove(
-      gameState,
-      move.from,
-      move.to,
-      move.cardIndex
-    );
-    const score = evaluateGameState(simulatedState, player);
-
-    if (score > bestScore) {
-      bestScore = score;
-      bestMove = move;
-    }
-  }
-
-  return bestMove;
 }
