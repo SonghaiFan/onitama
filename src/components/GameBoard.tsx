@@ -48,10 +48,10 @@ export default function GameBoard({
   gameStateRef.current = gameState;
 
   // Sound effects
-  const { play: playMoveSound } = useSound("ui/radio_select");
-  const { play: playCaptureSound } = useSound("ui/tab_close");
-  const { play: playSwapSound } = useSound("ui/window_open");
-  const { play: playMasterCaptureSound } = useSound("game/hit");
+  const { play: playMoveSound } = useSound("/sounds/move.mp3");
+  const { play: playCaptureSound } = useSound("/sounds/capture.mp3");
+  const { play: playSwapSound } = useSound("/sounds/move-self.mp3");
+  const { play: playMasterCaptureSound } = useSound("/sounds/promote.mp3");
 
   // Unified drag state
   const [dragState, setDragState] = useState<DragState>({
