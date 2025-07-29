@@ -1,9 +1,5 @@
 import React from "react";
-<<<<<<<< HEAD:src/components/ui/Footer.tsx
-import { content, Language } from "../landing/content";
-========
 import { content, Language } from "@/utils/content";
->>>>>>>> ai:src/components/Footer.tsx
 
 interface FooterProps {
   language: Language;
