@@ -10,6 +10,7 @@ import { HowToPlay } from "@/components/HowToPlay";
 import { Footer } from "@/components/ui/Footer";
 import { GameProvider, useGame } from "@/contexts/GameContext";
 import { defaultGameController } from "@/utils/gameController";
+import { MonteCarloDebugger } from "@/components/MonteCarloDebugger";
 
 type Language = "zh" | "en";
 
@@ -55,6 +56,7 @@ function GamePage({
           </div>
         </div>
       </div>
+      <MonteCarloDebugger />
     </div>
   );
 }
@@ -90,7 +92,10 @@ export default function OnitamaLanding() {
 
   if (showGame) {
     return (
-      <GameProvider controller={defaultGameController} cardPacks={getSelectedPacksForGame()}>
+      <GameProvider
+        controller={defaultGameController}
+        cardPacks={getSelectedPacksForGame()}
+      >
         <GamePage
           language={language}
           onBackToHome={() => setShowGame(false)}

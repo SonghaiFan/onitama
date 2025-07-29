@@ -1,12 +1,38 @@
 import { GameState, Player } from "@/types/game";
 import { BaseAI, AIMoveResult } from "./baseAI";
 import { MoveWithMetadata, checkWinConditions } from "@/utils/gameManager";
+import { eventBus } from "@/utils/eventBus";
+
+// Extended AI thinking event with Monte Carlo specific data
+interface MonteCarloThinkingEvent {
+  score: number;
+  nodesEvaluated: number;
+  depth: number;
+  elapsedTime?: number;
+  bestMoveFound?: {
+    from: [number, number];
+    to: [number, number];
+    cardIndex: number;
+  };
+  // Monte Carlo specific data
+  moveWinRates?: Array<{
+    move: string;
+    winRate: number;
+    simulations: number;
+    wins: number;
+    losses: number;
+    draws: number;
+  }>;
+  phase?: "alpha-beta" | "monte-carlo" | "decision";
+  filteredMoves?: number;
+  totalMoves?: number;
+}
 
 export class HybridMonteCarloAI extends BaseAI {
   private readonly simulationsPerBatch = 50; // Check timeout every 50 simulations
 
   constructor() {
-    super(0, 3000); // No depth limit, but time-limited
+    super(0, 5000); // No depth limit, but time-limited
   }
 
   async findBestMove(
@@ -16,12 +42,33 @@ export class HybridMonteCarloAI extends BaseAI {
     this.startTime = Date.now();
     const startTime = this.startTime;
 
+    // Emit thinking start event
+    eventBus.publish("ai_thinking_start", {});
+
+    console.log(
+      `🎯 [${player.toUpperCase()}] Starting Monte Carlo AI analysis...`
+    );
+
     const moves = this.generateLegalMoves(gameState, player);
     if (moves.length === 0) {
+      eventBus.publish("ai_thinking_end", {});
       throw new Error("No valid moves available for AI");
     }
 
+    console.log(`📊 Total legal moves: ${moves.length}`);
+
     if (moves.length === 1) {
+      console.log(`⚡ Only one move available, taking it immediately`);
+      this.emitMonteCarloUpdate({
+        score: 0,
+        depth: 0,
+        nodesEvaluated: 1,
+        phase: "decision",
+        bestMoveFound: moves[0],
+        totalMoves: 1,
+        filteredMoves: 1,
+      });
+      eventBus.publish("ai_thinking_end", {});
       return {
         move: moves[0],
         score: 0,
@@ -32,6 +79,7 @@ export class HybridMonteCarloAI extends BaseAI {
     }
 
     // First, run Alpha-Beta to filter moves and find guaranteed wins
+    console.log(`🔍 Phase 1: Alpha-Beta tactical analysis...`);
     const alphaBetaDuration = this.maxTime / 2;
     const alphaBetaResults = this.runAlphaBetaFiltering(
       gameState,
@@ -39,10 +87,28 @@ export class HybridMonteCarloAI extends BaseAI {
       alphaBetaDuration
     );
 
+    // Log Alpha-Beta results
+    console.log(`📈 Alpha-Beta Results:`);
+    alphaBetaResults.forEach(({ move, score }) => {
+      const moveStr = `${move.piece.id} ${move.from.join(",")}→${move.to.join(
+        ","
+      )}`;
+      console.log(`  ${moveStr}: ${score}`);
+    });
+
     // Check for guaranteed wins
     const guaranteedWinScore = player === "red" ? 1000000 : -1000000;
     for (const { move, score } of alphaBetaResults) {
       if (score === guaranteedWinScore) {
+        console.log(`🏆 GUARANTEED WIN FOUND! Taking move immediately`);
+        this.emitMonteCarloUpdate({
+          score,
+          depth: 0,
+          nodesEvaluated: 1,
+          phase: "decision",
+          bestMoveFound: move,
+        });
+        eventBus.publish("ai_thinking_end", {});
         return {
           move,
           score,
@@ -53,30 +119,27 @@ export class HybridMonteCarloAI extends BaseAI {
       }
     }
 
-    // Filter out guaranteed losses
-    const guaranteedLoseScore = player === "red" ? -1000000 : 1000000;
-    const filteredMoves = alphaBetaResults
-      .filter(({ score }) => score !== guaranteedLoseScore)
+    // Filter moves based on Alpha-Beta scores
+    const sortedMoves = alphaBetaResults
+      .sort((a, b) => {
+        if (player === "red") {
+          return b.score - a.score; // Red maximizes
+        } else {
+          return a.score - b.score; // Blue minimizes
+        }
+      })
       .map(({ move }) => move);
 
-    // If all moves lead to loss, still choose a move
-    const movesToEvaluate = filteredMoves.length > 0 ? filteredMoves : moves;
+    console.log(
+      `🎯 Filtered to ${sortedMoves.length} moves based on Alpha-Beta scores`
+    );
 
-    if (movesToEvaluate.length === 1) {
-      return {
-        move: movesToEvaluate[0],
-        score: 0,
-        depth: 0,
-        nodesEvaluated: 1,
-        thinkingTime: Date.now() - startTime,
-      };
-    }
-
-    // Run Monte Carlo on filtered moves
+    // Run Monte Carlo on the filtered moves
+    console.log(`🎲 Phase 2: Monte Carlo strategic analysis...`);
     const monteCarloDuration = this.maxTime / 2;
     const monteCarloResults = this.runMonteCarloSimulations(
       gameState,
-      movesToEvaluate,
+      sortedMoves,
       monteCarloDuration
     );
 
@@ -84,13 +147,69 @@ export class HybridMonteCarloAI extends BaseAI {
     const bestResult = this.selectBestMove(monteCarloResults, player);
     const thinkingTime = Date.now() - startTime;
 
+    const bestWinRate = (bestResult.score / bestResult.simulations) * 100;
+    console.log(
+      `🎯 HYBRID AI SELECTED: ${
+        bestResult.move.piece.id
+      } ${bestResult.move.from.join(",")}→${bestResult.move.to.join(
+        ","
+      )} (${bestWinRate.toFixed(1)}% win rate)`
+    );
+
+    // Convert results to win rates for display
+    const moveWinRates = monteCarloResults.map((result) => {
+      const winRate = (result.score / result.simulations) * 100;
+      const wins = Math.max(0, (result.score + result.simulations) / 2);
+      const losses = Math.max(0, (result.simulations - result.score) / 2);
+      const draws = result.simulations - wins - losses;
+
+      return {
+        move: `${result.move.piece.id} ${result.move.from.join(
+          ","
+        )}→${result.move.to.join(",")}`,
+        winRate,
+        simulations: result.simulations,
+        wins: Math.round(wins),
+        losses: Math.round(losses),
+        draws: Math.round(draws),
+      };
+    });
+
+    this.emitMonteCarloUpdate({
+      score: bestWinRate,
+      depth: 0,
+      nodesEvaluated: bestResult.simulations,
+      phase: "decision",
+      bestMoveFound: bestResult.move,
+      moveWinRates,
+      totalMoves: moves.length,
+      filteredMoves: sortedMoves.length,
+    });
+
+    eventBus.publish("ai_thinking_end", {});
+
     return {
       move: bestResult.move,
-      score: bestResult.score,
+      score: bestWinRate,
       depth: 0,
       nodesEvaluated: bestResult.simulations,
       thinkingTime,
     };
+  }
+
+  /**
+   * Emit Monte Carlo specific thinking updates
+   */
+  private emitMonteCarloUpdate(data: MonteCarloThinkingEvent): void {
+    const update = {
+      ...data,
+      elapsedTime: data.elapsedTime || Date.now() - this.startTime,
+    };
+
+    eventBus.publish("ai_thinking_update", update);
+
+    // Also publish to a Monte Carlo specific event
+    eventBus.publish("monte_carlo_update", update);
   }
 
   /**
@@ -106,14 +225,20 @@ export class HybridMonteCarloAI extends BaseAI {
     const moves = this.generateLegalMoves(gameState, player);
     const results: Array<{ move: MoveWithMetadata; score: number }> = [];
 
+    console.log(`🔍 Running Alpha-Beta on ${moves.length} moves...`);
+
     for (const move of moves) {
-      if (Date.now() >= deadline) break;
+      if (Date.now() >= deadline) {
+        console.log(`⏰ Alpha-Beta timeout reached`);
+        break;
+      }
 
       const newGameState = this.simulateMove(gameState, move);
       const score = this.alphaBeta(newGameState, 4, -Infinity, Infinity).score;
       results.push({ move, score });
     }
 
+    console.log(`✅ Alpha-Beta completed: ${results.length} moves evaluated`);
     return results;
   }
 
@@ -134,6 +259,11 @@ export class HybridMonteCarloAI extends BaseAI {
     }> = moves.map((move) => ({ move, score: 0, simulations: 0 }));
 
     let totalSimulations = 0;
+    let batchCount = 0;
+
+    console.log(
+      `🎲 Starting Monte Carlo simulations (${moves.length} moves, ${duration}ms)...`
+    );
 
     while (Date.now() < deadline) {
       for (let i = 0; i < this.simulationsPerBatch; i++) {
@@ -159,21 +289,38 @@ export class HybridMonteCarloAI extends BaseAI {
         }
       }
 
-      // Update thinking display
-      if (totalSimulations % (this.simulationsPerBatch * moves.length) === 0) {
+      batchCount++;
+
+      // Update thinking display every few batches
+      if (batchCount % 5 === 0) {
         const bestResult = this.selectBestMove(
           results,
           gameState.currentPlayer
         );
-        this.emitThinkingUpdate({
-          score: (bestResult.score / bestResult.simulations) * 100,
+        const bestWinRate =
+          bestResult.simulations > 0
+            ? (bestResult.score / bestResult.simulations) * 100
+            : 0;
+
+        console.log(
+          `📊 Batch ${batchCount}: ${totalSimulations} simulations, best win rate: ${bestWinRate.toFixed(
+            1
+          )}%`
+        );
+
+        this.emitMonteCarloUpdate({
+          score: bestWinRate,
           depth: 0,
           nodesEvaluated: totalSimulations,
+          phase: "monte-carlo",
           bestMoveFound: bestResult.move,
         });
       }
     }
 
+    console.log(
+      `✅ Monte Carlo completed: ${totalSimulations} total simulations`
+    );
     return results;
   }
 
@@ -254,12 +401,33 @@ export class HardMonteCarloAI extends BaseAI {
     this.startTime = Date.now();
     const startTime = this.startTime;
 
+    // Emit thinking start event
+    eventBus.publish("ai_thinking_start", {});
+
+    console.log(
+      `🎯 [${player.toUpperCase()}] Starting HARD Monte Carlo AI analysis...`
+    );
+
     const moves = this.generateLegalMoves(gameState, player);
     if (moves.length === 0) {
+      eventBus.publish("ai_thinking_end", {});
       throw new Error("No valid moves available for AI");
     }
 
+    console.log(`📊 Total legal moves: ${moves.length}`);
+
     if (moves.length === 1) {
+      console.log(`⚡ Only one move available, taking it immediately`);
+      this.emitMonteCarloUpdate({
+        score: 0,
+        depth: 0,
+        nodesEvaluated: 1,
+        phase: "decision",
+        bestMoveFound: moves[0],
+        totalMoves: 1,
+        filteredMoves: 1,
+      });
+      eventBus.publish("ai_thinking_end", {});
       return {
         move: moves[0],
         score: 0,
@@ -270,6 +438,7 @@ export class HardMonteCarloAI extends BaseAI {
     }
 
     // First, run Alpha-Beta to filter moves and find guaranteed wins
+    console.log(`🔍 Phase 1: Alpha-Beta tactical analysis...`);
     const alphaBetaDuration = this.maxTime / 2;
     const alphaBetaResults = this.runAlphaBetaFiltering(
       gameState,
@@ -277,10 +446,30 @@ export class HardMonteCarloAI extends BaseAI {
       alphaBetaDuration
     );
 
+    // Log Alpha-Beta results
+    console.log(`📈 Alpha-Beta Results:`);
+    alphaBetaResults.forEach(({ move, score }) => {
+      const moveStr = `${move.piece.id} ${move.from.join(",")}→${move.to.join(
+        ","
+      )}`;
+      console.log(`  ${moveStr}: ${score}`);
+    });
+
     // Check for guaranteed wins
     const guaranteedWinScore = player === "red" ? 1000000 : -1000000;
     for (const { move, score } of alphaBetaResults) {
       if (score === guaranteedWinScore) {
+        console.log(`🏆 HARD AI: GUARANTEED WIN FOUND!`);
+        this.emitMonteCarloUpdate({
+          score,
+          depth: 0,
+          nodesEvaluated: 1,
+          phase: "decision",
+          bestMoveFound: move,
+          totalMoves: moves.length,
+          filteredMoves: 1,
+        });
+        eventBus.publish("ai_thinking_end", {});
         return {
           move,
           score,
@@ -300,15 +489,31 @@ export class HardMonteCarloAI extends BaseAI {
       }
     }).score;
 
+    console.log(`🎯 HARD AI: Best Alpha-Beta score: ${bestAlphaBetaScore}`);
+
     // Only keep moves with the BEST Alpha-Beta score
     const bestMoves = alphaBetaResults
       .filter(({ score }) => score === bestAlphaBetaScore)
       .map(({ move }) => move);
 
+    console.log(
+      `🎯 HARD AI: Filtered to ${bestMoves.length} best tactical moves`
+    );
+
     // If all moves lead to loss, still choose a move
     const movesToEvaluate = bestMoves.length > 0 ? bestMoves : moves;
 
     if (movesToEvaluate.length === 1) {
+      this.emitMonteCarloUpdate({
+        score: bestAlphaBetaScore,
+        depth: 0,
+        nodesEvaluated: 1,
+        phase: "decision",
+        bestMoveFound: movesToEvaluate[0],
+        totalMoves: moves.length,
+        filteredMoves: movesToEvaluate.length,
+      });
+      eventBus.publish("ai_thinking_end", {});
       return {
         move: movesToEvaluate[0],
         score: 0,
@@ -319,6 +524,7 @@ export class HardMonteCarloAI extends BaseAI {
     }
 
     // Run Monte Carlo on the best moves only
+    console.log(`🎲 Phase 2: Monte Carlo strategic analysis...`);
     const monteCarloDuration = this.maxTime / 2;
     const monteCarloResults = this.runMonteCarloSimulations(
       gameState,
@@ -330,13 +536,63 @@ export class HardMonteCarloAI extends BaseAI {
     const bestResult = this.selectBestMove(monteCarloResults, player);
     const thinkingTime = Date.now() - startTime;
 
+    const bestWinRate = (bestResult.score / bestResult.simulations) * 100;
+    console.log(
+      `🎯 HARD AI SELECTED: ${
+        bestResult.move.piece.id
+      } ${bestResult.move.from.join(",")}→${bestResult.move.to.join(
+        ","
+      )} (${bestWinRate.toFixed(1)}% win rate)`
+    );
+
+    // Convert results to win rates for display
+    const moveWinRates = monteCarloResults.map((result) => {
+      const winRate = (result.score / result.simulations) * 100;
+      const wins = Math.max(0, (result.score + result.simulations) / 2);
+      const losses = Math.max(0, (result.simulations - result.score) / 2);
+      const draws = result.simulations - wins - losses;
+
+      return {
+        move: `${result.move.piece.id} ${result.move.from.join(
+          ","
+        )}→${result.move.to.join(",")}`,
+        winRate,
+        simulations: result.simulations,
+        wins: Math.round(wins),
+        losses: Math.round(losses),
+        draws: Math.round(draws),
+      };
+    });
+
+    this.emitMonteCarloUpdate({
+      score: bestWinRate,
+      depth: 0,
+      nodesEvaluated: bestResult.simulations,
+      phase: "decision",
+      bestMoveFound: bestResult.move,
+      moveWinRates,
+      totalMoves: moves.length,
+      filteredMoves: movesToEvaluate.length,
+    });
+
+    eventBus.publish("ai_thinking_end", {});
+
     return {
       move: bestResult.move,
-      score: bestResult.score,
+      score: bestWinRate,
       depth: 0,
       nodesEvaluated: bestResult.simulations,
       thinkingTime,
     };
+  }
+
+  private emitMonteCarloUpdate(data: MonteCarloThinkingEvent): void {
+    const update = {
+      ...data,
+      elapsedTime: data.elapsedTime || Date.now() - this.startTime,
+    };
+    eventBus.publish("ai_thinking_update", update);
+    eventBus.publish("monte_carlo_update", update);
   }
 
   /**
@@ -380,6 +636,11 @@ export class HardMonteCarloAI extends BaseAI {
     }> = moves.map((move) => ({ move, score: 0, simulations: 0 }));
 
     let totalSimulations = 0;
+    let batchCount = 0;
+
+    console.log(
+      `🎲 HARD AI: Starting Monte Carlo simulations (${moves.length} moves, ${duration}ms)...`
+    );
 
     while (Date.now() < deadline) {
       for (let i = 0; i < this.simulationsPerBatch; i++) {
@@ -404,21 +665,38 @@ export class HardMonteCarloAI extends BaseAI {
         }
       }
 
-      // Update thinking display
-      if (totalSimulations % (this.simulationsPerBatch * moves.length) === 0) {
+      batchCount++;
+
+      // Update thinking display every few batches
+      if (batchCount % 5 === 0) {
         const bestResult = this.selectBestMove(
           results,
           gameState.currentPlayer
         );
-        this.emitThinkingUpdate({
-          score: (bestResult.score / bestResult.simulations) * 100,
+        const bestWinRate =
+          bestResult.simulations > 0
+            ? (bestResult.score / bestResult.simulations) * 100
+            : 0;
+
+        console.log(
+          `📊 HARD AI Batch ${batchCount}: ${totalSimulations} simulations, best win rate: ${bestWinRate.toFixed(
+            1
+          )}%`
+        );
+
+        this.emitMonteCarloUpdate({
+          score: bestWinRate,
           depth: 0,
           nodesEvaluated: totalSimulations,
+          phase: "monte-carlo",
           bestMoveFound: bestResult.move,
         });
       }
     }
 
+    console.log(
+      `✅ HARD AI Monte Carlo completed: ${totalSimulations} total simulations`
+    );
     return results;
   }
 
@@ -571,12 +849,33 @@ export class PureMonteCarloAI extends BaseAI {
     this.startTime = Date.now();
     const startTime = this.startTime;
 
+    // Emit thinking start event
+    eventBus.publish("ai_thinking_start", {});
+
+    console.log(
+      `🎲 [${player.toUpperCase()}] Starting PURE Monte Carlo AI analysis...`
+    );
+
     const moves = this.generateLegalMoves(gameState, player);
     if (moves.length === 0) {
+      eventBus.publish("ai_thinking_end", {});
       throw new Error("No valid moves available for AI");
     }
 
+    console.log(`📊 Total legal moves: ${moves.length}`);
+
     if (moves.length === 1) {
+      console.log(`⚡ Only one move available, taking it immediately`);
+      this.emitMonteCarloUpdate({
+        score: 0,
+        depth: 0,
+        nodesEvaluated: 1,
+        phase: "decision",
+        bestMoveFound: moves[0],
+        totalMoves: 1,
+        filteredMoves: 1,
+      });
+      eventBus.publish("ai_thinking_end", {});
       return {
         move: moves[0],
         score: 0,
@@ -587,6 +886,7 @@ export class PureMonteCarloAI extends BaseAI {
     }
 
     // Run Monte Carlo directly on all moves
+    console.log(`🎲 Phase 1: Monte Carlo analysis on all moves...`);
     const results = this.runMonteCarloSimulations(
       gameState,
       moves,
@@ -595,13 +895,63 @@ export class PureMonteCarloAI extends BaseAI {
     const bestResult = this.selectBestMove(results, player);
     const thinkingTime = Date.now() - startTime;
 
+    const bestWinRate = (bestResult.score / bestResult.simulations) * 100;
+    console.log(
+      `🎲 PURE AI SELECTED: ${
+        bestResult.move.piece.id
+      } ${bestResult.move.from.join(",")}→${bestResult.move.to.join(
+        ","
+      )} (${bestWinRate.toFixed(1)}% win rate)`
+    );
+
+    // Convert results to win rates for display
+    const moveWinRates = results.map((result) => {
+      const winRate = (result.score / result.simulations) * 100;
+      const wins = Math.max(0, (result.score + result.simulations) / 2);
+      const losses = Math.max(0, (result.simulations - result.score) / 2);
+      const draws = result.simulations - wins - losses;
+
+      return {
+        move: `${result.move.piece.id} ${result.move.from.join(
+          ","
+        )}→${result.move.to.join(",")}`,
+        winRate,
+        simulations: result.simulations,
+        wins: Math.round(wins),
+        losses: Math.round(losses),
+        draws: Math.round(draws),
+      };
+    });
+
+    this.emitMonteCarloUpdate({
+      score: bestWinRate,
+      depth: 0,
+      nodesEvaluated: bestResult.simulations,
+      phase: "decision",
+      bestMoveFound: bestResult.move,
+      moveWinRates,
+      totalMoves: moves.length,
+      filteredMoves: moves.length,
+    });
+
+    eventBus.publish("ai_thinking_end", {});
+
     return {
       move: bestResult.move,
-      score: (bestResult.score / bestResult.simulations) * 100,
+      score: bestWinRate,
       depth: 0,
       nodesEvaluated: bestResult.simulations,
       thinkingTime,
     };
+  }
+
+  private emitMonteCarloUpdate(data: MonteCarloThinkingEvent): void {
+    const update = {
+      ...data,
+      elapsedTime: data.elapsedTime || Date.now() - this.startTime,
+    };
+    eventBus.publish("ai_thinking_update", update);
+    eventBus.publish("monte_carlo_update", update);
   }
 
   /**
@@ -621,6 +971,11 @@ export class PureMonteCarloAI extends BaseAI {
     }> = moves.map((move) => ({ move, score: 0, simulations: 0 }));
 
     let totalSimulations = 0;
+    let batchCount = 0;
+
+    console.log(
+      `🎲 PURE AI: Starting Monte Carlo simulations (${moves.length} moves, ${duration}ms)...`
+    );
 
     while (Date.now() < deadline) {
       for (let i = 0; i < this.simulationsPerBatch; i++) {
@@ -645,21 +1000,38 @@ export class PureMonteCarloAI extends BaseAI {
         }
       }
 
-      // Update thinking display
-      if (totalSimulations % (this.simulationsPerBatch * moves.length) === 0) {
+      batchCount++;
+
+      // Update thinking display every few batches
+      if (batchCount % 5 === 0) {
         const bestResult = this.selectBestMove(
           results,
           gameState.currentPlayer
         );
-        this.emitThinkingUpdate({
-          score: (bestResult.score / bestResult.simulations) * 100,
+        const bestWinRate =
+          bestResult.simulations > 0
+            ? (bestResult.score / bestResult.simulations) * 100
+            : 0;
+
+        console.log(
+          `📊 PURE AI Batch ${batchCount}: ${totalSimulations} simulations, best win rate: ${bestWinRate.toFixed(
+            1
+          )}%`
+        );
+
+        this.emitMonteCarloUpdate({
+          score: bestWinRate,
           depth: 0,
           nodesEvaluated: totalSimulations,
+          phase: "monte-carlo",
           bestMoveFound: bestResult.move,
         });
       }
     }
 
+    console.log(
+      `✅ PURE AI Monte Carlo completed: ${totalSimulations} total simulations`
+    );
     return results;
   }
 
