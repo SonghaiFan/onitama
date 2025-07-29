@@ -6,7 +6,7 @@ export class HybridMonteCarloAI extends BaseAI {
   private readonly simulationsPerBatch = 50; // Check timeout every 50 simulations
 
   constructor() {
-    super(0, 5000); // No depth limit, but time-limited
+    super(0, 3000); // No depth limit, but time-limited
   }
 
   async findBestMove(
@@ -95,31 +95,26 @@ export class HybridMonteCarloAI extends BaseAI {
 
   /**
    * Run Alpha-Beta filtering to identify guaranteed wins/losses
-   * Now uses proper iterative deepening like Rust implementation
    */
   private runAlphaBetaFiltering(
     gameState: GameState,
     player: Player,
     duration: number
   ): Array<{ move: MoveWithMetadata; score: number }> {
-    // Use the proper iterative deepening function
-    const scoredMoves = this.movesScoredDeepening(gameState, player, duration);
+    const startTime = Date.now();
+    const deadline = startTime + duration;
+    const moves = this.generateLegalMoves(gameState, player);
+    const results: Array<{ move: MoveWithMetadata; score: number }> = [];
 
-    if (!scoredMoves) {
-      // Fallback to basic scoring if iterative deepening fails
-      const moves = this.generateLegalMoves(gameState, player);
-      return moves.map((move) => ({
-        move,
-        score: this.alphaBeta(
-          this.simulateMove(gameState, move),
-          4,
-          -Infinity,
-          Infinity
-        ).score,
-      }));
+    for (const move of moves) {
+      if (Date.now() >= deadline) break;
+
+      const newGameState = this.simulateMove(gameState, move);
+      const score = this.alphaBeta(newGameState, 4, -Infinity, Infinity).score;
+      results.push({ move, score });
     }
 
-    return scoredMoves;
+    return results;
   }
 
   /**
@@ -346,31 +341,26 @@ export class HardMonteCarloAI extends BaseAI {
 
   /**
    * Run Alpha-Beta filtering to identify guaranteed wins/losses
-   * Now uses proper iterative deepening like Rust implementation
    */
   private runAlphaBetaFiltering(
     gameState: GameState,
     player: Player,
     duration: number
   ): Array<{ move: MoveWithMetadata; score: number }> {
-    // Use the proper iterative deepening function
-    const scoredMoves = this.movesScoredDeepening(gameState, player, duration);
+    const startTime = Date.now();
+    const deadline = startTime + duration;
+    const moves = this.generateLegalMoves(gameState, player);
+    const results: Array<{ move: MoveWithMetadata; score: number }> = [];
 
-    if (!scoredMoves) {
-      // Fallback to basic scoring if iterative deepening fails
-      const moves = this.generateLegalMoves(gameState, player);
-      return moves.map((move) => ({
-        move,
-        score: this.alphaBeta(
-          this.simulateMove(gameState, move),
-          4,
-          -Infinity,
-          Infinity
-        ).score,
-      }));
+    for (const move of moves) {
+      if (Date.now() >= deadline) break;
+
+      const newGameState = this.simulateMove(gameState, move);
+      const score = this.alphaBeta(newGameState, 4, -Infinity, Infinity).score;
+      results.push({ move, score });
     }
 
-    return scoredMoves;
+    return results;
   }
 
   /**
