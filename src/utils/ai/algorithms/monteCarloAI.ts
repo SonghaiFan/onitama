@@ -271,11 +271,11 @@ export class PureMonteCarloAI extends BaseAI {
  * Hybrid Monte Carlo AI
  */
 export class HybridMonteCarloAI extends BaseAI {
-  private readonly iterationsPerTimeCheck = 50;
+  private readonly iterationsPerTimeCheck = 100;
   private readonly maxSimulationMoves = 1000;
 
   constructor() {
-    super(0, 5000);
+    super(0, 3000);
   }
 
   async findBestMove(
