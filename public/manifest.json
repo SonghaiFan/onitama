@@ -32,14 +32,14 @@
   ],
   "screenshots": [
     {
-      "src": "/temple-arch.svg",
+      "src": "/symbol/temple-arch.svg",
       "sizes": "24x24",
       "type": "image/svg+xml",
       "form_factor": "wide",
       "label": "Onitama Temple Arch Symbol"
     },
     {
-      "src": "/temple-arch.svg",
+      "src": "/symbol/temple-arch.svg",
       "sizes": "24x24",
       "type": "image/svg+xml",
       "form_factor": "narrow",
