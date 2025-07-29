@@ -11,7 +11,8 @@ import { Player, CardPack } from "@/types/game";
  * Custom hook for managing game state through the game controller
  */
 export function useGameController(
-  controller: GameController = defaultGameController
+  controller: GameController = defaultGameController,
+  cardPacks: CardPack[] = ["normal"]
 ) {
   const [state, setState] = useState<GameControllerState>(
     controller.getState()
@@ -68,8 +69,8 @@ export function useGameController(
 
   // Initialize game on mount
   useEffect(() => {
-    controllerRef.current.init(["normal"]);
-  }, []);
+    controllerRef.current.init(cardPacks);
+  }, [cardPacks]);
 
   return {
     // State

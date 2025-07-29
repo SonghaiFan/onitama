@@ -3,6 +3,7 @@
 import React, { createContext, useContext, ReactNode } from "react";
 import { useGameController } from "@/hooks/useGameController";
 import { GameController } from "@/utils/gameController";
+import { CardPack } from "@/types/game";
 
 interface GameContextValue {
   gameState: ReturnType<typeof useGameController>;
@@ -13,10 +14,15 @@ const GameContext = createContext<GameContextValue | null>(null);
 interface GameProviderProps {
   children: ReactNode;
   controller?: GameController;
+  cardPacks?: CardPack[];
 }
 
-export function GameProvider({ children, controller }: GameProviderProps) {
-  const gameState = useGameController(controller);
+export function GameProvider({
+  children,
+  controller,
+  cardPacks,
+}: GameProviderProps) {
+  const gameState = useGameController(controller, cardPacks);
 
   return (
     <GameContext.Provider value={{ gameState }}>

@@ -81,19 +81,91 @@ export async function selectRandomCardsAsync(
   playerCards: MoveCard[];
   sharedCard: MoveCard;
 }> {
+  console.log("🎮 Starting card selection for packs:", cardPacks);
   const allCards = await getCardsForPacks(cardPacks);
 
   if (allCards.length < 5) {
     throw new Error(`Not enough cards available. Need 5 cards, but only ${allCards.length} cards were loaded.`);
   }
 
-  // Simple Fisher-Yates shuffle
-  const shuffled = [...allCards];
+  // Check if windway pack is included - special selection rules
+  const includeWindway = cardPacks.includes("windway");
+  console.log("🌪️ Include windway pack:", includeWindway);
+
+  if (includeWindway) {
+    return selectWindwayCards(allCards);
+  } else {
+    return selectRegularCards(allCards);
+  }
+}
+
+// Simple Fisher-Yates shuffle
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
+  return shuffled;
+}
 
+// Special selection for windway pack (must include 3 wind cards)
+function selectWindwayCards(allCards: MoveCard[]): {
+  playerCards: MoveCard[];
+  sharedCard: MoveCard;
+} {
+  console.log("🌪️ Windway pack detected - using special selection");
+  console.log("Total cards:", allCards.length);
+  
+  // Separate wind cards from non-wind cards
+  const windCards = allCards.filter((card) => card.isWindCard);
+  const nonWindCards = allCards.filter((card) => !card.isWindCard);
+
+  console.log("Wind cards found:", windCards.length, windCards.map(c => c.name));
+  console.log("Non-wind cards found:", nonWindCards.length);
+
+  // Check if we have enough wind cards
+  if (windCards.length < 3) {
+    throw new Error(`Not enough wind cards available. Need at least 3 wind cards, but only ${windCards.length} wind cards were loaded.`);
+  }
+
+  // Select exactly 3 wind cards randomly
+  const shuffledWindCards = shuffleArray(windCards);
+  const selectedWindCards = shuffledWindCards.slice(0, 3);
+
+  // Get remaining cards (both wind and non-wind) for the last 2 slots
+  const remainingWindCards = shuffledWindCards.slice(3);
+  const remainingCards = [...remainingWindCards, ...nonWindCards];
+
+  // Check if we have enough remaining cards
+  if (remainingCards.length < 2) {
+    throw new Error(`Not enough remaining cards available. Need at least 2 more cards, but only ${remainingCards.length} cards were loaded.`);
+  }
+
+  // Randomly select 2 more cards from the remaining cards
+  const shuffledRemainingCards = shuffleArray(remainingCards);
+  const selectedRemainingCards = shuffledRemainingCards.slice(0, 2);
+
+  // Combine and shuffle the final selection
+  const selected = shuffleArray([
+    ...selectedWindCards,
+    ...selectedRemainingCards,
+  ]);
+
+  console.log("Selected cards:", selected.map(c => `${c.name} (${c.isWindCard ? 'wind' : 'normal'})`));
+
+  return {
+    playerCards: selected.slice(0, 4),
+    sharedCard: selected[4],
+  };
+}
+
+// Regular selection for non-windway packs
+function selectRegularCards(allCards: MoveCard[]): {
+  playerCards: MoveCard[];
+  sharedCard: MoveCard;
+} {
+  const shuffled = shuffleArray(allCards);
   const selected = shuffled.slice(0, 5);
 
   return {
@@ -167,6 +239,7 @@ export const INITIAL_GAME_STATE: GameState = createInitialGameState(
 export async function createNewGameAsync(
   cardPacks: CardPack[] = ["normal"]
 ): Promise<GameState> {
+  console.log("🎯 Creating new game with packs:", cardPacks);
   const { playerCards, sharedCard } = await selectRandomCardsAsync(cardPacks);
 
   if (playerCards.length === 0 || !sharedCard.name) {
@@ -174,9 +247,10 @@ export async function createNewGameAsync(
   }
 
   const includeWindSpirit = cardPacks.includes("windway");
+  console.log("🌪️ Including wind spirit on board:", includeWindSpirit);
   const startingPlayer = sharedCard.color || "red";
 
-  return createInitialGameState(
+  const gameState = createInitialGameState(
     createInitialBoard(includeWindSpirit),
     {
       red: { cards: [playerCards[0], playerCards[1]] },
@@ -186,6 +260,12 @@ export async function createNewGameAsync(
     startingPlayer,
     cardPacks
   );
+
+  // Check if wind spirit is on the board
+  const windSpirit = gameState.board[2][2];
+  console.log("🌪️ Wind spirit on board:", windSpirit ? "YES" : "NO", windSpirit);
+
+  return gameState;
 }
 
 // Check card availability

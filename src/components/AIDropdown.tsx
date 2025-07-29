@@ -119,7 +119,7 @@ export function AIDropdown({
     >
       <div className="space-y-4">
         {!aiCompatible && (
-          <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded text-xs text-amber-700">
+          <div className="mb-4 p-3 zen-text text-xs text-amber-700">
             {disabledReason}
           </div>
         )}

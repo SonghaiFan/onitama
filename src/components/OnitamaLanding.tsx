@@ -90,7 +90,7 @@ export default function OnitamaLanding() {
 
   if (showGame) {
     return (
-      <GameProvider controller={defaultGameController}>
+      <GameProvider controller={defaultGameController} cardPacks={getSelectedPacksForGame()}>
         <GamePage
           language={language}
           onBackToHome={() => setShowGame(false)}

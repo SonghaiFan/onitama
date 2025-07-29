@@ -10,7 +10,13 @@ export function SoundProvider({ children }: SoundProviderProps) {
   return (
     <ReactSoundsProvider
       initialEnabled={true}
-      // Removed preload to prevent 404 errors for missing sound files
+      preload={[
+        "/sounds/move.mp3",
+        "/sounds/capture.mp3",
+        "/sounds/move-self.mp3",
+        "/sounds/promote.mp3",
+        "/sounds/wind.mp3",
+      ]}
     >
       {children}
     </ReactSoundsProvider>

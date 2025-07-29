@@ -19,6 +19,7 @@ const gameContent = {
     loading: "載入卡牌包...",
     aiMode: "AI 模式",
     settings: "設置",
+    windMove: "風起雲湧",
   },
   en: {
     victory: "Victory!",
@@ -28,6 +29,7 @@ const gameContent = {
     loading: "Loading card pack...",
     aiMode: "AI Mode",
     settings: "Settings",
+    windMove: "Wind Way",
   },
 };
 
@@ -48,8 +50,6 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
     const {
       gameState,
       isLoading,
-      isAITurn,
-      aiPlayer,
       selectPiece,
       selectCard,
       executeMove,
@@ -130,7 +130,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
               <div className="flex items-center space-x-1 ml-2">
                 <div className="w-2 h-2 sm:w-3 sm:h-3 bg-gray-500 rounded-full animate-pulse" />
                 <span className="text-gray-600 font-medium text-xs sm:text-sm">
-                  Wind Move
+                  {gameContent[language].windMove}
                 </span>
               </div>
             )}
