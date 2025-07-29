@@ -48,7 +48,18 @@ export abstract class BaseAI {
     gameState: GameState,
     player: Player
   ): MoveWithMetadata[] {
-    return getAllPlayerMoves(gameState, player);
+    const moves = getAllPlayerMoves(gameState, player);
+
+    // Sort moves by priority: captures first, then regular moves
+    // This matches the Rust implementation's move ordering logic
+    moves.sort((a, b) => {
+      // Captures get priority 0, regular moves get priority 1
+      const priorityA = a.isCapture ? 0 : 1;
+      const priorityB = b.isCapture ? 0 : 1;
+      return priorityA - priorityB;
+    });
+
+    return moves;
   }
 
   /**
