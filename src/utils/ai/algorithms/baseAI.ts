@@ -290,6 +290,216 @@ export abstract class BaseAI {
   }
 
   /**
+   * Iterative deepening Alpha-Beta with proper time management
+   * This matches the Rust iterative_deepening function
+   */
+  protected iterativeDeepeningAlphaBeta(
+    gameState: GameState,
+    player: Player,
+    duration: number
+  ): {
+    move: MoveWithMetadata;
+    score: number;
+    depth: number;
+    nodesEvaluated: number;
+  } | null {
+    const startTime = Date.now();
+    const deadline = startTime + duration;
+    const maxDepth = 50; // Match Rust MAX_DEPTH
+
+    let bestResult: {
+      move: MoveWithMetadata;
+      score: number;
+      depth: number;
+      nodesEvaluated: number;
+    } | null = null;
+    let totalNodes = 0;
+
+    for (let depth = 1; depth <= maxDepth; depth++) {
+      // Check for early termination (guaranteed wins/losses)
+      if (bestResult && Math.abs(bestResult.score) >= 1000000) {
+        break; // Found guaranteed win/loss, stop searching
+      }
+
+      // Check timeout
+      if (Date.now() >= deadline) {
+        break;
+      }
+
+      const result = this.alphaBetaWithDeadline(
+        gameState,
+        player,
+        depth,
+        deadline
+      );
+      if (result) {
+        bestResult = {
+          move: result.move,
+          score: result.score,
+          depth,
+          nodesEvaluated: result.nodesEvaluated,
+        };
+        totalNodes += result.nodesEvaluated;
+
+        this.emitThinkingUpdate({
+          score: result.score,
+          depth,
+          nodesEvaluated: totalNodes,
+          bestMoveFound: result.move,
+        });
+      } else {
+        // Timeout at this depth
+        break;
+      }
+    }
+
+    if (bestResult) {
+      bestResult.nodesEvaluated = totalNodes;
+    }
+
+    return bestResult;
+  }
+
+  /**
+   * Alpha-Beta with deadline checking (matches Rust optimal_move_deadline)
+   */
+  protected alphaBetaWithDeadline(
+    gameState: GameState,
+    player: Player,
+    depth: number,
+    deadline: number
+  ): { move: MoveWithMetadata; score: number; nodesEvaluated: number } | null {
+    const timedout = () => Date.now() >= deadline;
+
+    if (depth === 0 || timedout()) {
+      return null;
+    }
+
+    const moves = this.generateLegalMoves(gameState, player);
+    if (moves.length === 0) {
+      return null;
+    }
+
+    let bestMove = moves[0];
+    let newGameState = this.simulateMove(gameState, bestMove);
+    let bestScore = this.alphaBeta(
+      newGameState,
+      depth - 1,
+      -Infinity,
+      Infinity
+    ).score;
+
+    for (let i = 1; i < moves.length; i++) {
+      if (timedout()) {
+        return null;
+      }
+
+      const move = moves[i];
+      newGameState = this.simulateMove(gameState, move);
+      const score = this.alphaBeta(
+        newGameState,
+        depth - 1,
+        -Infinity,
+        Infinity
+      ).score;
+
+      if (player === "red" && score > bestScore) {
+        bestMove = move;
+        bestScore = score;
+      } else if (player === "blue" && score < bestScore) {
+        bestMove = move;
+        bestScore = score;
+      }
+    }
+
+    return { move: bestMove, score: bestScore, nodesEvaluated: 1 };
+  }
+
+  /**
+   * Score all moves with iterative deepening (matches Rust moves_scored_deepening)
+   */
+  protected movesScoredDeepening(
+    gameState: GameState,
+    player: Player,
+    duration: number
+  ): Array<{ move: MoveWithMetadata; score: number }> | null {
+    const startTime = Date.now();
+    const deadline = startTime + duration;
+    const maxDepth = 50;
+
+    let bestResult: Array<{ move: MoveWithMetadata; score: number }> | null =
+      null;
+
+    for (let depth = 1; depth <= maxDepth; depth++) {
+      // Check for early termination
+      if (bestResult) {
+        const hasGuaranteedWin = bestResult.some(
+          ({ score }) => Math.abs(score) >= 1000000
+        );
+        if (hasGuaranteedWin) {
+          break;
+        }
+      }
+
+      // Check timeout
+      if (Date.now() >= deadline) {
+        break;
+      }
+
+      const result = this.movesScoredDeadline(
+        gameState,
+        player,
+        depth,
+        deadline
+      );
+      if (result) {
+        bestResult = result;
+      } else {
+        // Timeout at this depth
+        break;
+      }
+    }
+
+    return bestResult;
+  }
+
+  /**
+   * Score all moves at a specific depth (matches Rust moves_scored_deadline)
+   */
+  protected movesScoredDeadline(
+    gameState: GameState,
+    player: Player,
+    depth: number,
+    deadline: number
+  ): Array<{ move: MoveWithMetadata; score: number }> | null {
+    const timedout = () => Date.now() >= deadline;
+
+    if (depth === 0 || timedout()) {
+      return null;
+    }
+
+    const moves = this.generateLegalMoves(gameState, player);
+    const scoredMoves: Array<{ move: MoveWithMetadata; score: number }> = [];
+
+    for (const move of moves) {
+      if (timedout()) {
+        return null;
+      }
+
+      const newGameState = this.simulateMove(gameState, move);
+      const score = this.alphaBeta(
+        newGameState,
+        depth - 1,
+        -Infinity,
+        Infinity
+      ).score;
+      scoredMoves.push({ move, score });
+    }
+
+    return scoredMoves;
+  }
+
+  /**
    * Run random simulation (for Monte Carlo algorithms)
    */
   protected runRandomSimulation(

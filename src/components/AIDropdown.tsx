@@ -39,7 +39,9 @@ export function AIDropdown({
       algorithm: "AI 算法",
       algorithms: {
         easy: "簡易",
-        montecarlo: "蒙特卡羅",
+        "pure-montecarlo": "純蒙特卡羅",
+        "hybrid-montecarlo": "混合蒙特卡羅",
+        "hard-montecarlo": "強硬蒙特卡羅",
       },
     },
     en: {
@@ -49,7 +51,9 @@ export function AIDropdown({
       algorithm: "AI Algorithm",
       algorithms: {
         easy: "Easy",
-        montecarlo: "Monte Carlo",
+        "pure-montecarlo": "Pure Monte Carlo",
+        "hybrid-montecarlo": "Hybrid Monte Carlo",
+        "hard-montecarlo": "Hard Monte Carlo",
       },
     },
   };
@@ -72,7 +76,9 @@ export function AIDropdown({
   // Algorithm selection items
   const algorithmItems: SelectableItem<AIAlgorithm>[] = [
     { id: "easy", label: t.algorithms.easy },
-    { id: "montecarlo", label: t.algorithms.montecarlo },
+    { id: "pure-montecarlo", label: t.algorithms["pure-montecarlo"] },
+    { id: "hybrid-montecarlo", label: t.algorithms["hybrid-montecarlo"] },
+    { id: "hard-montecarlo", label: t.algorithms["hard-montecarlo"] },
   ];
 
   // Algorithm selection config

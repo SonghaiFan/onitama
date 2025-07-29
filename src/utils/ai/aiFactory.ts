@@ -1,9 +1,17 @@
 import { GameState, Player } from "@/types/game";
 import { BaseAI, AIMoveResult } from "./algorithms/baseAI";
 import { EasyAI } from "./algorithms/easyAI";
-import { MonteCarloAI } from "./algorithms/monteCarloAI";
+import {
+  HybridMonteCarloAI,
+  PureMonteCarloAI,
+  HardMonteCarloAI,
+} from "./algorithms/monteCarloAI";
 
-export type AIAlgorithm = "montecarlo" | "easy";
+export type AIAlgorithm =
+  | "hybrid-montecarlo"
+  | "hard-montecarlo"
+  | "pure-montecarlo"
+  | "easy";
 
 export class AIFactory {
   private static instances: Map<AIAlgorithm, BaseAI> = new Map();
@@ -19,8 +27,14 @@ export class AIFactory {
         case "easy":
           ai = new EasyAI();
           break;
-        case "montecarlo":
-          ai = new MonteCarloAI();
+        case "hybrid-montecarlo":
+          ai = new HybridMonteCarloAI();
+          break;
+        case "hard-montecarlo":
+          ai = new HardMonteCarloAI();
+          break;
+        case "pure-montecarlo":
+          ai = new PureMonteCarloAI();
           break;
         default:
           ai = new EasyAI();

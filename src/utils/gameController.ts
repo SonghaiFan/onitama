@@ -45,7 +45,7 @@ export class GameController {
 
   constructor(config: Partial<GameControllerConfig> = {}) {
     this.aiService = new AIService(
-      config.aiAlgorithm || "montecarlo",
+      config.aiAlgorithm || "hybrid-montecarlo",
       config.aiThinkingTime || 1000
     );
 
@@ -54,7 +54,7 @@ export class GameController {
       isLoading: true,
       aiService: this.aiService,
       config: {
-        aiAlgorithm: config.aiAlgorithm || "montecarlo",
+        aiAlgorithm: config.aiAlgorithm || "hybrid-montecarlo",
         aiThinkingTime: config.aiThinkingTime || 1000,
       },
       isAITurn: false,

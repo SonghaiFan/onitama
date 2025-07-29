@@ -129,7 +129,7 @@ export class GamePersistence {
       musicEnabled: true,
       defaultCardPacks: ["normal"],
       defaultAIConfig: {
-        aiAlgorithm: "montecarlo",
+        aiAlgorithm: "hybrid-montecarlo",
         aiThinkingTime: 1000,
       },
     };

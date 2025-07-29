@@ -18,7 +18,7 @@ export class AIService {
   private thinkingTime: number;
 
   constructor(
-    algorithm: AIAlgorithm = "montecarlo",
+    algorithm: AIAlgorithm = "hybrid-montecarlo",
     thinkingTime: number = 1000
   ) {
     this.algorithm = algorithm;

@@ -5,9 +5,9 @@ import { CardPack } from "@/types/game";
  */
 const NORMAL_CARD_PACKS: Set<CardPack> = new Set([
   "normal",
-  "senseis", 
+  "senseis",
   "promo",
-  "special"
+  "special",
 ]);
 
 /**
@@ -15,7 +15,7 @@ const NORMAL_CARD_PACKS: Set<CardPack> = new Set([
  */
 const SPECIAL_CARD_PACKS: Set<CardPack> = new Set([
   "windway", // Contains wind cards
-  "dual"     // Contains mock/dual cards
+  "dual", // Contains mock/dual cards
 ]);
 
 /**
@@ -49,20 +49,21 @@ export function isAICompatible(selectedPacks: Set<CardPack>): boolean {
  * Get a message explaining why AI is disabled
  */
 export function getAIDisabledReason(
-  selectedPacks: Set<CardPack>, 
+  selectedPacks: Set<CardPack>,
   language: "zh" | "en" = "en"
 ): string {
   const messages = {
     zh: {
       noPacks: "請先選擇卡牌包",
       specialCards: "AI 僅支援普通卡牌，不支援風靈卡或雙重卡",
-      unknownPacks: "選中的卡牌包不兼容 AI"
+      unknownPacks: "選中的卡牌包不兼容 AI",
     },
     en: {
       noPacks: "Please select card packs first",
-      specialCards: "AI only supports normal cards, not wind cards or dual cards", 
-      unknownPacks: "Selected card packs are not AI compatible"
-    }
+      specialCards:
+        "AI only supports normal cards, not wind cards or dual cards",
+      unknownPacks: "Selected card packs are not AI compatible",
+    },
   };
 
   const content = messages[language];
@@ -72,7 +73,7 @@ export function getAIDisabledReason(
   }
 
   // Check for special card packs
-  const hasSpecialPacks = Array.from(selectedPacks).some(pack => 
+  const hasSpecialPacks = Array.from(selectedPacks).some((pack) =>
     SPECIAL_CARD_PACKS.has(pack)
   );
 
