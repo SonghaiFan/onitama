@@ -121,7 +121,7 @@ export function Header({
               <Image
                 src="/Onitama_Logo.svg.png"
                 alt="Onitama"
-                width={160}
+                width={120}
                 height={20}
                 style={{ width: "auto", height: "auto" }}
                 className="object-contain"
