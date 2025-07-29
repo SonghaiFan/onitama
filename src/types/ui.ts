@@ -16,7 +16,7 @@ export interface SelectionGroupConfig<T = string> {
   required?: boolean;
   minSelections?: number;
   maxSelections?: number;
-  layout?: 'grid' | 'list' | 'inline';
+  layout?: "grid" | "list" | "inline";
   columns?: number;
 }
 
@@ -27,10 +27,10 @@ export interface DropdownConfig {
     placeholder?: string;
   };
   positioning?: {
-    align?: 'left' | 'right' | 'center';
+    align?: "left" | "right" | "center";
     offset?: number;
     maxHeight?: number;
-    width?: number | 'trigger' | 'content';
+    width?: number | "trigger" | "content";
   };
   behavior?: {
     closeOnSelect?: boolean;
@@ -39,14 +39,14 @@ export interface DropdownConfig {
   };
   animation?: {
     duration?: number;
-    type?: 'slide' | 'fade' | 'scale';
+    type?: "slide" | "fade" | "scale";
   };
 }
 
 export interface ButtonVariant {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
-  size?: 'sm' | 'md' | 'lg';
-  style?: 'default' | 'zen' | 'minimal';
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "danger";
+  size?: "sm" | "md" | "lg";
+  style?: "default" | "zen" | "minimal";
 }
 
 export interface SelectionState<T = string> {

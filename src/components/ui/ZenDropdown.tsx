@@ -55,10 +55,23 @@ export function ZenDropdown({
       }
     };
 
+    // Touch outside handler for mobile
+    const handleTouchOutside = (event: TouchEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
-      return () =>
+      document.addEventListener("touchstart", handleTouchOutside);
+      return () => {
         document.removeEventListener("mousedown", handleClickOutside);
+        document.removeEventListener("touchstart", handleTouchOutside);
+      };
     }
   }, [isOpen, setIsOpen]);
 
@@ -101,7 +114,7 @@ export function ZenDropdown({
         return "w-full";
       case "content":
       default:
-        return "w-64";
+        return "w-48 sm:w-64"; // Smaller on mobile
     }
   };
 
@@ -140,7 +153,7 @@ export function ZenDropdown({
           <motion.div
             {...getAnimationProps()}
             transition={{ duration: duration / 1000 }}
-            className={`absolute mt-2 ${getAlignmentClasses()} ${getWidthClasses()} bg-white border border-stone-200 shadow-lg zen-card p-4 z-[9999]`}
+            className={`absolute mt-1 sm:mt-2 ${getAlignmentClasses()} ${getWidthClasses()} bg-white border border-stone-200 shadow-lg zen-card z-[9999] rounded-lg overflow-hidden`}
             style={{
               maxHeight: `${maxHeight}px`,
               overflowY: "auto",

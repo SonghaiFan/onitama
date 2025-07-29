@@ -39,7 +39,7 @@ export function AIDropdown({
       algorithm: "AI 算法",
       algorithms: {
         easy: "簡易",
-        montecarlo: "蒙特卡羅 (統計)",
+        montecarlo: "蒙特卡羅",
       },
     },
     en: {
@@ -49,7 +49,7 @@ export function AIDropdown({
       algorithm: "AI Algorithm",
       algorithms: {
         easy: "Easy",
-        montecarlo: "Monte Carlo (Statistical)",
+        montecarlo: "Monte Carlo",
       },
     },
   };
@@ -81,7 +81,7 @@ export function AIDropdown({
     title: t.algorithm,
     allowMultiple: false,
     layout: "grid",
-    columns: 1, // Stack vertically for better readability with longer labels
+    columns: 2, // Use 2 columns for better mobile layout
   };
 
   // Algorithm selection state
@@ -99,9 +99,13 @@ export function AIDropdown({
     <ZenDropdown
       className={className}
       config={{
-        positioning: { align: "right", width: 320 },
-        behavior: { closeOnSelect: false },
-        animation: { type: "slide", duration: 200 },
+        positioning: {
+          align: "right",
+          width: "content",
+          maxHeight: 300, // Limit height for mobile
+        },
+        behavior: { closeOnSelect: true }, // Close on select for mobile
+        animation: { type: "slide", duration: 150 }, // Faster animation for mobile
       }}
       trigger={
         <ZenButton
@@ -109,17 +113,16 @@ export function AIDropdown({
           variant="secondary"
           selected={aiEnabled}
           disabled={!aiCompatible}
-          className="px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm"
+          className="px-2 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm"
         >
           <span className="hidden sm:inline">{t.aiSettings}</span>
           <span className="sm:hidden">AI</span>
-          {aiEnabled && <span className="ml-1 text-xs">(🔵)</span>}
         </ZenButton>
       }
     >
-      <div className="space-y-4">
+      <div className="space-y-3 p-2 sm:p-3">
         {!aiCompatible && (
-          <div className="mb-4 p-3 zen-text text-xs text-amber-700">
+          <div className="mb-3 p-2 zen-text text-xs text-amber-700 bg-amber-50 rounded border border-amber-200">
             {disabledReason}
           </div>
         )}
@@ -129,7 +132,7 @@ export function AIDropdown({
             onClick={() => onSetAIEnabled(!aiEnabled)}
             variant={aiEnabled ? "primary" : "secondary"}
             disabled={!aiCompatible}
-            className="w-full justify-center px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm"
+            className="w-full justify-center px-2 py-1.5 text-xs sm:px-3 sm:py-2 sm:text-sm"
           >
             {aiEnabled ? t.disableAI : t.enableAI}
           </ZenButton>
@@ -140,6 +143,7 @@ export function AIDropdown({
             items={algorithmItems}
             config={algorithmConfig}
             selection={algorithmSelection}
+            className="mt-3"
           />
         )}
       </div>
