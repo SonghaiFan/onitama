@@ -225,7 +225,7 @@ function handleWindDualMoveFirst(
   // Check if wind spirit has any legal moves for the second part
   if (!gameState.windSpiritPosition) {
     // No wind spirit on board - complete the turn without second move
-    return completeTurnAfterWindCard(
+    return completeTurn(
       newState,
       gameState.players[gameState.currentPlayer].cards[cardIndex],
       cardIndex,
@@ -250,7 +250,7 @@ function handleWindDualMoveFirst(
 
   if (windSpiritMoves.length === 0) {
     // No wind spirit moves available - complete the turn without second move
-    return completeTurnAfterWindCard(
+    return completeTurn(
       newState,
       gameState.players[gameState.currentPlayer].cards[cardIndex],
       cardIndex,
@@ -295,7 +295,7 @@ function handleWindDualMoveSecond(
   newState.firstMove = undefined;
 
   // Handle card exchange and turn switch
-  return completeTurnAfterWindCard(
+  return completeTurn(
     newState,
     gameState.players[gameState.currentPlayer].cards[cardIndex],
     cardIndex,
@@ -327,7 +327,7 @@ function handleWindSpiritDirectMove(
   newState.windSpiritPosition = [toRow, toCol];
 
   // Complete turn
-  return completeTurnAfterWindCard(
+  return completeTurn(
     newState,
     gameState.players[gameState.currentPlayer].cards[cardIndex],
     cardIndex,
@@ -539,9 +539,9 @@ export function applyMove(
 }
 
 /**
- * Helper function to complete turn after wind card usage
+ * Helper function to complete turn
  */
-function completeTurnAfterWindCard(
+function completeTurn(
   gameState: GameState,
   usedCard: MoveCard,
   cardIndex: number,
@@ -564,18 +564,7 @@ function completeTurnAfterWindCard(
   };
 
   const nextPlayer = originalGameState.currentPlayer === "red" ? "blue" : "red";
-  const rotatedCard: MoveCard = {
-    ...usedCard,
-    moves: usedCard.moves?.map((move) => ({ x: -move.x, y: -move.y })) ?? [],
-    master_moves:
-      usedCard.master_moves?.map((move) => ({ x: -move.x, y: -move.y })) ?? [],
-    student_moves:
-      usedCard.student_moves?.map((move) => ({ x: -move.x, y: -move.y })) ?? [],
-    wind_move:
-      usedCard.wind_move?.map((move) => ({ x: -move.x, y: -move.y })) ?? [],
-    color: nextPlayer,
-  };
-  newState.sharedCard = rotatedCard;
+  newState.sharedCard = usedCard;
 
   newState.currentPlayer = nextPlayer;
   newState.selectedPiece = null;
@@ -676,12 +665,7 @@ export function executeMove(
   }
 
   // Handle card exchange and turn switch
-  return completeTurnAfterWindCard(
-    newState,
-    selectedCard,
-    cardIndex,
-    gameState
-  );
+  return completeTurn(newState, selectedCard, cardIndex, gameState);
 }
 
 // ============================================================================

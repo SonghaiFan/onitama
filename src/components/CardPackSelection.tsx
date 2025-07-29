@@ -91,7 +91,7 @@ export function CardPackSelection({
     title: undefined,
     allowMultiple: true,
     layout: "grid",
-    columns: 2,
+    columns: 1,
   });
 
   const getPackSelection = (): SelectionState<CardPack> => ({

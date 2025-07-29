@@ -83,6 +83,7 @@ export function Header({
                   alt="Onitama"
                   width={400}
                   height={120}
+                  style={{ width: "auto", height: "auto" }}
                   className="object-contain zen-float sm:w-[520px] sm:h-[156px]"
                   priority
                 />
@@ -119,6 +120,7 @@ export function Header({
                 alt="Onitama"
                 width={160}
                 height={20}
+                style={{ width: "auto", height: "auto" }}
                 className="object-contain"
               />
             </motion.div>
