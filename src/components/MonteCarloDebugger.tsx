@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import  { useEffect } from "react";
 import { eventBus } from "@/utils/eventBus";
 
 interface MonteCarloUpdateEvent {
@@ -22,6 +22,18 @@ interface MonteCarloUpdateEvent {
   phase?: "alpha-beta" | "monte-carlo" | "decision";
   filteredMoves?: number;
   totalMoves?: number;
+  aiType?: "hybrid" | "hard" | "pure";
+  guaranteedWin?: boolean;
+  alphaBetaScores?: Array<{
+    move: string;
+    score: number;
+  }>;
+  batchProgress?: {
+    batchNumber: number;
+    totalSimulations: number;
+    bestWinRate: number;
+  };
+  timeoutReached?: boolean;
 }
 
 export function MonteCarloDebugger() {
@@ -30,9 +42,15 @@ export function MonteCarloDebugger() {
     const unsubscribeMonteCarlo = eventBus.subscribe<MonteCarloUpdateEvent>(
       "monte_carlo_update",
       (data) => {
+        const aiTypeLabel = data.aiType ? `[${data.aiType.toUpperCase()}] ` : "";
         console.group(
-          `🎲 Monte Carlo Update - Phase: ${data.phase || "unknown"}`
+          `🎲 ${aiTypeLabel}Monte Carlo Update - Phase: ${data.phase || "unknown"}`
         );
+        
+        if (data.guaranteedWin) {
+          console.log(`🏆 GUARANTEED WIN FOUND!`);
+        }
+        
         console.log(`📊 Score: ${data.score.toFixed(1)}%`);
         console.log(
           `🧠 Nodes Evaluated: ${data.nodesEvaluated.toLocaleString()}`
@@ -48,6 +66,14 @@ export function MonteCarloDebugger() {
           );
         }
 
+        if (data.alphaBetaScores && data.alphaBetaScores.length > 0) {
+          console.group("📈 Alpha-Beta Scores:");
+          data.alphaBetaScores.forEach((moveData) => {
+            console.log(`  ${moveData.move}: ${moveData.score}`);
+          });
+          console.groupEnd();
+        }
+
         if (data.moveWinRates && data.moveWinRates.length > 0) {
           console.group("📈 Move Win Rates:");
           data.moveWinRates.forEach((moveData) => {
@@ -59,10 +85,20 @@ export function MonteCarloDebugger() {
           console.groupEnd();
         }
 
+        if (data.batchProgress) {
+          console.log(
+            `📊 Batch ${data.batchProgress.batchNumber}: ${data.batchProgress.totalSimulations.toLocaleString()} simulations, best win rate: ${data.batchProgress.bestWinRate.toFixed(1)}%`
+          );
+        }
+
         if (data.filteredMoves !== undefined && data.totalMoves !== undefined) {
           console.log(
             `🎯 Move Filtering: ${data.filteredMoves}/${data.totalMoves} moves after filtering`
           );
+        }
+
+        if (data.timeoutReached) {
+          console.log(`⏰ Timeout reached`);
         }
 
         console.groupEnd();
@@ -72,7 +108,7 @@ export function MonteCarloDebugger() {
     // Subscribe to general AI thinking updates
     const unsubscribeAI = eventBus.subscribe(
       "ai_thinking_update",
-      (data: any) => {
+      (data: MonteCarloUpdateEvent) => {
         // Only log if it's not a Monte Carlo update (to avoid duplicates)
         if (!data.phase) {
           console.log(

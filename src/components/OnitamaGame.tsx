@@ -6,7 +6,6 @@ import GameBoard from "./GameBoard";
 import Card from "./MoveCards";
 import { getPlayerColors } from "@/utils/gameAestheticConfig";
 import { gameEventBus, GameEvents } from "@/utils/eventBus";
-import { AIThinkingIndicator } from "./ui/AIThinkingIndicator";
 
 type Language = "zh" | "en";
 
@@ -175,8 +174,6 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
           }`}
         />
 
-        {/* AI Thinking Indicator */}
-        <AIThinkingIndicator language={language} />
 
         <div className="game-layout-grid flex-1">
           <div
