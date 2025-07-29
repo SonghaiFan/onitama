@@ -69,9 +69,9 @@ export class GameController {
     this.setState({ isLoading: true });
 
     try {
-      const result = await createNewGameAsync(cardPacks);
+      const gameState = await createNewGameAsync(cardPacks);
       this.setState({
-        gameState: result.gameState,
+        gameState,
         isLoading: false,
       });
 

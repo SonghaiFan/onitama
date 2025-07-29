@@ -2,12 +2,12 @@
 
 import { useState, useRef } from "react";
 import OnitamaGame from "@/components/OnitamaGame";
-import { Header } from "@/components/Header";
+import { Header } from "@/components/GameHeader";
 import { CardPackSelection } from "@/components/CardPackSelection";
 import { CardPack } from "@/types/game";
 import { GameOverview } from "@/components/GameOverview";
 import { HowToPlay } from "@/components/HowToPlay";
-import { Footer } from "@/components/Footer";
+import { Footer } from "@/components/ui/Footer";
 import { GameProvider, useGame } from "@/contexts/GameContext";
 import { defaultGameController } from "@/utils/gameController";
 

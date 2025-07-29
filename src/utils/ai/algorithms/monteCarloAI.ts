@@ -6,7 +6,7 @@ export class MonteCarloAI extends BaseAI {
   private readonly simulationsPerBatch = 50; // Check timeout every 50 simulations
 
   constructor() {
-    super(0, 3000); // No depth limit, but time-limited
+    super(0, 5000); // No depth limit, but time-limited
   }
 
   async findBestMove(

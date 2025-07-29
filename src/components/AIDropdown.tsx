@@ -1,7 +1,7 @@
 import React from "react";
-import { ZenDropdown } from "./ZenDropdown";
-import { SelectionGroup } from "./SelectionGroup";
-import { ZenButton } from "./ZenButton";
+import { ZenDropdown } from "@/components/ui/ZenDropdown";
+import { SelectionGroup } from "@/components/ui/SelectionGroup";
+import { ZenButton } from "@/components/ui/ZenButton";
 import {
   SelectableItem,
   SelectionGroupConfig,

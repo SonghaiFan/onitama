@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     siteName: "Onitama",
     images: [
       {
-        url: "/temple-arch.svg",
+        url: "/symbol/temple-arch.svg",
         width: 24,
         height: 24,
         alt: "Onitama - Temple Arch Symbol",
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
     title: "Onitama - 意志與策略的對弈 | Will and Strategy in Battle",
     description:
       "Play Onitama online - a two-player abstract strategy game on a 5×5 board. Master the art of movement cards.",
-    images: ["/temple-arch.svg"],
+    images: ["/symbol/temple-arch.svg"],
     creator: "@onitama_game",
   },
   robots: {
@@ -86,8 +86,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head>
-        <link rel="icon" href="/temple-arch.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/temple-arch.svg" />
+        <link rel="icon" href="/symbol/temple-arch.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/symbol/temple-arch.svg" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#78716c" />
         <meta name="color-scheme" content="light" />
@@ -103,7 +103,7 @@ export default function RootLayout({
         <meta name="msapplication-TileColor" content="#78716c" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
       </head>
-      <body>
+      <body suppressHydrationWarning={true}>
         <SoundProvider>{children}</SoundProvider>
       </body>
     </html>

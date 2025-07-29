@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { content, Language } from "../utils/content";
 import { ZenButton } from "@/components/ui/ZenButton";
-import { AIDropdown } from "@/components/ui/AIDropdown";
+import { AIDropdown } from "@/components/AIDropdown";
 import { motion } from "motion/react";
 import { AIAlgorithm } from "@/utils/ai/aiFactory";
 import { CardPack } from "@/types/game";

@@ -24,12 +24,10 @@ export function CardPackSelection({
   const [cardValidation, setCardValidation] = useState<{
     hasEnoughCards: boolean;
     totalCards: number;
-    warnings: string[];
     isLoading: boolean;
   }>({
     hasEnoughCards: false,
     totalCards: 0,
-    warnings: [],
     isLoading: false,
   });
 
@@ -56,7 +54,6 @@ export function CardPackSelection({
       setCardValidation({
         hasEnoughCards: result.hasEnoughCards,
         totalCards: result.totalCards,
-        warnings: result.warnings,
         isLoading: false,
       });
     };
