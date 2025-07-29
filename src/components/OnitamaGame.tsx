@@ -9,7 +9,6 @@ import React, {
 import { useGame } from "@/contexts/GameContext";
 import GameBoard from "./GameBoard";
 import Card from "./MoveCards";
-import AIThinkingIndicator, { ThinkingData } from "./ui/AIThinkingIndicator";
 import { getPlayerColors } from "@/utils/gameAestheticConfig";
 import {
   gameEventBus,
@@ -65,35 +64,6 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
       executeMove,
       resetGame,
     } = useGame();
-
-    const [thinkingData, setThinkingData] = useState<ThinkingData | undefined>(
-      undefined
-    );
-
-    // Listen for AI thinking updates
-    useEffect(() => {
-      const unsubscribe = gameEventBus.subscribe<AIThinkingUpdateEvent>(
-        "ai_thinking_update",
-        (data) => {
-          setThinkingData({
-            score: data.score,
-            nodesEvaluated: data.nodesEvaluated,
-            depth: data.depth,
-            elapsedTime: data.elapsedTime,
-            timestamp: Date.now(),
-          });
-        }
-      );
-
-      return unsubscribe;
-    }, []);
-
-    // Clear thinking data when AI turn ends
-    useEffect(() => {
-      if (!isAITurn) {
-        setThinkingData(undefined);
-      }
-    }, [isAITurn]);
 
     // Expose reset function to parent
     useImperativeHandle(ref, () => ({
@@ -193,18 +163,6 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
 
     return (
       <div className="w-full h-full flex flex-col watercolor-wash z-10 relative">
-        {/* AI Thinking Indicator */}
-        {aiPlayer && (
-          <div className="absolute top-2 left-2 z-20">
-            <AIThinkingIndicator
-              isThinking={isAITurn}
-              player={aiPlayer}
-              language={language}
-              thinkingData={thinkingData}
-            />
-          </div>
-        )}
-
         <div
           className={`absolute inset-0 -z-10 pointer-events-none ${
             gameState.winner
