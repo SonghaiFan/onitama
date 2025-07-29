@@ -227,7 +227,7 @@ export const content = {
     },
     startGame: "Begin",
     newGame: "New Game",
-    backToHome: "← Back",
+    backToHome: "Back to Home",
     music: "Music",
     gameOverview: "Game Overview",
     victoryPaths: "Paths to Victory",

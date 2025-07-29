@@ -111,7 +111,10 @@ export function Header({
                 variant="secondary"
                 className="px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm mr-2 sm:mr-4"
               >
-                {content[language].backToHome}
+                <span className="hidden sm:inline">
+                  {content[language].backToHome}
+                </span>
+                <span className="sm:hidden">←</span>
               </ZenButton>
             </div>
             <motion.div layout layoutId="logo" className="flex items-center">
