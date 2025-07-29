@@ -1,9 +1,9 @@
 import React from "react";
-import { content, Language } from "./content";
+import { content, Language } from "@/utils/content";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { IconCircle } from "@/components/ui/IconCircle";
 import Card from "@/components/MoveCards";
-import { MoveCard, Player } from "@/types/game";
+import { MoveCard } from "@/types/game";
 import { GameSymbol } from "@/utils/gameAestheticConfig";
 
 interface HowToPlayProps {
@@ -46,7 +46,7 @@ const exampleCards: MoveCard[] = [
 ];
 
 export function HowToPlay({ language }: HowToPlayProps) {
-  const handleCardClick = (cardIndex: number, player: Player) => {
+  const handleCardClick = () => {
     // Demo function - no action needed for tutorial
   };
 

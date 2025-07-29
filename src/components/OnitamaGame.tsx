@@ -1,23 +1,11 @@
 "use client";
 
-import React, {
-  useState,
-  useCallback,
-  useImperativeHandle,
-  forwardRef,
-  useEffect,
-} from "react";
+import React, { forwardRef, useImperativeHandle } from "react";
+import { useGame } from "@/contexts/GameContext";
 import GameBoard from "./GameBoard";
 import Card from "./MoveCards";
-import { GameState, Player } from "@/types/game";
-import { INITIAL_GAME_STATE, createNewGameAsync } from "@/utils/dataLoader";
 import { getPlayerColors } from "@/utils/gameAestheticConfig";
-import {
-  isValidMove,
-  executeMove,
-  getAllPossibleMoves,
-  validateWindSpiritMove,
-} from "@/utils/gameManager";
+import { gameEventBus, GameEvents } from "@/utils/eventBus";
 
 type Language = "zh" | "en";
 
@@ -29,9 +17,8 @@ const gameContent = {
     redPlayer: "紅方",
     bluePlayer: "藍方",
     loading: "載入卡牌包...",
-    warnings: "警告",
-    close: "關閉",
-    dualWindPhase: "风起云涌",
+    aiMode: "AI 模式",
+    settings: "設置",
   },
   en: {
     victory: "Victory!",
@@ -39,9 +26,8 @@ const gameContent = {
     redPlayer: "Red",
     bluePlayer: "Blue",
     loading: "Loading card pack...",
-    warnings: "Warnings",
-    close: "Close",
-    dualWindPhase: "Wind Move",
+    aiMode: "AI Mode",
+    settings: "Settings",
   },
 };
 
@@ -59,196 +45,45 @@ interface OnitamaGameProps {
 
 const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
   function OnitamaGame({ cardPacks = ["normal"], language = "zh" }, ref) {
-    const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
-    const [isLoading, setIsLoading] = useState(true);
-
-    // Sound effects - removed card selection sound
-
-    // Load the appropriate card pack when component mounts or cardPacks changes
-    useEffect(() => {
-      const loadGame = async () => {
-        setIsLoading(true);
-        try {
-          const result = await createNewGameAsync(cardPacks);
-          setGameState(result.gameState);
-        } catch (error) {
-          console.error("Failed to load card packs:", error);
-          // Fallback to normal game state
-          setGameState(INITIAL_GAME_STATE);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
-      loadGame();
-    }, [cardPacks]);
-
-    const handlePieceClick = useCallback(
-      (position: [number, number]) => {
-        if (gameState.winner) return;
-
-        const [row, col] = position;
-        const piece = gameState.board[row][col];
-
-        // Handle move to empty square or capture
-        if (
-          !piece &&
-          gameState.selectedPiece &&
-          gameState.selectedCard !== null
-        ) {
-          // Validate move using getAllPossibleMoves
-
-          // Use getAllPossibleMoves for validation
-          const possibleMoves = getAllPossibleMoves(
-            gameState,
-            gameState.selectedPiece,
-            gameState.selectedCard
-          );
-
-          if (possibleMoves.some(([r, c]) => r === row && c === col)) {
-            const newGameState = executeMove(
-              gameState,
-              gameState.selectedPiece,
-              position,
-              gameState.selectedCard
-            );
-            setGameState(newGameState);
-          }
-          return;
-        }
-
-        // Handle piece selection or capture
-        if (piece) {
-          // In dual move mode, only allow wind spirit selection
-          if (gameState.isDualMoveInProgress) {
-            if (piece.isWindSpirit) {
-              const newGameState = { ...gameState, selectedPiece: position };
-              setGameState(newGameState);
-            }
-            return;
-          }
-
-          // Select own piece or wind spirit (any player can select wind spirits)
-          if (piece.player === gameState.currentPlayer || piece.isWindSpirit) {
-            // Additional validation for wind spirit moves
-            if (piece.isWindSpirit && gameState.selectedCard !== null) {
-              const card =
-                gameState.players[gameState.currentPlayer].cards[
-                  gameState.selectedCard
-                ];
-              if (!validateWindSpiritMove(gameState, piece, card)) {
-                return; // Don't allow invalid wind spirit moves
-              }
-            }
-
-            const newGameState = { ...gameState, selectedPiece: position };
-            setGameState(newGameState);
-          } else if (
-            gameState.selectedPiece &&
-            gameState.selectedCard !== null
-          ) {
-            // Capture opponent's piece
-
-            // Use getAllPossibleMoves for validation
-            const possibleMoves = getAllPossibleMoves(
-              gameState,
-              gameState.selectedPiece,
-              gameState.selectedCard
-            );
-
-            if (possibleMoves.some(([r, c]) => r === row && c === col)) {
-              const newGameState = executeMove(
-                gameState,
-                gameState.selectedPiece,
-                position,
-                gameState.selectedCard
-              );
-              setGameState(newGameState);
-            }
-          }
-        } else {
-          // Clear selection when clicking empty square
-          setGameState({
-            ...gameState,
-            selectedPiece: null,
-            selectedCard: null,
-          });
-        }
-      },
-      [gameState]
-    );
-
-    const handleCardClick = useCallback(
-      (cardIndex: number, player: Player) => {
-        if (gameState.winner) return;
-        if (player !== gameState.currentPlayer) return;
-        // Prevent card changes during dual move sequence
-        if (gameState.isDualMoveInProgress) return;
-
-        // Play card select sound
-        // Removed playCardSelectSound();
-
-        const newGameState = { ...gameState, selectedCard: cardIndex };
-        setGameState(newGameState);
-      },
-      [gameState]
-    );
-
-    const handleCardSelect = useCallback(
-      (cardIndex: number) => {
-        if (gameState.winner) return;
-        // Prevent card changes during dual move sequence
-        if (gameState.isDualMoveInProgress) return;
-
-        // Play card select sound
-        // Removed playCardSelectSound();
-
-        const newGameState = { ...gameState, selectedCard: cardIndex };
-        setGameState(newGameState);
-      },
-      [gameState]
-    );
-
-    const handlePieceMove = useCallback(
-      (from: [number, number], to: [number, number], cardIndex: number) => {
-        if (gameState.winner) return;
-
-        const selectedCard =
-          gameState.players[gameState.currentPlayer].cards[cardIndex];
-
-        if (
-          isValidMove(
-            from,
-            to,
-            selectedCard,
-            gameState.board,
-            gameState.currentPlayer
-          )
-        ) {
-          const newGameState = executeMove(gameState, from, to, cardIndex);
-          setGameState(newGameState);
-        }
-      },
-      [gameState]
-    );
-
-    const resetGame = useCallback(async () => {
-      setIsLoading(true);
-      try {
-        const result = await createNewGameAsync(cardPacks);
-        setGameState(result.gameState);
-      } catch (error) {
-        console.error("Failed to reset game:", error);
-        setGameState(INITIAL_GAME_STATE);
-      } finally {
-        setIsLoading(false);
-      }
-    }, [cardPacks]);
-
-    useImperativeHandle(ref, () => ({
+    const {
+      gameState,
+      isLoading,
+      isAITurn,
+      aiPlayer,
+      selectPiece,
+      selectCard,
+      executeMove,
       resetGame,
+    } = useGame();
+
+    // Expose reset function to parent
+    useImperativeHandle(ref, () => ({
+      resetGame: () => resetGame(cardPacks),
     }));
 
+    // Handle piece click with event bus integration
+    const handlePieceClick = (position: [number, number]) => {
+      selectPiece(position);
+      gameEventBus.publish(GameEvents.PIECE_SELECTED, { position });
+    };
+
+    // Handle card click with event bus integration
+    const handleCardClick = (cardIndex: number, player: "red" | "blue") => {
+      selectCard(cardIndex, player);
+      gameEventBus.publish(GameEvents.CARD_SELECTED, { cardIndex, player });
+    };
+
+    // Handle piece move with event bus integration
+    const handlePieceMove = (
+      from: [number, number],
+      to: [number, number],
+      cardIndex: number
+    ) => {
+      executeMove(from, to, cardIndex);
+      gameEventBus.publish(GameEvents.MOVE_EXECUTED, { from, to, cardIndex });
+    };
+
+    // Game status component
     const GameStatusSimple = () => (
       <div
         className={`relative flex items-center justify-center space-x-0.5 sm:space-x-2 lg:space-x-4 mb-0.5 sm:mb-2 lg:mb-4 z-25 ${
@@ -281,7 +116,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
                 backgroundColor: getPlayerColors(gameState.currentPlayer).cssVar
                   .primary,
               }}
-            ></div>
+            />
             <span
               className={`font-bold text-sm sm:text-base zen-text ${
                 getPlayerColors(gameState.currentPlayer).tailwind.text
@@ -293,9 +128,9 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
             </span>
             {gameState.isDualMoveInProgress && (
               <div className="flex items-center space-x-1 ml-2">
-                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-gray-500 rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-gray-500 rounded-full animate-pulse" />
                 <span className="text-gray-600 font-medium text-xs sm:text-sm">
-                  {gameContent[language].dualWindPhase}
+                  Wind Move
                 </span>
               </div>
             )}
@@ -308,7 +143,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
       return (
         <div className="flex items-center justify-center h-48 sm:h-64">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-stone-600 mx-auto mb-3 sm:mb-4"></div>
+            <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-stone-600 mx-auto mb-3 sm:mb-4" />
             <p className="text-stone-600 font-light text-sm sm:text-base">
               {gameContent[language].loading}
             </p>
@@ -351,6 +186,7 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
           >
             <GameStatusSimple />
           </div>
+
           <div
             style={{ gridArea: "board" }}
             className="h-full flex items-center justify-center"
@@ -358,7 +194,9 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
             <GameBoard
               gameState={gameState}
               onPieceClick={handlePieceClick}
-              onCardSelect={handleCardSelect}
+              onCardSelect={(cardIndex) =>
+                selectCard(cardIndex, gameState.currentPlayer)
+              }
               onPieceMove={handlePieceMove}
             />
           </div>
@@ -427,13 +265,13 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
             }
           />
 
-          {/* Shared Card - positioned based on next player */}
+          {/* Shared Card */}
           <Card
             card={gameState.sharedCard}
             gridArea={
               gameState.currentPlayer === "blue"
-                ? "shared-left" // Blue's turn, shared card goes to red's area (left side)
-                : "shared-right" // Red's turn, shared card goes to blue's area (right side)
+                ? "shared-left"
+                : "shared-right"
             }
             isSelected={false}
             playerOwner="shared"

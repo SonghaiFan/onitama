@@ -5,6 +5,7 @@ import {
   Move,
   GameState,
   PlayerState,
+  CardPack,
 } from "@/types/game";
 
 export function isWithinBoard(row: number, col: number): boolean {
@@ -224,7 +225,7 @@ function handleWindDualMoveFirst(
   // Check if wind spirit has any legal moves for the second part
   if (!gameState.windSpiritPosition) {
     // No wind spirit on board - complete the turn without second move
-    return completeTurnAfterWindCard(
+    return completeTurn(
       newState,
       gameState.players[gameState.currentPlayer].cards[cardIndex],
       cardIndex,
@@ -249,7 +250,7 @@ function handleWindDualMoveFirst(
 
   if (windSpiritMoves.length === 0) {
     // No wind spirit moves available - complete the turn without second move
-    return completeTurnAfterWindCard(
+    return completeTurn(
       newState,
       gameState.players[gameState.currentPlayer].cards[cardIndex],
       cardIndex,
@@ -294,7 +295,7 @@ function handleWindDualMoveSecond(
   newState.firstMove = undefined;
 
   // Handle card exchange and turn switch
-  return completeTurnAfterWindCard(
+  return completeTurn(
     newState,
     gameState.players[gameState.currentPlayer].cards[cardIndex],
     cardIndex,
@@ -326,7 +327,7 @@ function handleWindSpiritDirectMove(
   newState.windSpiritPosition = [toRow, toCol];
 
   // Complete turn
-  return completeTurnAfterWindCard(
+  return completeTurn(
     newState,
     gameState.players[gameState.currentPlayer].cards[cardIndex],
     cardIndex,
@@ -538,9 +539,9 @@ export function applyMove(
 }
 
 /**
- * Helper function to complete turn after wind card usage
+ * Helper function to complete turn
  */
-function completeTurnAfterWindCard(
+function completeTurn(
   gameState: GameState,
   usedCard: MoveCard,
   cardIndex: number,
@@ -563,18 +564,7 @@ function completeTurnAfterWindCard(
   };
 
   const nextPlayer = originalGameState.currentPlayer === "red" ? "blue" : "red";
-  const rotatedCard: MoveCard = {
-    ...usedCard,
-    moves: usedCard.moves?.map((move) => ({ x: -move.x, y: -move.y })) ?? [],
-    master_moves:
-      usedCard.master_moves?.map((move) => ({ x: -move.x, y: -move.y })) ?? [],
-    student_moves:
-      usedCard.student_moves?.map((move) => ({ x: -move.x, y: -move.y })) ?? [],
-    wind_move:
-      usedCard.wind_move?.map((move) => ({ x: -move.x, y: -move.y })) ?? [],
-    color: nextPlayer,
-  };
-  newState.sharedCard = rotatedCard;
+  newState.sharedCard = usedCard;
 
   newState.currentPlayer = nextPlayer;
   newState.selectedPiece = null;
@@ -675,12 +665,7 @@ export function executeMove(
   }
 
   // Handle card exchange and turn switch
-  return completeTurnAfterWindCard(
-    newState,
-    selectedCard,
-    cardIndex,
-    gameState
-  );
+  return completeTurn(newState, selectedCard, cardIndex, gameState);
 }
 
 // ============================================================================
@@ -764,7 +749,7 @@ export function createInitialGameState(
   players: { red: PlayerState; blue: PlayerState },
   sharedCard: MoveCard,
   startingPlayer: Player,
-  cardPacks?: ("normal" | "senseis" | "windway" | "promo" | "dual")[]
+  cardPacks?: CardPack[]
 ): GameState {
   const includeWindSpirit = cardPacks?.includes("windway") ?? false;
 
@@ -782,4 +767,212 @@ export function createInitialGameState(
     isDualMoveInProgress: false,
     firstMove: undefined,
   };
+}
+
+/**
+ * Enhanced move generation for AI - returns moves with metadata
+ */
+export interface MoveWithMetadata {
+  from: [number, number];
+  to: [number, number];
+  cardIndex: number;
+  piece: Piece;
+  card: MoveCard;
+  score?: number; // For AI evaluation
+  isCapture?: boolean;
+  isMasterMove?: boolean;
+  isWindSpiritMove?: boolean;
+  distanceToGoal?: number;
+}
+
+/**
+ * Get all possible moves for a player with metadata
+ */
+export function getAllPlayerMoves(
+  gameState: GameState,
+  player: Player
+): MoveWithMetadata[] {
+  const moves: MoveWithMetadata[] = [];
+
+  // Check all pieces belonging to the player
+  for (let row = 0; row < 5; row++) {
+    for (let col = 0; col < 5; col++) {
+      const piece = gameState.board[row][col];
+      if (piece && piece.player === player) {
+        // Check each card
+        for (
+          let cardIndex = 0;
+          cardIndex < gameState.players[player].cards.length;
+          cardIndex++
+        ) {
+          const card = gameState.players[player].cards[cardIndex];
+          const possibleMoves = getPossibleMoves(
+            piece,
+            card,
+            gameState.board,
+            player
+          );
+
+          for (const [toRow, toCol] of possibleMoves) {
+            const targetPiece = gameState.board[toRow][toCol];
+            const isCapture = !!targetPiece && targetPiece.player !== player;
+            const isMasterMove = piece.isMaster;
+            const isWindSpiritMove = piece.isWindSpirit;
+
+            // Calculate distance to opponent's goal
+            const goalRow = player === "red" ? 4 : 0; // Red goes to bottom, Blue goes to top
+            const distanceToGoal =
+              Math.abs(toRow - goalRow) + Math.abs(toCol - 2);
+
+            moves.push({
+              from: [row, col],
+              to: [toRow, toCol],
+              cardIndex,
+              piece,
+              card,
+              isCapture,
+              isMasterMove,
+              isWindSpiritMove,
+              distanceToGoal,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  // Also check wind spirit moves if available
+  if (gameState.windSpiritPosition) {
+    const windSpiritPiece: Piece = {
+      id: "wind_spirit",
+      player: "neutral",
+      isMaster: false,
+      isWindSpirit: true,
+      position: gameState.windSpiritPosition,
+    };
+
+    for (
+      let cardIndex = 0;
+      cardIndex < gameState.players[player].cards.length;
+      cardIndex++
+    ) {
+      const card = gameState.players[player].cards[cardIndex];
+      const possibleMoves = getPossibleMoves(
+        windSpiritPiece,
+        card,
+        gameState.board,
+        player
+      );
+
+      for (const [toRow, toCol] of possibleMoves) {
+        const targetPiece = gameState.board[toRow][toCol];
+        const isCapture = !!targetPiece && targetPiece.player !== player;
+
+        moves.push({
+          from: gameState.windSpiritPosition!,
+          to: [toRow, toCol],
+          cardIndex,
+          piece: windSpiritPiece,
+          card,
+          isCapture,
+          isMasterMove: false,
+          isWindSpiritMove: true,
+          distanceToGoal: 0, // Wind spirit doesn't have a goal
+        });
+      }
+    }
+  }
+
+  return moves;
+}
+
+/**
+ * Evaluate a game state for AI decision making
+ */
+export function evaluateGameState(
+  gameState: GameState,
+  player: Player
+): number {
+  let score = 0;
+  const opponent = player === "red" ? "blue" : "red";
+
+  // Check win conditions first
+  if (gameState.winner === player) return 1000;
+  if (gameState.winner === opponent) return -1000;
+
+  // Count pieces
+  let playerPieces = 0;
+  let opponentPieces = 0;
+  let playerMaster = false;
+  let opponentMaster = false;
+
+  for (let row = 0; row < 5; row++) {
+    for (let col = 0; col < 5; col++) {
+      const piece = gameState.board[row][col];
+      if (piece) {
+        if (piece.player === player) {
+          playerPieces++;
+          if (piece.isMaster) playerMaster = true;
+          // Bonus for master being close to opponent's goal
+          if (piece.isMaster) {
+            const goalRow = player === "red" ? 4 : 0;
+            const distanceToGoal = Math.abs(row - goalRow) + Math.abs(col - 2);
+            score += (5 - distanceToGoal) * 10; // Closer is better
+          }
+        } else if (piece.player === opponent) {
+          opponentPieces++;
+          if (piece.isMaster) opponentMaster = true;
+        }
+      }
+    }
+  }
+
+  // Piece count advantage
+  score += (playerPieces - opponentPieces) * 5;
+
+  // Master survival bonus
+  if (playerMaster) score += 50;
+  if (!opponentMaster) score += 100; // Opponent lost their master
+
+  // Wind spirit position bonus (if applicable)
+  if (gameState.windSpiritPosition) {
+    const [windRow, windCol] = gameState.windSpiritPosition;
+    // Bonus for wind spirit being in advantageous position
+    const centerDistance = Math.abs(windRow - 2) + Math.abs(windCol - 2);
+    score += (5 - centerDistance) * 2; // Closer to center is better
+  }
+
+  return score;
+}
+
+/**
+ * Get the best move using simple evaluation (for MVP AI)
+ */
+export function getBestMove(
+  gameState: GameState,
+  player: Player
+): MoveWithMetadata | null {
+  const allMoves = getAllPlayerMoves(gameState, player);
+  if (allMoves.length === 0) return null;
+
+  let bestMove: MoveWithMetadata | null = null;
+  let bestScore = -Infinity;
+
+  for (const move of allMoves) {
+    // Simulate the move
+    const simulatedState = executeMove(
+      gameState,
+      move.from,
+      move.to,
+      move.cardIndex
+    );
+    const score = evaluateGameState(simulatedState, player);
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestMove = move;
+    }
+  }
+
+  return bestMove;
 }

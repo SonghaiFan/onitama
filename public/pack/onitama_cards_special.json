@@ -32,6 +32,22 @@
       ],
       "firstPlayerColor": "blue",
       "type": "normal_card"
+    },
+    {
+      "id": "fly",
+      "name": { "en": "Fly", "hu": "Repül", "zh": "飞", "ja": "飛" },
+      "moves": [
+        { "x": 2, "y": -2 },
+        { "x": 1, "y": -1 },
+        { "x": 1, "y": 1 },
+        { "x": 2, "y": 2 },
+        { "x": 1, "y": 2 },
+        { "x": 0, "y": 2 },
+        { "x": -1, "y": 2 },
+        { "x": -2, "y": 2 }
+      ],
+      "firstPlayerColor": "red",
+      "type": "normal_card"
     }
   ]
 }
