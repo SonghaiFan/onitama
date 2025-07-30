@@ -49,7 +49,7 @@ export class PureMonteCarloAI extends BaseAI {
   private readonly maxSimulationMoves = 1000;
 
   constructor() {
-    super(0, 3000);
+    super(0, 1500);
   }
 
   async findBestMove(
@@ -271,11 +271,11 @@ export class PureMonteCarloAI extends BaseAI {
  * Hybrid Monte Carlo AI
  */
 export class HybridMonteCarloAI extends BaseAI {
-  private readonly iterationsPerTimeCheck = 100;
+  private readonly iterationsPerTimeCheck = 50; // Reduce batch size for more responsive timeout checks
   private readonly maxSimulationMoves = 1000;
 
   constructor() {
-    super(0, 3000);
+    super(0, 800); // Reduce from 1500ms to 800ms for faster response
   }
 
   async findBestMove(
@@ -457,12 +457,39 @@ export class HybridMonteCarloAI extends BaseAI {
     const moves = this.generateLegalMoves(gameState, player);
     const results: Array<{ move: MoveWithMetadata; score: number }> = [];
 
+    // Add progress reporting
+    let processed = 0;
+    const total = moves.length;
+
     for (const move of moves) {
-      if (Date.now() >= deadline) break;
+      if (Date.now() >= deadline) {
+        this.emitMonteCarloUpdate({
+          score: 0,
+          depth: 0,
+          nodesEvaluated: processed,
+          phase: "alpha-beta",
+          aiType: "hybrid",
+          timeoutReached: true,
+        });
+        break;
+      }
 
       const newGameState = this.simulateMove(gameState, move);
-      const score = this.alphaBeta(newGameState, 4, -Infinity, Infinity).score;
+      const score = this.alphaBeta(newGameState, 2, -Infinity, Infinity).score; // Reduce depth from 4 to 2
       results.push({ move, score });
+      processed++;
+
+      // Emit progress every 2 moves
+      if (processed % 2 === 0 || processed === total) {
+        this.emitMonteCarloUpdate({
+          score: score,
+          depth: 2,
+          nodesEvaluated: processed,
+          phase: "alpha-beta",
+          aiType: "hybrid",
+          bestMoveFound: move,
+        });
+      }
     }
 
     return results;
@@ -485,8 +512,10 @@ export class HybridMonteCarloAI extends BaseAI {
     const timeCheckIterations = this.iterationsPerTimeCheck;
 
     while (Date.now() < deadline) {
-      for (let i = 0; i < timeCheckIterations; i++) {
+      for (let i = 0; i < timeCheckIterations && Date.now() < deadline; i++) {
         for (const result of results) {
+          if (Date.now() >= deadline) break; // Check timeout more frequently
+          
           totalSimulations++;
           const newGameState = this.simulateMove(gameState, result.move);
           const winner = this.runRandomPlayoutSimulation(newGameState);
@@ -501,8 +530,8 @@ export class HybridMonteCarloAI extends BaseAI {
         }
       }
 
-      // Update display periodically
-      if (totalSimulations % (timeCheckIterations * 10) === 0) {
+      // Update display more frequently for better UX (every 5 iterations instead of 10)
+      if (totalSimulations % (timeCheckIterations * 5) === 0) {
         const bestResult = this.selectBestMove(
           results,
           gameState.currentPlayer
@@ -585,7 +614,7 @@ export class HardMonteCarloAI extends BaseAI {
   private readonly maxSimulationMoves = 1000;
 
   constructor() {
-    super(0, 8000);
+    super(0, 3000);
   }
 
   async findBestMove(

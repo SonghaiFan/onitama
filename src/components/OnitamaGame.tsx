@@ -20,6 +20,7 @@ const gameContent = {
     aiMode: "AI 模式",
     settings: "設置",
     windMove: "風起雲湧",
+    aiThinking: "AI 思考中",
   },
   en: {
     victory: "Victory!",
@@ -30,6 +31,7 @@ const gameContent = {
     aiMode: "AI Mode",
     settings: "Settings",
     windMove: "Wind Way",
+    aiThinking: "AI Thinking",
   },
 };
 
@@ -134,6 +136,14 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
                 </span>
               </div>
             )}
+            {gameState.isAITurn && (
+              <div className="flex items-center space-x-1 ml-2">
+                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-500 rounded-full animate-spin" />
+                <span className="text-blue-600 font-medium text-xs sm:text-sm">
+                  {gameContent[language].aiThinking}
+                </span>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -173,7 +183,6 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
                 } via-transparent to-transparent`
           }`}
         />
-
 
         <div className="game-layout-grid flex-1">
           <div
