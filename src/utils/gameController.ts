@@ -10,7 +10,6 @@ import { createNewGameAsync } from "./dataLoader";
 
 export interface GameControllerConfig {
   aiAlgorithm: AIAlgorithm;
-  aiThinkingTime: number;
 }
 
 export interface GameAction {
@@ -44,10 +43,7 @@ export class GameController {
   private aiService: AIService;
 
   constructor(config: Partial<GameControllerConfig> = {}) {
-    this.aiService = new AIService(
-      config.aiAlgorithm || "hybrid-montecarlo",
-      config.aiThinkingTime || 1000
-    );
+    this.aiService = new AIService(config.aiAlgorithm || "hybrid-montecarlo");
 
     this.state = {
       gameState: {} as GameState, // Will be initialized in init()
@@ -55,7 +51,6 @@ export class GameController {
       aiService: this.aiService,
       config: {
         aiAlgorithm: config.aiAlgorithm || "hybrid-montecarlo",
-        aiThinkingTime: config.aiThinkingTime || 1000,
       },
       isAITurn: false,
       aiPlayer: null,
@@ -249,9 +244,6 @@ export class GameController {
   updateAIConfig(config: Partial<GameControllerConfig>): void {
     if (config.aiAlgorithm) {
       this.aiService.setAlgorithm(config.aiAlgorithm);
-    }
-    if (config.aiThinkingTime) {
-      this.aiService.setThinkingTime(config.aiThinkingTime);
     }
 
     this.setState({

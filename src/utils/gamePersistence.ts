@@ -130,7 +130,6 @@ export class GamePersistence {
       defaultCardPacks: ["normal"],
       defaultAIConfig: {
         aiAlgorithm: "hybrid-montecarlo",
-        aiThinkingTime: 1000,
       },
     };
   }
