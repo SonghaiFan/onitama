@@ -6,8 +6,10 @@ import {
   HardMonteCarloAI,
   PureMonteCarloAI,
 } from "./algorithms/monteCarloAI";
+import { AlphaBetaAI } from "./algorithms/alphaBetaAI";
 
 export type AIAlgorithm =
+  | "master-alphabeta"
   | "hybrid-montecarlo"
   | "hard-montecarlo"
   | "pure-montecarlo"
@@ -24,6 +26,9 @@ export class AIFactory {
       let ai: BaseAI;
 
       switch (algorithm) {
+        case "master-alphabeta":
+          ai = new AlphaBetaAI();
+          break;
         case "easy":
           ai = new EasyAI();
           break;
@@ -37,7 +42,7 @@ export class AIFactory {
           ai = new PureMonteCarloAI();
           break;
         default:
-          ai = new HybridMonteCarloAI(); // 使用优化后的混合AI作为默认
+          ai = new AlphaBetaAI();
       }
 
       this.instances.set(algorithm, ai);

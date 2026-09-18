@@ -12,6 +12,7 @@ interface AISettings {
   enabled: boolean;
   algorithm?: AIAlgorithm;
   selectedPacks?: Set<CardPack>;
+  showWinProbability?: boolean;
 }
 
 // Base header props
@@ -46,6 +47,8 @@ interface HeaderProps {
   onSetAIEnabled?: (enabled: boolean) => void;
   aiAlgorithm?: AIAlgorithm;
   onAlgorithmChange?: (algorithm: AIAlgorithm) => void;
+  showWinProbability?: boolean;
+  onToggleWinProbability?: (show: boolean) => void;
   selectedPacks?: Set<CardPack>;
 }
 
@@ -99,7 +102,7 @@ function LandingHeader({
             {content[language].title}
           </span>
         </p>
-        <div className="flex justify-center pb-8 sm:pb-10 lg:pb-16">
+        <div className="flex flex-wrap items-center justify-center gap-4 pb-8 sm:pb-10 lg:pb-16">
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -107,7 +110,7 @@ function LandingHeader({
           >
             <ZenButton
               onClick={onStartGame || (() => {})}
-              className="text-base sm:text-lg py-4 sm:py-6 px-8 sm:px-12"
+              className="text-base sm:text-lg py-4 sm:py-6 px-8 sm:px-12 shadow-md"
             >
               {content[language].startGame}
             </ZenButton>
@@ -121,7 +124,6 @@ function LandingHeader({
 // Game Header Component
 function GameHeader({
   language,
-  onToggleLanguage,
   onBackToHome,
   onNewGame,
   aiSettings,
@@ -203,6 +205,10 @@ function GameHeader({
               handleAISettingsChange({ algorithm })
             }
             selectedPacks={aiSettings.selectedPacks}
+            showWinProbability={aiSettings.showWinProbability}
+            onToggleWinProbability={(show) =>
+              handleAISettingsChange({ showWinProbability: show })
+            }
           />
         )}
 
@@ -255,6 +261,8 @@ export function Header({
   onSetAIEnabled,
   aiAlgorithm,
   onAlgorithmChange,
+  showWinProbability,
+  onToggleWinProbability,
   selectedPacks,
 }: HeaderProps) {
   // Transform legacy props to new grouped format
@@ -264,6 +272,7 @@ export function Header({
           enabled: aiEnabled,
           algorithm: aiAlgorithm,
           selectedPacks,
+          showWinProbability,
         }
       : undefined;
 
@@ -273,6 +282,9 @@ export function Header({
     }
     if (updates.algorithm !== undefined && onAlgorithmChange) {
       onAlgorithmChange(updates.algorithm);
+    }
+    if (updates.showWinProbability !== undefined && onToggleWinProbability) {
+      onToggleWinProbability(updates.showWinProbability);
     }
   };
 

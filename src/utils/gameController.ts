@@ -7,9 +7,15 @@ import {
 import { AIService } from "./aiService";
 import { AIAlgorithm } from "./ai/aiFactory";
 import { createNewGameAsync } from "./dataLoader";
+import {
+  WinProbability,
+  calculateWinProbability,
+} from "./ai/winProbability";
+import { eventBus, AIThinkingUpdateEvent } from "./eventBus";
 
 export interface GameControllerConfig {
   aiAlgorithm: AIAlgorithm;
+  showWinProbability?: boolean;
 }
 
 export interface GameAction {
@@ -31,6 +37,7 @@ export interface GameControllerState {
   config: GameControllerConfig;
   isAITurn: boolean;
   aiPlayer: Player | null;
+  winProbability: WinProbability;
 }
 
 /**
@@ -51,10 +58,35 @@ export class GameController {
       aiService: this.aiService,
       config: {
         aiAlgorithm: config.aiAlgorithm || "hybrid-montecarlo",
+        showWinProbability: config.showWinProbability ?? true,
       },
       isAITurn: false,
       aiPlayer: null,
+      winProbability: {
+        red: 50,
+        blue: 50,
+        score: 0,
+        advantage: "even",
+      },
     };
+
+    // Dynamically update win probability during AI deeper iterations
+    eventBus.subscribe<AIThinkingUpdateEvent>("ai_thinking_update", (data) => {
+      if (
+        this.state.isAITurn &&
+        this.state.aiPlayer &&
+        data &&
+        typeof data.score === "number" &&
+        data.depth >= 2
+      ) {
+        const winProb = calculateWinProbability(
+          this.state.gameState,
+          data.score,
+          this.state.aiPlayer
+        );
+        this.setState({ winProbability: winProb });
+      }
+    });
   }
 
   /**
@@ -65,9 +97,11 @@ export class GameController {
 
     try {
       const gameState = await createNewGameAsync(cardPacks);
+      const winProbability = calculateWinProbability(gameState);
       this.setState({
         gameState,
         isLoading: false,
+        winProbability,
       });
 
       // Check if AI should make the first move
@@ -217,7 +251,8 @@ export class GameController {
     if (gameState.winner) return;
 
     const newGameState = executeMove(gameState, from, to, cardIndex);
-    this.setState({ gameState: newGameState });
+    const winProbability = calculateWinProbability(newGameState);
+    this.setState({ gameState: newGameState, winProbability });
 
     // Wait for player move animation to complete before starting AI turn
     // The motion animation uses spring with damping: 20, which typically takes ~500ms to settle
@@ -312,9 +347,15 @@ export class GameController {
           aiMove.to,
           aiMove.cardIndex
         );
+        const winProbability = calculateWinProbability(
+          newGameState,
+          aiMove.score,
+          aiPlayer
+        );
         this.setState({
           gameState: newGameState,
           isAITurn: false,
+          winProbability,
         });
 
         // Schedule next AI turn check after AI animation completes

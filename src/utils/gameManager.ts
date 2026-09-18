@@ -791,7 +791,7 @@ export function getAllPlayerMoves(
             const isWindSpiritMove = piece.isWindSpirit;
 
             // Calculate distance to opponent's goal
-            const goalRow = player === "red" ? 4 : 0; // Red goes to bottom, Blue goes to top
+            const goalRow = player === "red" ? 0 : 4; // Red goes to row 0, Blue goes to row 4
             const distanceToGoal =
               Math.abs(toRow - goalRow) + Math.abs(toCol - 2);
 

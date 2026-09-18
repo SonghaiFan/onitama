@@ -13,6 +13,7 @@ import { defaultGameController } from "@/utils/gameController";
 import { MonteCarloDebugger } from "@/components/MonteCarloDebugger";
 
 type Language = "zh" | "en";
+type ViewMode = "landing" | "game";
 
 // Game page component that has access to GameContext
 function GamePage({
@@ -43,6 +44,10 @@ function GamePage({
         onAlgorithmChange={(algorithm) =>
           updateAIConfig({ aiAlgorithm: algorithm })
         }
+        showWinProbability={config.showWinProbability ?? true}
+        onToggleWinProbability={(show) =>
+          updateAIConfig({ showWinProbability: show })
+        }
         selectedPacks={selectedPacks}
       />
       <div className="flex-1 p-2 sm:p-4 lg:p-6 overflow-hidden">
@@ -62,7 +67,7 @@ function GamePage({
 }
 
 export default function OnitamaLanding() {
-  const [showGame, setShowGame] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("landing");
   const [selectedPacks, setSelectedPacks] = useState<Set<CardPack>>(
     new Set(["normal"])
   );
@@ -90,7 +95,7 @@ export default function OnitamaLanding() {
     setLanguage((lang) => (lang === "zh" ? "en" : "zh"));
   };
 
-  if (showGame) {
+  if (viewMode === "game") {
     return (
       <GameProvider
         controller={defaultGameController}
@@ -98,7 +103,7 @@ export default function OnitamaLanding() {
       >
         <GamePage
           language={language}
-          onBackToHome={() => setShowGame(false)}
+          onBackToHome={() => setViewMode("landing")}
           gameRef={gameRef}
           cardPacks={getSelectedPacksForGame()}
           selectedPacks={selectedPacks}
@@ -113,7 +118,7 @@ export default function OnitamaLanding() {
         language={language}
         mode="landing"
         onToggleLanguage={toggleLanguage}
-        onStartGame={() => setShowGame(true)}
+        onStartGame={() => setViewMode("game")}
       />
 
       <CardPackSelection

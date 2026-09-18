@@ -323,9 +323,8 @@ export class HybridMonteCarloAI extends BaseAI {
     );
 
     // Step 2: Check for guaranteed wins
-    const guaranteedWinScore = player === "red" ? 1000000 : -1000000;
     for (const { move, score } of alphaBetaResults) {
-      if (score === guaranteedWinScore) {
+      if (player === "red" ? score >= 900000 : score <= -900000) {
         this.emitMonteCarloUpdate({
           score,
           depth: 0,
@@ -347,9 +346,8 @@ export class HybridMonteCarloAI extends BaseAI {
     }
 
     // Step 3: Filter out guaranteed losing moves
-    const guaranteedLoseScore = player === "red" ? -1000000 : 1000000;
     const filteredMoves = alphaBetaResults
-      .filter(({ score }) => score !== guaranteedLoseScore)
+      .filter(({ score }) => !(player === "red" ? score <= -900000 : score >= 900000))
       .map(({ move }) => move);
 
     // If all moves lead to loss, still choose a move
@@ -489,6 +487,13 @@ export class HybridMonteCarloAI extends BaseAI {
           aiType: "hybrid",
           bestMoveFound: move,
         });
+      }
+    }
+
+    // Ensure all moves are represented even if timeout occurred
+    if (results.length < moves.length) {
+      for (let i = results.length; i < moves.length; i++) {
+        results.push({ move: moves[i], score: 0 });
       }
     }
 
@@ -662,9 +667,8 @@ export class HardMonteCarloAI extends BaseAI {
     );
 
     // Step 2: Check for guaranteed wins
-    const guaranteedWinScore = player === "red" ? 1000000 : -1000000;
     for (const { move, score } of alphaBetaResults) {
-      if (score === guaranteedWinScore) {
+      if (player === "red" ? score >= 900000 : score <= -900000) {
         this.emitMonteCarloUpdate({
           score,
           depth: 0,
@@ -810,6 +814,13 @@ export class HardMonteCarloAI extends BaseAI {
       const newGameState = this.simulateMove(gameState, move);
       const score = this.alphaBeta(newGameState, 4, -Infinity, Infinity).score;
       results.push({ move, score });
+    }
+
+    // Ensure all moves are represented even if timeout occurred
+    if (results.length < moves.length) {
+      for (let i = results.length; i < moves.length; i++) {
+        results.push({ move: moves[i], score: 0 });
+      }
     }
 
     return results;

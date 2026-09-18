@@ -79,6 +79,7 @@ export function useGameController(
     isAITurn: state.isAITurn,
     aiPlayer: state.aiPlayer,
     config: state.config,
+    winProbability: state.winProbability,
 
     // Actions
     selectPiece,

@@ -4,6 +4,7 @@ import React, { forwardRef, useImperativeHandle } from "react";
 import { useGame } from "@/contexts/GameContext";
 import GameBoard from "./GameBoard";
 import Card from "./MoveCards";
+import { WinProbabilityBar } from "./WinProbabilityBar";
 import { getPlayerColors } from "@/utils/gameAestheticConfig";
 import { gameEventBus, GameEvents } from "@/utils/eventBus";
 
@@ -52,6 +53,10 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
     const {
       gameState,
       isLoading,
+      isAITurn,
+      aiPlayer,
+      config,
+      winProbability,
       selectPiece,
       selectCard,
       executeMove,
@@ -199,8 +204,18 @@ const OnitamaGame = forwardRef<{ resetGame: () => void }, OnitamaGameProps>(
 
           <div
             style={{ gridArea: "board" }}
-            className="h-full flex items-center justify-center"
+            className="h-full flex flex-col items-center justify-center gap-1.5 sm:gap-2.5"
           >
+            {/* Real-time Win Probability Bar during AI matches */}
+            {aiPlayer && (config.showWinProbability ?? true) && winProbability && (
+              <WinProbabilityBar
+                winProbability={winProbability}
+                language={language}
+                isAITurn={isAITurn}
+                aiPlayer={aiPlayer}
+              />
+            )}
+
             <GameBoard
               gameState={gameState}
               onPieceClick={handlePieceClick}

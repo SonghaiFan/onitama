@@ -18,6 +18,8 @@ interface AIDropdownProps {
   aiAlgorithm?: AIAlgorithm;
   onAlgorithmChange?: (algorithm: AIAlgorithm) => void;
   selectedPacks?: Set<CardPack>;
+  showWinProbability?: boolean;
+  onToggleWinProbability?: (show: boolean) => void;
   className?: string;
 }
 
@@ -28,6 +30,8 @@ export function AIDropdown({
   aiAlgorithm,
   onAlgorithmChange,
   selectedPacks = new Set(),
+  showWinProbability = true,
+  onToggleWinProbability,
   className = "",
 }: AIDropdownProps) {
   // Content translations
@@ -37,11 +41,14 @@ export function AIDropdown({
       enableAI: "啟用 AI",
       disableAI: "關閉 AI",
       algorithm: "AI 算法",
+      showWinRate: "顯示勝率",
+      hideWinRate: "隱藏勝率",
       algorithms: {
+        "master-alphabeta": "宗師",
+        "hybrid-montecarlo": "混合蒙特",
+        "hard-montecarlo": "強硬蒙特",
+        "pure-montecarlo": "純蒙特",
         easy: "簡易",
-        "pure-montecarlo": "純蒙特卡羅",
-        "hybrid-montecarlo": "混合蒙特卡羅",
-        "hard-montecarlo": "強硬蒙特卡羅",
       },
     },
     en: {
@@ -49,11 +56,14 @@ export function AIDropdown({
       enableAI: "Enable AI",
       disableAI: "Disable AI",
       algorithm: "AI Algorithm",
+      showWinRate: "Show Win Rate",
+      hideWinRate: "Hide Win Rate",
       algorithms: {
+        "master-alphabeta": "Master",
+        "hybrid-montecarlo": "Hybrid",
+        "hard-montecarlo": "Hard",
+        "pure-montecarlo": "Pure MC",
         easy: "Easy",
-        "pure-montecarlo": "Pure Monte Carlo",
-        "hybrid-montecarlo": "Hybrid Monte Carlo",
-        "hard-montecarlo": "Hard Monte Carlo",
       },
     },
   };
@@ -75,10 +85,11 @@ export function AIDropdown({
 
   // Algorithm selection items
   const algorithmItems: SelectableItem<AIAlgorithm>[] = [
-    { id: "easy", label: t.algorithms.easy },
-    { id: "pure-montecarlo", label: t.algorithms["pure-montecarlo"] },
+    { id: "master-alphabeta", label: t.algorithms["master-alphabeta"] },
     { id: "hybrid-montecarlo", label: t.algorithms["hybrid-montecarlo"] },
     { id: "hard-montecarlo", label: t.algorithms["hard-montecarlo"] },
+    { id: "pure-montecarlo", label: t.algorithms["pure-montecarlo"] },
+    { id: "easy", label: t.algorithms.easy },
   ];
 
   // Algorithm selection config
@@ -107,8 +118,8 @@ export function AIDropdown({
       config={{
         positioning: {
           align: "right",
-          width: "content",
-          maxHeight: 300, // Limit height for mobile
+          width: 250,
+          maxHeight: 350,
         },
         behavior: { closeOnSelect: true }, // Close on select for mobile
         animation: { type: "slide", duration: 150 }, // Faster animation for mobile
@@ -151,6 +162,18 @@ export function AIDropdown({
             selection={algorithmSelection}
             className="mt-3"
           />
+        )}
+
+        {aiEnabled && onToggleWinProbability && (
+          <div className="pt-2 border-t border-stone-200">
+            <ZenButton
+              onClick={() => onToggleWinProbability(!showWinProbability)}
+              variant={showWinProbability ? "primary" : "secondary"}
+              className="w-full justify-center px-2 py-1.5 text-xs sm:text-xs"
+            >
+              {showWinProbability ? t.hideWinRate : t.showWinRate}
+            </ZenButton>
+          </div>
         )}
       </div>
     </ZenDropdown>
